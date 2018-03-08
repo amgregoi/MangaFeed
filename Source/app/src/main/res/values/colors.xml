@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FFA500</color>
+
+    <color name="Manga_white">#FFFFFFFF</color>
+    <color name="Manga_black">#FF000000</color>
+    <color name="Manga_off_white">#FFF5F5F5</color>
+    <color name="Manga_white_alpha50">#80FFFFFF</color>
+    <color name="Manga_charcoal">#FF222222</color>
+
+</resources>

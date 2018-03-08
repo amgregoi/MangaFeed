@@ -1,0 +1,30 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.Dark" parent="AppTheme">
+        <!-- Add Dark theme styles -->
+        <item name="background_color">@color/Manga_charcoal</item>
+        <item name="background_color2">#282828</item>
+    </style>
+
+    <style name="AppTheme.Light" parent="AppTheme">
+        <!-- Add Dark theme styles -->
+        <item name="background_color">@color/Manga_off_white</item>
+    </style>
+
+    <style name="Widget.ViewPager.MangaFeed" parent="android:Widget">
+        <item name="android:background">?attr/background_color</item>
+    </style>
+
+    <style name="Widget.BottomNav.MangaFeed" parent="android:Widget">
+        <item name="android:background">?attr/background_color2</item>
+    </style>
+
+</resources>
