@@ -1,0 +1,355 @@
+package com.amgregoire.mangafeed.Models;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Property;
+import org.greenrobot.greendao.annotation.Generated;
+
+@Entity(nameInDb = "Manga")
+public class Manga implements Parcelable
+{
+    public final static String TAG = "MANGA";
+
+    @Id(autoincrement = true)
+    public Long _id;
+
+    @Property(nameInDb = "title")
+    public String title;
+
+    @Property(nameInDb = "image")
+    public String image;
+
+    @Property(nameInDb = "link")
+    public String link;
+
+    @Property(nameInDb = "description")
+    public String description;
+
+    @Property(nameInDb = "author")
+    public String author;
+
+    @Property(nameInDb = "artist")
+    public String artist;
+
+    @Property(nameInDb = "genres")
+    public String genres;
+
+    @Property(nameInDb = "status")
+    public String status;
+
+    @Property(nameInDb = "source")
+    public String source;
+
+    @Property(nameInDb = "alternate")
+    public String alternate;
+
+    @Property(nameInDb = "following")
+    public int following;
+
+    @Property(nameInDb = "initialized")
+    public int initialized;
+
+    @Property(nameInDb = "recentChapter")
+    public String recentChapter;
+
+    public Manga()
+    {
+
+    }
+
+    public Manga(String aTitle, String aUrl, String aSource)
+    {
+        title = aTitle;
+        link = aUrl;
+        source = aSource;
+        initialized = 0;
+        _id = null;
+    }
+
+    public Manga(Manga aIn)
+    {
+        _id = aIn._id;
+        title = aIn.title;
+        image = aIn.image;
+        link = aIn.link;
+        description = aIn.description;
+        author = aIn.author;
+        artist = aIn.artist;
+        genres = aIn.genres;
+        status = aIn.status;
+        source = aIn.source;
+        alternate = aIn.alternate;
+        following = aIn.following;
+        initialized = aIn.initialized;
+        recentChapter = aIn.recentChapter;
+    }
+
+    protected Manga(Parcel aIn)
+    {
+        _id = aIn.readLong();
+        title = aIn.readString();
+        image = aIn.readString();
+        link = aIn.readString();
+        description = aIn.readString();
+
+        author = aIn.readString();
+        artist = aIn.readString();
+        genres = aIn.readString();
+        status = aIn.readString();
+        source = aIn.readString();
+        alternate = aIn.readString();
+        following = aIn.readInt();
+        initialized = aIn.readInt();
+        recentChapter = aIn.readString();
+    }
+
+    @Generated(hash = 736454909)
+    public Manga(Long _id, String title, String image, String link,
+                 String description, String author, String artist, String genres,
+                 String status, String source, String alternate, int following,
+                 int initialized, String recentChapter)
+    {
+        this._id = _id;
+        this.title = title;
+        this.image = image;
+        this.link = link;
+        this.description = description;
+        this.author = author;
+        this.artist = artist;
+        this.genres = genres;
+        this.status = status;
+        this.source = source;
+        this.alternate = alternate;
+        this.following = following;
+        this.initialized = initialized;
+        this.recentChapter = recentChapter;
+    }
+
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel aDest, int aFlags)
+    {
+        aDest.writeLong(_id);
+        aDest.writeString(title);
+        aDest.writeString(image);
+        aDest.writeString(link);
+        aDest.writeString(description);
+
+        aDest.writeString(author);
+        aDest.writeString(artist);
+        aDest.writeString(genres);
+        aDest.writeString(status);
+        aDest.writeString(source);
+        aDest.writeString(alternate);
+        aDest.writeInt(following);
+        aDest.writeInt(initialized);
+        aDest.writeString(recentChapter);
+    }
+
+    public static final Creator<Manga> CREATOR = new Creator<Manga>()
+    {
+        @Override
+        public Manga createFromParcel(Parcel aIn)
+        {
+            return new Manga(aIn);
+        }
+
+        @Override
+        public Manga[] newArray(int aSize)
+        {
+            return new Manga[aSize];
+        }
+    };
+
+    public Long get_id()
+    {
+        return _id;
+    }
+
+    public void set_id(Long aId)
+    {
+        _id = aId;
+    }
+
+    public String toString()
+    {
+        return title;
+    }
+
+    public String getTitle()
+    {
+        return title;
+    }
+
+    public void setTitle(String aTitle)
+    {
+        title = aTitle;
+    }
+
+    public String getDescription() { return description;}
+
+    public void setDescription(String aDesc) {description = aDesc;}
+
+    public String getPicUrl()
+    {
+        return image;
+    }
+
+    public void setPicUrl(String aPicUrl)
+    {
+        image = aPicUrl;
+    }
+
+    public String getMangaURL()
+    {
+        return link;
+    }
+
+    public void setMangaUrl(String aUrl)
+    {
+        link = aUrl;
+    }
+
+    public String getAuthor()
+    {
+        return author;
+    }
+
+    public void setAuthor(String aAuthor)
+    {
+        author = aAuthor;
+    }
+
+    public String getArtist()
+    {
+        return artist;
+    }
+
+    public void setArtist(String aArtist)
+    {
+        artist = aArtist;
+    }
+
+    public String getmGenre()
+    {
+        return genres;
+    }
+
+    public void setmGenre(String aGenres)
+    {
+        genres = aGenres;
+    }
+
+    public String getStatus()
+    {
+        return status;
+    }
+
+    public void setStatus(String aStatus)
+    {
+        status = aStatus;
+    }
+
+    public String getSource()
+    {
+        return source;
+    }
+
+    public void setSource(String aSource)
+    {
+        source = aSource;
+    }
+
+    public String getAlternate() { return alternate; }
+
+    public void setAlternate(String aAlternate) { alternate = aAlternate; }
+
+    public long getFollowing()
+    {
+        return following;
+    }
+
+    public int getFollowingValue()
+    {
+        return following;
+    }
+
+    public int setFollowing(int lVal)
+    {
+        following = lVal;
+        return following;
+    }
+
+    public int getInitialized()
+    {
+        return initialized;
+    }
+
+    public void setInitialized(int aInitialized)
+    {
+        initialized = aInitialized;
+    }
+
+    @Override
+    public boolean equals(Object aObject)
+    {
+        boolean lCompare = false;
+        if (aObject != null && aObject instanceof Manga)
+        {
+            if (link.equals(((Manga) aObject).getMangaURL()))
+            {
+                lCompare = true;
+            }
+        }
+
+        return lCompare;
+    }
+
+    public String getImage()
+    {
+        return this.image;
+    }
+
+    public void setImage(String image)
+    {
+        this.image = image;
+    }
+
+    public String getLink()
+    {
+        return this.link;
+    }
+
+    public void setLink(String link)
+    {
+        this.link = link;
+    }
+
+    public String getGenres()
+    {
+        return this.genres;
+    }
+
+    public void setGenres(String genres)
+    {
+        this.genres = genres;
+    }
+
+    public String getRecentChapter()
+    {
+        return this.recentChapter;
+    }
+
+    public void setRecentChapter(String recentChapter)
+    {
+        this.recentChapter = recentChapter;
+    }
+}

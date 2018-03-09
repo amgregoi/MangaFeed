@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipeRefreshHomeManga"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Recents page. HALP"
+            android:textColor="@color/colorAccent" />
+
+        <com.l4digital.fastscroll.FastScrollRecyclerView
+            android:id="@+id/recyclerViewHomeManga"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:bubbleColor="@color/colorAccent"
+            app:bubbleTextColor="@color/Manga_white"
+            app:handleColor="@color/colorAccent"
+            app:hideScrollbar="true"
+            app:showTrack="false"
+            app:trackColor="@color/colorAccent" />
+
+    </RelativeLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

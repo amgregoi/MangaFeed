@@ -3,4 +3,15 @@
     <string name="nav_bottom_title_catalog">Catalog</string>
     <string name="nav_bottom_title_download">Downloads</string>
     <string name="nav_bottom_title_account">Account</string>
+
+    <!-- Preferences -->
+    <string name="PREF_USER_SOURCE">SAVED_SOURCE</string>
+    <string name="PREF_LOGGING_STATUS">PREF_LOGGING_STATUS</string>
+    <string name="PREF_SAVE_LOGS">SAVE_LOGS</string>
+    <string name="PREF_CHAPTER_SCROLL_VERTICAL">CHAPTER_SCROLL_VERTICAL</string>
+    <string name="PREF_APP_LAYOUT_IS_GRID">APP_LAYOUT_IS_GRID</string>
+    <string name="PREF_APP_THEME_IS_LIGHT">APP_THEME_IS_LIGHT</string>
+    <string name="PREF_STORAGE_LOCATION">MangaPark</string>
+    <string name="PREF_GOOGLE_EMAIL">EMAIL</string>
+    <string name="PREF_CHAPTER_SCREEN_ORIENTATION">PREF_CHAPTER_SCREEN_ORIENTATION</string>
 </resources>

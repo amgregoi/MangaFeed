@@ -6,9 +6,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.SparseArray;
 
-import com.amgregoire.mangafeed.Fragments.CatalogFragment;
-import com.amgregoire.mangafeed.Fragments.LibraryFragment;
-import com.amgregoire.mangafeed.Fragments.RecentFragment;
+import com.amgregoire.mangafeed.UI.Fragments.HomeFragmentCatalog;
+import com.amgregoire.mangafeed.UI.Fragments.HomeFragmentLibrary;
+import com.amgregoire.mangafeed.UI.Fragments.HomeFragmentRecent;
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
@@ -42,15 +42,15 @@ public class HomeViewPagerAdapter extends FragmentStatePagerAdapter
         switch (aPosition)
         {
             case 0:
-                lFragment = RecentFragment.newInstance();
+                lFragment = HomeFragmentRecent.newInstance();
                 mRegisteredFragments.put(0, lFragment);
                 break;
             case 1:
-                lFragment = LibraryFragment.newInstance();
+                lFragment = HomeFragmentLibrary.newInstance();
                 mRegisteredFragments.put(1, lFragment);
                 break;
             default:
-                lFragment = CatalogFragment.newInstance();
+                lFragment = HomeFragmentCatalog.newInstance();
                 mRegisteredFragments.put(2, lFragment);
         }
 
