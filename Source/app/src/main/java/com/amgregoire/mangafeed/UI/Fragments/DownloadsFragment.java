@@ -33,7 +33,7 @@ public class DownloadsFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View lView = inflater.inflate(R.layout.frament_home_offline, null);
+        View lView = inflater.inflate(R.layout.fragment_downloads, null);
         ButterKnife.bind(this, lView);
 
         return lView;

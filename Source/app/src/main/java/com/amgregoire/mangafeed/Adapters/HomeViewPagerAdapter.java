@@ -1,6 +1,5 @@
 package com.amgregoire.mangafeed.Adapters;
 
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -25,13 +24,6 @@ public class HomeViewPagerAdapter extends FragmentStatePagerAdapter
         super(aFragmentManager);
 
         this.mTabCount = aTabCount;
-    }
-
-
-    @Override
-    public void restoreState(Parcelable state, ClassLoader loader)
-    {
-//        super.restoreState(state, loader);
     }
 
     @Override

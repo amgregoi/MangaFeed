@@ -12,11 +12,13 @@
         <!-- Add Dark theme styles -->
         <item name="background_color">@color/Manga_charcoal</item>
         <item name="background_color2">#282828</item>
+        <item name="text_color">@color/Manga_white</item>
     </style>
 
     <style name="AppTheme.Light" parent="AppTheme">
         <!-- Add Dark theme styles -->
         <item name="background_color">@color/Manga_off_white</item>
+        <item name="text_color">@color/Manga_charcoal</item>
     </style>
 
     <style name="Widget.ViewPager.MangaFeed" parent="android:Widget">

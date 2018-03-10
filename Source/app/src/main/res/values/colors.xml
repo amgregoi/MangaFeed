@@ -9,7 +9,10 @@
     <color name="Manga_off_white">#FFF5F5F5</color>
     <color name="Manga_white_alpha50">#80FFFFFF</color>
     <color name="Manga_charcoal">#FF222222</color>
-    <color name="Manga_green">#32851D</color>
-    <color name="Manga_red">#991215</color>
+    <color name="Manga_red">#ffff3030</color>
+    <color name="Manga_yellow">#FFFFFC4C</color>
+    <color name="Manga_green">#FF2DED4D</color>
+    <color name="Manga_blue">#FF3F51B5</color>
+    <color name="Manga_gray">#FFC4C4C4</color>
 
 </resources>

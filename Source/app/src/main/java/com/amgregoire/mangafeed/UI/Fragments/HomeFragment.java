@@ -43,11 +43,6 @@ public class HomeFragment extends Fragment implements IHome.HomeMap
         ButterKnife.bind(this, lView);
 
         mPresenter = new HomePres(this, getChildFragmentManager());
-
-        if (savedInstanceState != null)
-        {
-            // restore state
-        }
         mPresenter.init(getArguments());
 
         return lView;

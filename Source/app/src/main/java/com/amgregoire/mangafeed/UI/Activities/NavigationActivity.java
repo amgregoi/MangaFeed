@@ -1,21 +1,19 @@
 package com.amgregoire.mangafeed.UI.Activities;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.widget.FrameLayout;
 
+import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragment;
 import com.amgregoire.mangafeed.UI.Fragments.DownloadsFragment;
 import com.amgregoire.mangafeed.UI.Fragments.HomeFragment;
 import com.amgregoire.mangafeed.UI.Fragments.OfflineFragment;
-import com.amgregoire.mangafeed.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,7 +25,7 @@ public class NavigationActivity extends AppCompatActivity
     @BindView(R.id.navigation) BottomNavigationView mBottomNav;
     @BindView(R.id.frameLayoutNavContainer) FrameLayout mFragmentContainer;
 
-    private boolean mHomeFlag = true;
+    private int mMenuFlag = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -45,10 +43,16 @@ public class NavigationActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        if (mHomeFlag)
+        if (mMenuFlag == 0)
         {
             MenuInflater lInflater = getMenuInflater();
             lInflater.inflate(R.menu.menu_toolbar_home, menu);
+            return true;
+        }
+        else if(mMenuFlag == 2)
+        {
+            MenuInflater lInflater = getMenuInflater();
+            lInflater.inflate(R.menu.menu_toolbar_account, menu);
             return true;
         }
 
@@ -61,34 +65,32 @@ public class NavigationActivity extends AppCompatActivity
      */
     private void setupNavigation()
     {
-        mBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener()
+        mBottomNav.setOnNavigationItemSelectedListener(item ->
         {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item)
+            mMenuFlag = 0;
+            switch (item.getItemId())
             {
-                mHomeFlag = false;
-                switch (item.getItemId())
-                {
-                    case R.id.navigation_home:
-                        mHomeFlag = true;
-                        setTitle(R.string.nav_bottom_title_catalog);
-                        setFragment(HomeFragment.TAG);
-                        break;
-                    case R.id.navigation_downloads:
-                        setTitle(R.string.nav_bottom_title_download);
-                        setFragment(DownloadsFragment.TAG);
-                        break;
-                    case R.id.navigation_account:
-                        setTitle(R.string.nav_bottom_title_account);
-                        setFragment(AccountFragment.TAG);
-                        break;
-                    default:
-                        return false;
-                }
-
-                invalidateOptionsMenu();
-                return true;
+                case R.id.navigation_home:
+                    mMenuFlag = 0;
+                    setTitle(R.string.nav_bottom_title_catalog);
+                    setFragment(HomeFragment.TAG);
+                    break;
+                case R.id.navigation_downloads:
+                    mMenuFlag = -1;
+                    setTitle(R.string.nav_bottom_title_download);
+                    setFragment(DownloadsFragment.TAG);
+                    break;
+                case R.id.navigation_account:
+                    mMenuFlag = 2;
+                    setTitle(R.string.nav_bottom_title_account);
+                    setFragment(AccountFragment.TAG);
+                    break;
+                default:
+                    return false;
             }
+
+            invalidateOptionsMenu();
+            return true;
         });
     }
 

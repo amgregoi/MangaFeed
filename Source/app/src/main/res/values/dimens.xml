@@ -1,6 +1,8 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="baseline_margin_unit_5dp">5dp</dimen>
     <dimen name="baseline_margin_unit_16dp">16dp</dimen>
+    <dimen name="baseline_margin_unit_18dp">18dp</dimen>
     <dimen name="single_line_height_48dp">48dp</dimen>
     <dimen name="grid_item_img_height_144dp">144dp</dimen>
 
