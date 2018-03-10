@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.amgregoire.mangafeed.UI.Presenters.HomePresBase;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Presenters.HomePresRecent;
 
@@ -49,9 +48,26 @@ public class HomeFragmentRecent extends HomeFragmentsBase
         setupSwipeLayout();
     }
 
+    @Override
+    public void startRefresh()
+    {
+        mSwipeLayout.setRefreshing(true);
+    }
+
+    @Override
+    public void stopRefresh()
+    {
+        mSwipeLayout.setRefreshing(false);
+    }
+
     private void setupSwipeLayout()
     {
         mSwipeLayout.setEnabled(true);
-        mSwipeLayout.setOnRefreshListener(() -> mPresenter.updateMangaList());
+        mSwipeLayout.setOnRefreshListener(() -> ((HomePresRecent)mPresenter).onSwipeRefresh());
+    }
+
+    public void hasInternetMessage()
+    {
+        ((HomePresRecent)mPresenter).hasInternetMessage();
     }
 }

@@ -62,7 +62,8 @@ public abstract class HomePresBase implements IHome.HomeBasePres, SearchRecycler
         catch (Exception lException)
         {
             MangaLogger.logError(TAG, lException.getMessage());
-        }    }
+        }
+    }
 
 
     /***
@@ -79,14 +80,15 @@ public abstract class HomePresBase implements IHome.HomeBasePres, SearchRecycler
                 if (mangaList != null)
                 {
                     mangaList = new ArrayList<>(mangaList);
-                    //Sorts manga list of Library or Catalog fragment
                     if (!(this instanceof HomePresRecent))
+                    {
                         Collections.sort(mangaList, (emp1, emp2) -> emp1.getTitle().compareToIgnoreCase(emp2.getTitle()));
+                    }
                 }
                 else
                 {
                     // failed to update list, show refresh view,
-                    mangaList = new ArrayList<>(); //empty list
+                    mangaList = new ArrayList<>();
                 }
 
                 if (mAdapter == null)
@@ -95,6 +97,7 @@ public abstract class HomePresBase implements IHome.HomeBasePres, SearchRecycler
                     mAdapter = new SearchRecyclerAdapter(mangaList, (pos) -> onItemSelected(pos));
                     mAdapter.setHasStableIds(true);
                     mMap.registerAdapter(mAdapter, mLayoutManager, mNeedsItemSpacing);
+                    mNeedsItemSpacing = false;
                 }
                 else
                 {
@@ -102,7 +105,6 @@ public abstract class HomePresBase implements IHome.HomeBasePres, SearchRecycler
                 }
 
                 mMap.stopRefresh();
-                mNeedsItemSpacing = false;
 
                 mMangaListSubscription.unsubscribe();
                 mMangaListSubscription = null;

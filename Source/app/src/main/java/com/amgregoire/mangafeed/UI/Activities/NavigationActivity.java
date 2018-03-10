@@ -1,14 +1,19 @@
 package com.amgregoire.mangafeed.UI.Activities;
 
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.FrameLayout;
 
+import com.amgregoire.mangafeed.Common.WifiBroadcastReceiver;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragment;
 import com.amgregoire.mangafeed.UI.Fragments.DownloadsFragment;
@@ -18,14 +23,17 @@ import com.amgregoire.mangafeed.UI.Fragments.OfflineFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class NavigationActivity extends AppCompatActivity
+public class NavigationActivity extends AppCompatActivity implements WifiBroadcastReceiver.WifiResponseListener
 {
+    public final static String TAG = NavigationActivity.class.getSimpleName();
 
     @BindView(R.id.navigationHomeToolbar) Toolbar mToolbar;
     @BindView(R.id.navigation) BottomNavigationView mBottomNav;
     @BindView(R.id.frameLayoutNavContainer) FrameLayout mFragmentContainer;
 
+    private WifiBroadcastReceiver mReceiver;
     private int mMenuFlag = 0;
+    private boolean mInternetFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -36,8 +44,37 @@ public class NavigationActivity extends AppCompatActivity
 
         mToolbar = findViewById(R.id.navigationHomeToolbar);
         setSupportActionBar(mToolbar);
+
+        mInternetFlag = WifiBroadcastReceiver.hasInternet(this);
+
         setupNavigation();
         setupFragmentBackStack();
+    }
+
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        mReceiver = new WifiBroadcastReceiver(this);
+        registerReceiver(mReceiver, filter);
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        try
+        {
+            unregisterReceiver(mReceiver);
+        }
+        catch (Exception ex)
+        {
+            Log.e(TAG, "Unregister receiver error: " + ex.getMessage());
+        }
+
     }
 
     @Override
@@ -49,7 +86,7 @@ public class NavigationActivity extends AppCompatActivity
             lInflater.inflate(R.menu.menu_toolbar_home, menu);
             return true;
         }
-        else if(mMenuFlag == 2)
+        else if (mMenuFlag == 2)
         {
             MenuInflater lInflater = getMenuInflater();
             lInflater.inflate(R.menu.menu_toolbar_account, menu);
@@ -57,6 +94,31 @@ public class NavigationActivity extends AppCompatActivity
         }
 
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void hasInternet()
+    {
+        mInternetFlag = true;
+
+        if (mMenuFlag == 0)
+        {
+            setFragment(HomeFragment.TAG);
+
+            HomeFragment lHome = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HomeFragment.TAG);
+            lHome.onInternetConnection();
+        }
+    }
+
+    @Override
+    public void hasNoInternet()
+    {
+        mInternetFlag = false;
+
+        if (mMenuFlag == 0)
+        {
+            setFragment(OfflineFragment.TAG);
+        }
     }
 
     /***
@@ -73,7 +135,14 @@ public class NavigationActivity extends AppCompatActivity
                 case R.id.navigation_home:
                     mMenuFlag = 0;
                     setTitle(R.string.nav_bottom_title_catalog);
-                    setFragment(HomeFragment.TAG);
+                    if (mInternetFlag)
+                    {
+                        setFragment(HomeFragment.TAG);
+                    }
+                    else
+                    {
+                        setFragment(OfflineFragment.TAG);
+                    }
                     break;
                 case R.id.navigation_downloads:
                     mMenuFlag = -1;
@@ -115,20 +184,30 @@ public class NavigationActivity extends AppCompatActivity
      */
     private void setupFragmentBackStack()
     {
+        FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
+
         mCurrentTag = HomeFragment.TAG;
         Fragment lHome = HomeFragment.newInstance();
         Fragment lAccount = AccountFragment.newInstance();
         Fragment lDownload = DownloadsFragment.newInstance();
         Fragment lOffline = OfflineFragment.newInstance();
 
-        getSupportFragmentManager().beginTransaction()
-                                   .add(R.id.frameLayoutNavContainer, lHome, HomeFragment.TAG)
-                                   .add(R.id.frameLayoutNavContainer, lAccount, AccountFragment.TAG)
-                                   .add(R.id.frameLayoutNavContainer, lDownload, DownloadsFragment.TAG)
-                                   .add(R.id.frameLayoutNavContainer, lOffline, OfflineFragment.TAG)
-                                   .hide(lOffline)
-                                   .hide(lAccount)
-                                   .hide(lDownload)
-                                   .commit();
+        lTransaction.add(R.id.frameLayoutNavContainer, lHome, HomeFragment.TAG)
+                    .add(R.id.frameLayoutNavContainer, lAccount, AccountFragment.TAG)
+                    .add(R.id.frameLayoutNavContainer, lDownload, DownloadsFragment.TAG)
+                    .add(R.id.frameLayoutNavContainer, lOffline, OfflineFragment.TAG)
+                    .hide(lAccount)
+                    .hide(lDownload);
+
+        if (!mInternetFlag)
+        {
+            lTransaction.hide(lHome);
+        }
+        else
+        {
+            lTransaction.hide(lOffline);
+        }
+
+        lTransaction.commit();
     }
 }

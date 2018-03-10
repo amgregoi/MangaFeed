@@ -15,25 +15,25 @@ import butterknife.ButterKnife;
  * Created by Andy Gregoire on 3/8/2018.
  */
 
-public class OfflineFragment extends Fragment
+public class AccountFragmentStats extends Fragment
 {
-    public final static String TAG = OfflineFragment.class.getSimpleName();
+    public final static String TAG = AccountFragmentStats.class.getSimpleName();
 
     /***
      * This function creates and returns a new instance of the OfflineFragment.
      *
      * @return
      */
-    public static OfflineFragment newInstance()
+    public static AccountFragmentStats newInstance()
     {
-        return new OfflineFragment();
+        return new AccountFragmentStats();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View lView = inflater.inflate(R.layout.fragment_offline, container, false);
+        View lView = inflater.inflate(R.layout.fragment_account_stats, container, false);
         ButterKnife.bind(this, lView);
 
         return lView;

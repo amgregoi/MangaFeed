@@ -1,6 +1,7 @@
 package com.amgregoire.mangafeed.UI.Presenters;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import com.amgregoire.mangafeed.Adapters.HomeViewPagerAdapter;
@@ -34,5 +35,11 @@ public class HomePres implements IHome.HomePres
         }
 
         mMap.registerAdapter(mAdapter);
+    }
+
+    @Override
+    public Fragment getAdapterFragment(int position)
+    {
+        return mAdapter.getRegisteredFragment(position);
     }
 }

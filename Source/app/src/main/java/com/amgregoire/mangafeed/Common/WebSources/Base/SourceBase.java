@@ -102,8 +102,7 @@ public abstract class SourceBase
                              .subscribeOn(Schedulers.io())
                              .observeOn(AndroidSchedulers.mainThread())
                              .retry(3)
-                             .doOnError(aThrowable -> MangaLogger.logError(TAG, aThrowable.getMessage()))
-                             .onErrorReturn(null);
+                             .doOnError(aThrowable -> MangaLogger.logError(TAG, aThrowable.getMessage()));
     }
 
     /***

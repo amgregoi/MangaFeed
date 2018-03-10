@@ -10,9 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Mappers.IHome;
 import com.amgregoire.mangafeed.UI.Presenters.HomePres;
-import com.amgregoire.mangafeed.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +44,7 @@ public class HomeFragment extends Fragment implements IHome.HomeMap
 
         mPresenter = new HomePres(this, getChildFragmentManager());
         mPresenter.init(getArguments());
+
 
         return lView;
     }
@@ -93,5 +94,11 @@ public class HomeFragment extends Fragment implements IHome.HomeMap
                 // do nothing
             }
         });
+    }
+
+    public void onInternetConnection()
+    {
+        HomeFragmentRecent lRecent = (HomeFragmentRecent) mPresenter.getAdapterFragment(0);
+        lRecent.hasInternetMessage();
     }
 }
