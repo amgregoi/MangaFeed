@@ -1,193 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/background_color"
     android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/baseline_margin_unit_16dp"
-        android:layout_marginTop="@dimen/baseline_margin_unit_16dp"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Statistics for "
-            android:textColor="?attr/text_color"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/textViewAccountStatsSourceName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="MangaJoy"
-            android:textColor="?attr/text_color"
-            android:textStyle="bold" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayoutStatsReadingContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/baseline_margin_unit_16dp"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:orientation="horizontal"
-        android:paddingBottom="@dimen/baseline_margin_unit_5dp"
-        android:paddingTop="@dimen/baseline_margin_unit_5dp">
-
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="32dp"
             android:layout_marginStart="@dimen/baseline_margin_unit_16dp"
-            android:background="@drawable/circle_blue" />
+            android:layout_marginTop="@dimen/baseline_margin_unit_16dp"
+            android:orientation="horizontal">
 
-        <TextView
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Statistics for "
+                android:textColor="?attr/text_color"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewAccountStatsSourceName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MangaJoy"
+                android:textColor="?attr/text_color"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayoutStatsReadingContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1.5"
-            android:text="Reading"
-            android:textColor="?attr/text_color"
-            android:textSize="15sp" />
+            android:layout_marginTop="@dimen/baseline_margin_unit_16dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/baseline_margin_unit_5dp"
+            android:paddingTop="@dimen/baseline_margin_unit_5dp">
 
-        <TextView
-            android:id="@+id/textViewAccountStatsReading"
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginStart="@dimen/baseline_margin_unit_16dp"
+                android:background="@drawable/circle_blue" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1.5"
+                android:text="Reading"
+                android:textColor="?attr/text_color"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textViewAccountStatsReading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:text="85"
+                android:textAlignment="center"
+                android:textColor="?attr/text_color"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayoutStatsCompletedContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:text="85"
-            android:textAlignment="center"
-            android:textColor="?attr/text_color"
-            android:textSize="15sp" />
+            android:layout_marginTop="@dimen/baseline_margin_unit_16dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/baseline_margin_unit_5dp"
+            android:paddingTop="@dimen/baseline_margin_unit_5dp">
 
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginStart="@dimen/baseline_margin_unit_16dp"
+                android:background="@drawable/circle_green" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1.5"
+                android:text="Completed"
+                android:textColor="?attr/text_color"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textViewAccountStatsCompleted"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:text="85"
+                android:textAlignment="center"
+                android:textColor="?attr/text_color"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayoutStatsOnHoldContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/baseline_margin_unit_16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/baseline_margin_unit_5dp"
+            android:paddingTop="@dimen/baseline_margin_unit_5dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginStart="@dimen/baseline_margin_unit_16dp"
+                android:background="@drawable/circle_red" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1.5"
+                android:text="On-Hold"
+                android:textColor="?attr/text_color"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textViewAccountStatsOnHold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:text="85"
+                android:textAlignment="center"
+                android:textColor="?attr/text_color"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayoutStatsPlanToReadContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/baseline_margin_unit_16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/baseline_margin_unit_5dp"
+            android:paddingTop="@dimen/baseline_margin_unit_5dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginStart="@dimen/baseline_margin_unit_16dp"
+                android:background="@drawable/circle_gray" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1.5"
+                android:text="Plan to Read"
+                android:textColor="?attr/text_color"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textViewAccountStatsPlanToRead"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:text="85"
+                android:textAlignment="center"
+                android:textColor="?attr/text_color"
+                android:textSize="15sp" />
+
+        </LinearLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayoutStatsCompletedContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/baseline_margin_unit_16dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:orientation="horizontal"
-        android:paddingBottom="@dimen/baseline_margin_unit_5dp"
-        android:paddingTop="@dimen/baseline_margin_unit_5dp">
-
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginStart="@dimen/baseline_margin_unit_16dp"
-            android:background="@drawable/circle_green" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1.5"
-            android:text="Completed"
-            android:textColor="?attr/text_color"
-            android:textSize="15sp" />
-
-        <TextView
-            android:id="@+id/textViewAccountStatsCompleted"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:text="85"
-            android:textAlignment="center"
-            android:textColor="?attr/text_color"
-            android:textSize="15sp" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayoutStatsOnHoldContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/baseline_margin_unit_16dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:orientation="horizontal"
-        android:paddingBottom="@dimen/baseline_margin_unit_5dp"
-        android:paddingTop="@dimen/baseline_margin_unit_5dp">
-
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginStart="@dimen/baseline_margin_unit_16dp"
-            android:background="@drawable/circle_red" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1.5"
-            android:text="On-Hold"
-            android:textColor="?attr/text_color"
-            android:textSize="15sp" />
-
-        <TextView
-            android:id="@+id/textViewAccountStatsOnHold"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:text="85"
-            android:textAlignment="center"
-            android:textColor="?attr/text_color"
-            android:textSize="15sp" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayoutStatsPlanToReadContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/baseline_margin_unit_16dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:orientation="horizontal"
-        android:paddingBottom="@dimen/baseline_margin_unit_5dp"
-        android:paddingTop="@dimen/baseline_margin_unit_5dp">
-
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginStart="@dimen/baseline_margin_unit_16dp"
-            android:background="@drawable/circle_gray" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1.5"
-            android:text="Plan to Read"
-            android:textColor="?attr/text_color"
-            android:textSize="15sp" />
-
-        <TextView
-            android:id="@+id/textViewAccountStatsPlanToRead"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:text="85"
-            android:textAlignment="center"
-            android:textColor="?attr/text_color"
-            android:textSize="15sp" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</android.support.v4.widget.NestedScrollView>

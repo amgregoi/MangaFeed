@@ -94,10 +94,10 @@ public class MangaEnums
      */
     public enum Source
     {
-        MangaEden(new MangaEden()),
-        MangaHere(new MangaHere()),
+        ReadLight(new ReadLight()),
         MangaJoy(new MangaJoy()),
-        ReadLight(new ReadLight());
+        MangaHere(new MangaHere()),
+        MangaEden(new MangaEden());
 
         SourceBase lSource;
 

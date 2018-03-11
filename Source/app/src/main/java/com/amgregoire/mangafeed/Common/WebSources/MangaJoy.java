@@ -68,6 +68,13 @@ public class MangaJoy extends SourceManga
             "Yuri"
     };
 
+
+    @Override
+    public String getSourceName()
+    {
+        return SourceKey;
+    }
+
     @Override
     public MangaEnums.SourceType getSourceType()
     {

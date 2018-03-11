@@ -14,7 +14,6 @@ import android.widget.TextView;
 import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
-import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.l4digital.fastscroll.FastScroller;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
@@ -62,7 +61,8 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
-        View lView = LayoutInflater.from(parent.getContext()).inflate(R.layout.manga_grid_item, parent, false);
+        View lView = LayoutInflater.from(parent.getContext())
+                                   .inflate(R.layout.manga_grid_item, parent, false);
         return new ViewHolderManga(lView);
     }
 
@@ -125,13 +125,20 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
      */
     public void updateItem(Manga aManga)
     {
-        Manga lNewManga = MangaDB.getInstance().getManga(aManga.getLink());
-        int lFiltPos = mFilteredData.indexOf(aManga);
+        if (aManga == null)
+        {
+            return;
+        }
 
-        mOriginalData.set(mOriginalData.indexOf(aManga), lNewManga);
-        mFilteredData.set(lFiltPos, lNewManga);
+        int lFilterPos = mFilteredData.indexOf(aManga);
 
-        notifyItemChanged(lFiltPos);
+        if (lFilterPos >= 0)
+        {
+            mOriginalData.set(mOriginalData.indexOf(aManga), aManga);
+            mFilteredData.set(lFilterPos, aManga);
+
+            notifyItemChanged(lFilterPos);
+        }
     }
 
     /***
@@ -143,19 +150,19 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
      */
     public void updateItem(Manga aManga, boolean isAddingFlag)
     {
-        Manga lNewManga = MangaDB.getInstance().getManga(aManga.getMangaURL());
-
-        if (isAddingFlag)
+        if (isAddingFlag && !mOriginalData.contains(aManga))
         {
-            mOriginalData.add(lNewManga);
-            mFilteredData.add(lNewManga);
-            Collections.sort(mFilteredData, (emp1, emp2) -> emp1.getTitle().compareToIgnoreCase(emp2.getTitle()));
-            Collections.sort(mOriginalData, (emp1, emp2) -> emp1.getTitle().compareToIgnoreCase(emp2.getTitle()));
+            mOriginalData.add(aManga);
+            mFilteredData.add(aManga);
+            Collections.sort(mFilteredData, (emp1, emp2) -> emp1.getTitle()
+                                                                .compareToIgnoreCase(emp2.getTitle()));
+            Collections.sort(mOriginalData, (emp1, emp2) -> emp1.getTitle()
+                                                                .compareToIgnoreCase(emp2.getTitle()));
         }
-        else
+        else if (!isAddingFlag && mOriginalData.contains(aManga))
         {
-            mOriginalData.remove(lNewManga);
-            mFilteredData.remove(lNewManga);
+            mOriginalData.remove(aManga);
+            mFilteredData.remove(aManga);
         }
 
         notifyDataSetChanged();
@@ -218,6 +225,8 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
         @BindDrawable(R.drawable.intercom_input_gallery) Drawable mPlaceHolder;
         @BindDrawable(R.drawable.intercom_error) Drawable mError;
+
+        private boolean mImageLoaded = false;
 
         private final Target mImageTarget = new Target()
         {
@@ -283,6 +292,8 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                    .placeholder(mPlaceHolder)
                    .memoryPolicy(MemoryPolicy.NO_STORE)
                    .into(mImageTarget);
+
+            mImageLoaded = true;
         }
 
         /***

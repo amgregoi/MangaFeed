@@ -26,6 +26,13 @@ public class ReadLight extends SourceNovel
     public final static String TAG = ReadLight.class.getSimpleName();
     private final String SourceKey = "ReadLight";
 
+
+    @Override
+    public String getSourceName()
+    {
+        return SourceKey;
+    }
+
     @Override
     public MangaEnums.SourceType getSourceType()
     {

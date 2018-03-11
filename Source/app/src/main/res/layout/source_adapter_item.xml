@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cardViewSourceItemRoot"
+    android:layout_width="match_parent"
+    android:layout_height="120dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/imageViewSourceBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/funmanga_logo" />
+
+        <View
+            android:background="@color/Manga_charcoal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha=".85" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="15dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textViewSourceName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FunManga"
+                android:textColor="?attr/text_color"
+                android:layout_marginBottom="10dp"
+                android:textSize="25dp" />
+
+            <TextView
+                android:id="@+id/textViewSourceUrl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="http://www.funmanga.com"
+                android:textColor="?attr/text_color"
+                android:textSize="12dp" />
+        </LinearLayout>
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

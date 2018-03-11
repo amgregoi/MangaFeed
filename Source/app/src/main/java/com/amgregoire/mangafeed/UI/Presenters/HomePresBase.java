@@ -8,7 +8,7 @@ import com.amgregoire.mangafeed.Adapters.SearchRecyclerAdapter;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Mappers.IHome;
-import com.amgregoire.mangafeed.UpdateItemEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.UpdateItemEvent;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
 import java.util.ArrayList;
@@ -45,9 +45,10 @@ public abstract class HomePresBase implements IHome.HomeBasePres, SearchRecycler
     {
         mMap.initViews();
         updateMangaList();
-
-
+        setupRxBus();
     }
+
+    public void setupRxBus(){};
 
     @Override
     public void onItemSelected(int position)
@@ -56,8 +57,8 @@ public abstract class HomePresBase implements IHome.HomeBasePres, SearchRecycler
         {
             Manga lManga = mAdapter.getItem(position);
 
-
-            MangaFeed.getInstance().rxBus().send(new UpdateItemEvent());
+            //This will go into Manga Info fragment when implemented.
+            MangaFeed.getInstance().rxBus().send(new UpdateItemEvent(mAdapter.getItem(position)));
 
             // launch new activity
             // look into way of updating other instances of this object when returning

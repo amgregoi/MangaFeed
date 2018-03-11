@@ -63,6 +63,12 @@ public class MangaHere extends SourceManga
     };
 
     @Override
+    public String getSourceName()
+    {
+        return SourceKey;
+    }
+
+    @Override
     public MangaEnums.SourceType getSourceType()
     {
         return MangaEnums.SourceType.MANGA;

@@ -12,6 +12,7 @@ import io.reactivex.Observable;
 
 public class RxBus
 {
+
     private final Relay<Object> bus = PublishRelay.create().toSerialized();
 
     public void send(Object event) {

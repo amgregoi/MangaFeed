@@ -14,11 +14,13 @@ import android.view.MenuInflater;
 import android.widget.FrameLayout;
 
 import com.amgregoire.mangafeed.Common.WifiBroadcastReceiver;
+import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragment;
 import com.amgregoire.mangafeed.UI.Fragments.DownloadsFragment;
 import com.amgregoire.mangafeed.UI.Fragments.HomeFragment;
 import com.amgregoire.mangafeed.UI.Fragments.OfflineFragment;
+import com.amgregoire.mangafeed.Utils.BusEvents.UpdateSourceEvent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,6 +36,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     private WifiBroadcastReceiver mReceiver;
     private int mMenuFlag = 0;
     private boolean mInternetFlag;
+    private String mCurrentTag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -42,15 +45,18 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         setContentView(R.layout.activity_navigation);
         ButterKnife.bind(this);
 
-        mToolbar = findViewById(R.id.navigationHomeToolbar);
-        setSupportActionBar(mToolbar);
-
-        mInternetFlag = WifiBroadcastReceiver.hasInternet(this);
-
-        setupNavigation();
-        setupFragmentBackStack();
+        // TODO: implement presenter..
+        initViews();
     }
 
+    private void initViews()
+    {
+        mInternetFlag = WifiBroadcastReceiver.hasInternet(this);
+        setupToolbar();
+        setupNavigation();
+        setupFragmentBackStack();
+        setupRxBus();
+    }
 
     @Override
     protected void onResume()
@@ -134,7 +140,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
             {
                 case R.id.navigation_home:
                     mMenuFlag = 0;
-                    setTitle(R.string.nav_bottom_title_catalog);
+                    setTitle(MangaFeed.getInstance().getCurrentSource().getSourceName());
                     if (mInternetFlag)
                     {
                         setFragment(HomeFragment.TAG);
@@ -163,7 +169,22 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         });
     }
 
-    private String mCurrentTag;
+    private void setupRxBus()
+    {
+        MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
+        {
+            if (o instanceof UpdateSourceEvent)
+            {
+                Fragment home = getSupportFragmentManager().findFragmentByTag(HomeFragment.TAG);
+                getSupportFragmentManager().beginTransaction().detach(home).attach(home).commit();
+                MangaFeed.getInstance()
+                         .makeSnackBarShort(findViewById(R.id.coordinatorLayoutSnack), "Source changed to " + MangaFeed.getInstance()
+                                                                                                .getCurrentSource()
+                                                                                                .getSourceName());
+            }
+        }, throwable -> Log.e(TAG, throwable.getMessage()));
+    }
+
 
     /***
      * This fragment switches the active fragment to the newly specified fragment by its tag, and detaches the old.
@@ -209,5 +230,15 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         }
 
         lTransaction.commit();
+    }
+
+    /***
+     * This function sets up the activities toolbar.
+     *
+     */
+    private void setupToolbar()
+    {
+        setSupportActionBar(mToolbar);
+        setTitle(MangaFeed.getInstance().getCurrentSource().getSourceName());
     }
 }

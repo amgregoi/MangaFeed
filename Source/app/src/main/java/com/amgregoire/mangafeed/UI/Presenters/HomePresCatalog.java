@@ -1,7 +1,11 @@
 package com.amgregoire.mangafeed.UI.Presenters;
 
+import android.util.Log;
+
 import com.amgregoire.mangafeed.MangaFeed;
+import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Mappers.IHome;
+import com.amgregoire.mangafeed.Utils.BusEvents.UpdateItemEvent;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
@@ -15,6 +19,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class HomePresCatalog extends HomePresBase
 {
+    public final static String TAG = HomePresCatalog.class.getSimpleName();
 
     public HomePresCatalog(IHome.HomeBaseMap map)
     {
@@ -44,5 +49,19 @@ public class HomePresCatalog extends HomePresBase
             MangaLogger.logError(TAG, aException.getMessage());
 
         }
+    }
+
+    @Override
+    public void setupRxBus()
+    {
+        MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
+        {
+            if(o instanceof UpdateItemEvent)
+            {
+                Manga m = ((UpdateItemEvent)o).manga;
+                mAdapter.updateItem(m);
+                Log.e(TAG, m.title);
+            }
+        }, throwable -> Log.e(TAG, throwable.getMessage()));
     }
 }

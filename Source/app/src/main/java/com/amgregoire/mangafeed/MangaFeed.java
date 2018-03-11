@@ -1,13 +1,15 @@
 package com.amgregoire.mangafeed;
 
 import android.app.Application;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 import android.widget.Toast;
 
 import com.amgregoire.mangafeed.Common.MangaEnums;
+import com.amgregoire.mangafeed.Common.WebSources.Base.SourceBase;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.RxBus;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
-import com.amgregoire.mangafeed.Common.WebSources.Base.SourceBase;
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
@@ -66,6 +68,11 @@ public class MangaFeed extends Application
     public void makeToastLong(String message)
     {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    public void makeSnackBarShort(View v, String message)
+    {
+        Snackbar.make(v, message, Snackbar.LENGTH_LONG).show();
     }
 
 

@@ -277,6 +277,11 @@ public class Manga implements Parcelable
         return following;
     }
 
+    public boolean isFollowing()
+    {
+        return following > 0;
+    }
+
     public int getFollowingValue()
     {
         return following;

@@ -29,6 +29,8 @@ public abstract class SourceBase
 {
     private String TAG = SourceBase.class.getSimpleName();
 
+    public abstract String getSourceName();
+
     /***
      * This function returns the type of content the source provides.
      * @return

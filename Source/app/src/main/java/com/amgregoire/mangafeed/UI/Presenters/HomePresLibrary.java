@@ -1,7 +1,11 @@
 package com.amgregoire.mangafeed.UI.Presenters;
 
+import android.util.Log;
+
 import com.amgregoire.mangafeed.MangaFeed;
+import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Mappers.IHome;
+import com.amgregoire.mangafeed.Utils.BusEvents.UpdateItemEvent;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
@@ -15,6 +19,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class HomePresLibrary extends HomePresBase
 {
+    public final static String TAG = HomePresLibrary.class.getSimpleName();
 
     public HomePresLibrary(IHome.HomeBaseMap map)
     {
@@ -36,13 +41,28 @@ public class HomePresLibrary extends HomePresBase
                                             .getLibraryList().cache()
                                             .subscribeOn(Schedulers.io())
                                             .observeOn(AndroidSchedulers.mainThread())
-                                            .doOnError(throwable -> MangaFeed.getInstance().makeToastShort(throwable.getMessage()))
+                                            .doOnError(throwable -> MangaFeed.getInstance()
+                                                                             .makeToastShort(throwable
+                                                                                     .getMessage()))
                                             .subscribe(aManga -> updateMangaGridView(aManga));
         }
         catch (Exception aException)
         {
             MangaLogger.logError(TAG, aException.getMessage());
-
         }
+    }
+
+    @Override
+    public void setupRxBus()
+    {
+        MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
+        {
+            if (o instanceof UpdateItemEvent)
+            {
+                Manga manga = ((UpdateItemEvent) o).manga;
+                mAdapter.updateItem(manga, manga.isFollowing());
+                Log.e(TAG, manga.title);
+            }
+        }, throwable -> Log.e(TAG, throwable.getMessage()));
     }
 }
