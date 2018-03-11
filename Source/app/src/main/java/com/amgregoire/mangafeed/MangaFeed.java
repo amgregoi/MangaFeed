@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Utils.MangaDB;
+import com.amgregoire.mangafeed.Utils.RxBus;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceBase;
 
@@ -15,6 +16,7 @@ import com.amgregoire.mangafeed.Common.WebSources.Base.SourceBase;
 public class MangaFeed extends Application
 {
     private static MangaFeed mInstance;
+    private RxBus mBus;
 
     public MangaFeed()
     {
@@ -25,6 +27,8 @@ public class MangaFeed extends Application
     public void onCreate()
     {
         super.onCreate();
+
+        mBus = new RxBus();
 
         MangaDB.getInstance().createDB(); // Copy pre-loaded database if not already done.
         MangaDB.getInstance().initDao();
@@ -37,6 +41,11 @@ public class MangaFeed extends Application
     public static synchronized MangaFeed getInstance()
     {
         return mInstance;
+    }
+
+    public RxBus rxBus()
+    {
+        return  mBus;
     }
 
     /***

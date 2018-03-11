@@ -17,7 +17,8 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.schedulers.Schedulers;
+import io.reactivex.schedulers.Schedulers;
+
 
 public class MangaHere extends SourceManga
 {

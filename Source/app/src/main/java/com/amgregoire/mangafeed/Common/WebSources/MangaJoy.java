@@ -1,13 +1,13 @@
 package com.amgregoire.mangafeed.Common.WebSources;
 
 
+import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Common.RequestWrapper;
+import com.amgregoire.mangafeed.Common.WebSources.Base.SourceManga;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
-import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
-import com.amgregoire.mangafeed.Common.WebSources.Base.SourceManga;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,7 +17,7 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.schedulers.Schedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class MangaJoy extends SourceManga
 {
@@ -124,7 +124,6 @@ public class MangaJoy extends SourceManga
                         updateMangaObservable(new RequestWrapper(lManga)).subscribeOn(Schedulers.computation())
                                                                          .doOnError(aThrowable -> MangaLogger
                                                                                  .logError(TAG, aThrowable.getMessage()))
-                                                                         .onErrorReturn(null)
                                                                          .subscribe();
                     }
                 }

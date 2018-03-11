@@ -5,15 +5,18 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.amgregoire.mangafeed.Adapters.SearchRecyclerAdapter;
+import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Mappers.IHome;
+import com.amgregoire.mangafeed.UpdateItemEvent;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import rx.Subscription;
+import io.reactivex.disposables.Disposable;
+
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
@@ -24,7 +27,7 @@ public abstract class HomePresBase implements IHome.HomeBasePres, SearchRecycler
     public final static String TAG = HomePresBase.class.getSimpleName();
 
     protected IHome.HomeBaseMap mMap;
-    protected Subscription mMangaListSubscription;
+    protected Disposable mMangaListSubscription;
     protected SearchRecyclerAdapter mAdapter;
 
     private RecyclerView.LayoutManager mLayoutManager;
@@ -42,6 +45,8 @@ public abstract class HomePresBase implements IHome.HomeBasePres, SearchRecycler
     {
         mMap.initViews();
         updateMangaList();
+
+
     }
 
     @Override
@@ -50,6 +55,10 @@ public abstract class HomePresBase implements IHome.HomeBasePres, SearchRecycler
         try
         {
             Manga lManga = mAdapter.getItem(position);
+
+
+            MangaFeed.getInstance().rxBus().send(new UpdateItemEvent());
+
             // launch new activity
             // look into way of updating other instances of this object when returning
 
@@ -82,7 +91,8 @@ public abstract class HomePresBase implements IHome.HomeBasePres, SearchRecycler
                     mangaList = new ArrayList<>(mangaList);
                     if (!(this instanceof HomePresRecent))
                     {
-                        Collections.sort(mangaList, (emp1, emp2) -> emp1.getTitle().compareToIgnoreCase(emp2.getTitle()));
+                        Collections.sort(mangaList, (emp1, emp2) -> emp1.getTitle()
+                                                                        .compareToIgnoreCase(emp2.getTitle()));
                     }
                 }
                 else
@@ -106,7 +116,7 @@ public abstract class HomePresBase implements IHome.HomeBasePres, SearchRecycler
 
                 mMap.stopRefresh();
 
-                mMangaListSubscription.unsubscribe();
+                mMangaListSubscription.dispose();
                 mMangaListSubscription = null;
             }
         }

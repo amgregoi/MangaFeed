@@ -1,13 +1,13 @@
 package com.amgregoire.mangafeed.Common.WebSources;
 
 
+import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Common.RequestWrapper;
+import com.amgregoire.mangafeed.Common.WebSources.Base.SourceManga;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
-import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
-import com.amgregoire.mangafeed.Common.WebSources.Base.SourceManga;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import rx.schedulers.Schedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class MangaEden extends SourceManga
 {

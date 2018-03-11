@@ -8,8 +8,9 @@ import com.squareup.okhttp.Response;
 
 import java.util.concurrent.TimeUnit;
 
-import rx.Observable;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.schedulers.Schedulers;
 
 public class NetworkService
 {
@@ -48,7 +49,7 @@ public class NetworkService
      */
     public Observable<Response> getResponse(final String url)
     {
-        return Observable.create((Observable.OnSubscribe<Response>) subscriber ->
+        return Observable.create((ObservableEmitter<Response> subscriber) ->
         {
             try
             {
@@ -58,7 +59,7 @@ public class NetworkService
                         .build();
 
                 subscriber.onNext(mClient.newCall(request).execute());
-                subscriber.onCompleted();
+                subscriber.onComplete();
             }
             catch (Throwable e)
             {
@@ -76,7 +77,7 @@ public class NetworkService
      */
     public Observable<Response> getResponseCustomHeaders(final String url, final Headers headers)
     {
-        return Observable.create((Observable.OnSubscribe<Response>) subscriber ->
+        return Observable.create((ObservableEmitter<Response> subscriber) ->
         {
             try
             {
@@ -86,7 +87,7 @@ public class NetworkService
                         .build();
 
                 subscriber.onNext(mClient.newCall(request).execute());
-                subscriber.onCompleted();
+                subscriber.onComplete();
             }
             catch (Throwable e)
             {
@@ -104,12 +105,12 @@ public class NetworkService
      */
     public static Observable<String> mapResponseToString(final Response response)
     {
-        return Observable.create((Observable.OnSubscribe<String>) subscriber ->
+        return Observable.create((ObservableEmitter<String> subscriber) ->
         {
             try
             {
                 subscriber.onNext(response.body().string());
-                subscriber.onCompleted();
+                subscriber.onComplete();
             }
             catch (Throwable e)
             {

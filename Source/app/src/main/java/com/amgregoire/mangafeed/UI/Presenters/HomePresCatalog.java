@@ -1,15 +1,13 @@
 package com.amgregoire.mangafeed.UI.Presenters;
 
-import android.os.Bundle;
-import android.widget.Toast;
-
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.UI.Mappers.IHome;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
@@ -28,14 +26,14 @@ public class HomePresCatalog extends HomePresBase
     {
         if (mMangaListSubscription != null)
         {
-            mMangaListSubscription.unsubscribe();
+            mMangaListSubscription.dispose();
             mMangaListSubscription = null;
         }
 
         try
         {
             mMangaListSubscription = MangaDB.getInstance()
-                                            .getCatalogList().cache()
+                                            .getCatalogList()
                                             .subscribeOn(Schedulers.io())
                                             .observeOn(AndroidSchedulers.mainThread())
                                             .doOnError(throwable -> MangaFeed.getInstance().makeToastShort(throwable.getMessage()))

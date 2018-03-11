@@ -2,27 +2,28 @@ package com.amgregoire.mangafeed.Common.WebSources.Base;
 
 import android.graphics.drawable.Drawable;
 
+import com.amgregoire.mangafeed.Common.MangaEnums;
+import com.amgregoire.mangafeed.Common.RequestWrapper;
+import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
-import com.amgregoire.mangafeed.Common.MangaEnums;
-import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.Utils.NetworkService;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
-import com.amgregoire.mangafeed.Common.RequestWrapper;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.FutureTarget;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.squareup.okhttp.Headers;
-import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public abstract class SourceBase
 {
@@ -101,8 +102,7 @@ public abstract class SourceBase
                              .flatMap(aHtml -> Observable.just(parseResponseToRecentList(aHtml)))
                              .subscribeOn(Schedulers.io())
                              .observeOn(AndroidSchedulers.mainThread())
-                             .retry(3)
-                             .doOnError(aThrowable -> MangaLogger.logError(TAG, aThrowable.getMessage()));
+                             .retry(3);
     }
 
     /***
@@ -191,13 +191,13 @@ public abstract class SourceBase
      */
     public Observable<Drawable> cacheFromImagesOfSize(final List<String> imageUrls)
     {
-        return Observable.create((Observable.OnSubscribe<Drawable>) subscriber ->
+        return Observable.create((ObservableEmitter<Drawable> subscriber) ->
         {
             try
             {
                 for (String imageUrl : imageUrls)
                 {
-                    if (!subscriber.isUnsubscribed())
+                    if (!subscriber.isDisposed())
                     {
                         RequestOptions lOptions = new RequestOptions();
                         lOptions.skipMemoryCache(true)
@@ -209,7 +209,7 @@ public abstract class SourceBase
                         subscriber.onNext(cacheFuture.get(30, TimeUnit.SECONDS));
                     }
                 }
-                subscriber.onCompleted();
+                subscriber.onComplete();
             }
             catch (Throwable e)
             {

@@ -45,7 +45,6 @@ public class HomeFragment extends Fragment implements IHome.HomeMap
         mPresenter = new HomePres(this, getChildFragmentManager());
         mPresenter.init(getArguments());
 
-
         return lView;
     }
 

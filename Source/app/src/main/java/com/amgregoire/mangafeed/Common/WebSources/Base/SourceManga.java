@@ -1,13 +1,13 @@
 package com.amgregoire.mangafeed.Common.WebSources.Base;
 
-import com.amgregoire.mangafeed.Utils.NetworkService;
 import com.amgregoire.mangafeed.Common.RequestWrapper;
+import com.amgregoire.mangafeed.Utils.NetworkService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
@@ -23,7 +23,7 @@ public abstract class SourceManga extends SourceBase
         return lCurrentService.getResponse(aRequest.getChapterUrl())
                               .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
                               .flatMap(aUnparsedHtml -> Observable.just(parseResponseToPageUrls(aUnparsedHtml)))
-                              .flatMap(aPageUrls -> Observable.from(aPageUrls.toArray(new String[aPageUrls.size()])))
+                              .flatMap(aPageUrls -> Observable.fromArray(aPageUrls.toArray(new String[aPageUrls.size()])))
                               .buffer(10)
                               .concatMap(batchedPageUrls ->
                               {
@@ -48,8 +48,8 @@ public abstract class SourceManga extends SourceBase
                                       return lImageUrls;
                                   });
                               })
-                              .concatMap(batchedImageUrls -> Observable.from(batchedImageUrls.toArray(new String[batchedImageUrls.size()])))
-                              .doOnNext(lTemporaryCachedImageUrls::add)
-                              .onBackpressureBuffer();
+                              .concatMap(batchedImageUrls -> Observable.fromArray(batchedImageUrls.toArray(new String[batchedImageUrls.size()])))
+                              .doOnNext(lTemporaryCachedImageUrls::add);
+//                              .onBackpressureBuffer();
     }
 }

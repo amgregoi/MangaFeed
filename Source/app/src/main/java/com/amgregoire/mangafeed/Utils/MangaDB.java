@@ -20,7 +20,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import rx.Observable;
+import io.reactivex.Observable;
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
@@ -226,7 +226,7 @@ public class MangaDB extends SQLiteOpenHelper
                                                                            .list());
 
                 subscriber.onNext(lMangaList);
-                subscriber.onCompleted();
+                subscriber.onComplete();
             }
             catch (Exception aException)
             {
@@ -253,7 +253,7 @@ public class MangaDB extends SQLiteOpenHelper
                                                                            .list());
 
                 subscriber.onNext(lMangaList);
-                subscriber.onCompleted();
+                subscriber.onComplete();
             }
             catch (Exception lException)
             {

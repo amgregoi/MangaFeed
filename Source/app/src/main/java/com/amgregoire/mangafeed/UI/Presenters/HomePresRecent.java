@@ -1,14 +1,11 @@
 package com.amgregoire.mangafeed.UI.Presenters;
 
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Mappers.IHome;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import rx.Subscriber;
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
@@ -30,37 +27,31 @@ public class HomePresRecent extends HomePresBase
     {
         if (mMangaListSubscription != null)
         {
-            mMangaListSubscription.unsubscribe();
+            mMangaListSubscription.dispose();
             mMangaListSubscription = null;
         }
 
         try
         {
             mMap.startRefresh();
-            mMangaListSubscription = MangaFeed.getInstance().getCurrentSource()
+            mMangaListSubscription = MangaFeed.getInstance()
+                                              .getCurrentSource()
                                               .getRecentMangaObservable()
                                               .cache()
-                                              .subscribe(new Subscriber<List<Manga>>()
+                                              .subscribe(mangas ->
                                               {
-                                                  @Override
-                                                  public void onCompleted()
-                                                  {
+                                                  // OnNext
+                                                  updateMangaGridView(mangas);
+                                                  mIsInitialized = true;
+                                              }, throwable ->
+                                              {
+                                                  // OnError
+                                                  mIsInitialized = false;
 
-                                                  }
-
-                                                  @Override
-                                                  public void onError(Throwable e)
-                                                  {
-                                                      // Failed to initialize
-                                                      mIsInitialized = false;
-                                                  }
-
-                                                  @Override
-                                                  public void onNext(List<Manga> mangas)
-                                                  {
-                                                      updateMangaGridView(mangas);
-                                                      mIsInitialized = true;
-                                                  }
+                                              }, () ->
+                                              {
+                                                  // OnComplete
+                                                  mMangaListSubscription.dispose();
                                               });
         }
         catch (Exception aException)
@@ -76,7 +67,7 @@ public class HomePresRecent extends HomePresBase
      */
     public void hasInternetMessage()
     {
-        if(!mIsInitialized)
+        if (!mIsInitialized)
         {
             updateMangaList();
         }

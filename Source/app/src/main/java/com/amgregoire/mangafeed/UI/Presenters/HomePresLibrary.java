@@ -5,8 +5,9 @@ import com.amgregoire.mangafeed.UI.Mappers.IHome;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
@@ -25,7 +26,7 @@ public class HomePresLibrary extends HomePresBase
     {
         if (mMangaListSubscription != null)
         {
-            mMangaListSubscription.unsubscribe();
+            mMangaListSubscription.dispose();
             mMangaListSubscription = null;
         }
 

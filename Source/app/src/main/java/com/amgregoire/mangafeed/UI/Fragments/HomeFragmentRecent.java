@@ -63,11 +63,14 @@ public class HomeFragmentRecent extends HomeFragmentsBase
     private void setupSwipeLayout()
     {
         mSwipeLayout.setEnabled(true);
-        mSwipeLayout.setOnRefreshListener(() -> ((HomePresRecent)mPresenter).onSwipeRefresh());
+        mSwipeLayout.setOnRefreshListener(() -> ((HomePresRecent) mPresenter).onSwipeRefresh());
     }
 
     public void hasInternetMessage()
     {
-        ((HomePresRecent)mPresenter).hasInternetMessage();
+        if (mPresenter != null)
+        {
+            ((HomePresRecent) mPresenter).hasInternetMessage();
+        }
     }
 }
