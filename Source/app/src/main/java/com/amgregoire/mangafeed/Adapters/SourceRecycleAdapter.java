@@ -102,7 +102,7 @@ public class SourceRecycleAdapter extends RecyclerView.Adapter<RecyclerView.View
 
             switch (mSource)
             {
-                case MangaJoy:
+                case FunManga:
                     mBackGround.setImageDrawable(mFunMangaLogo);
                     mLink.setText("http://www.funmanga.com/");
                     break;
@@ -138,10 +138,12 @@ public class SourceRecycleAdapter extends RecyclerView.Adapter<RecyclerView.View
             if(mSource == MangaFeed.getInstance().getCurrentSource().getCurrentSource())
             {
                 mSourceName.setTextColor(mAccent);
+                mLink.setTextColor(mAccent);
             }
             else
             {
                 mSourceName.setTextColor(mWhite);
+                mLink.setTextColor(mWhite);
             }
         }
     }

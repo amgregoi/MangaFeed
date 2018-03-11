@@ -94,7 +94,7 @@ public class MangaFeed extends Application
      *
      * MangaEden
      * MangaHere
-     * MangaJoy
+     * FunManga
      * ReadLight
      *
      * @return

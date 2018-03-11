@@ -12,8 +12,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.amgregoire.mangafeed.Common.MangaEnums;
+import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
+import com.amgregoire.mangafeed.Utils.BusEvents.UpdateItemEvent;
 import com.l4digital.fastscroll.FastScroller;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
@@ -37,23 +39,12 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 {
     public final static String TAG = SearchRecyclerAdapter.class.getSimpleName();
 
-    /***
-     * Listener interface for interacting with adapter items.
-     *
-     */
-    public interface ItemSelectedListener
-    {
-        void onItemSelected(int aPosition);
-    }
-
-    private final ItemSelectedListener mListener;
     private ArrayList<Manga> mOriginalData = null;
     private ArrayList<Manga> mFilteredData = null;
     private TextFilter mFilter = new TextFilter();
 
-    public SearchRecyclerAdapter(List<Manga> data, ItemSelectedListener listener)
+    public SearchRecyclerAdapter(List<Manga> data)
     {
-        mListener = listener;
         mOriginalData = new ArrayList<>(data);
         mFilteredData = new ArrayList<>(data);
     }
@@ -218,15 +209,13 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         @BindView(R.id.linearLayoutMangaGridItemFooter) LinearLayout mFooter;
 
         @BindColor(R.color.Manga_white) int mWhite;
-        @BindColor(R.color.colorPrimary) int mPrimary; // blue
+        @BindColor(R.color.colorPrimary) int mPrimary;
         @BindColor(R.color.Manga_black) int mBlack;
         @BindColor(R.color.Manga_red) int mRed;
         @BindColor(R.color.Manga_green) int mGreen;
 
         @BindDrawable(R.drawable.intercom_input_gallery) Drawable mPlaceHolder;
         @BindDrawable(R.drawable.intercom_error) Drawable mError;
-
-        private boolean mImageLoaded = false;
 
         private final Target mImageTarget = new Target()
         {
@@ -261,7 +250,10 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         public void onCardItemClick()
         {
             notifyItemChanged(getLayoutPosition());
-            mListener.onItemSelected(getAdapterPosition());
+            MangaFeed.getInstance()
+                     .rxBus()
+                     .send(new UpdateItemEvent(mFilteredData.get(getLayoutPosition())));
+
         }
 
         /***
@@ -293,7 +285,6 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                    .memoryPolicy(MemoryPolicy.NO_STORE)
                    .into(mImageTarget);
 
-            mImageLoaded = true;
         }
 
         /***

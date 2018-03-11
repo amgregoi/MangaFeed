@@ -131,7 +131,7 @@ public class SharedPrefs
     {
         Context lContext = MangaFeed.getInstance();
         return PreferenceManager.getDefaultSharedPreferences(lContext)
-                                .getString(lContext.getString(R.string.PREF_USER_SOURCE), MangaEnums.Source.MangaJoy.name());
+                                .getString(lContext.getString(R.string.PREF_USER_SOURCE), MangaEnums.Source.FunManga.name());
     }
 
     /***

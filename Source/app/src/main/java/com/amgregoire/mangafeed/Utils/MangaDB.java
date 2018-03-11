@@ -174,7 +174,10 @@ public class MangaDB extends SQLiteOpenHelper
      */
     public Manga getManga(String link)
     {
-        return mSession.getMangaDao().queryBuilder().where(MangaDao.Properties.Link.eq(link)).unique();
+        return mSession.getMangaDao()
+                       .queryBuilder()
+                       .where(MangaDao.Properties.Link.eq(link))
+                       .unique();
     }
 
 
@@ -205,7 +208,10 @@ public class MangaDB extends SQLiteOpenHelper
      */
     public Chapter getChapter(String url)
     {
-        return mSession.getChapterDao().queryBuilder().where(ChapterDao.Properties.Url.eq(url)).unique();
+        return mSession.getChapterDao()
+                       .queryBuilder()
+                       .where(ChapterDao.Properties.Url.eq(url))
+                       .unique();
     }
 
     /**
@@ -220,10 +226,12 @@ public class MangaDB extends SQLiteOpenHelper
             try
             {
                 ArrayList<Manga> lMangaList = new ArrayList<>(mSession.getMangaDao()
-                                                                           .queryBuilder()
-                                                                           .where(MangaDao.Properties.Source.eq(SharedPrefs.getSavedSource()))
-                                                                           .where(MangaDao.Properties.Following.notEq(0))
-                                                                           .list());
+                                                                      .queryBuilder()
+                                                                      .where(MangaDao.Properties.Source
+                                                                              .eq(SharedPrefs.getSavedSource()))
+                                                                      .where(MangaDao.Properties.Following
+                                                                              .notEq(0))
+                                                                      .list());
 
                 subscriber.onNext(lMangaList);
                 subscriber.onComplete();
@@ -234,6 +242,64 @@ public class MangaDB extends SQLiteOpenHelper
             }
         });
     }
+
+    /**
+     * This function retrieves the list of followed items from the database with a specified filter (follow type)
+     *
+     * @return Observable arraylist of users followed manga
+     */
+    public Observable<ArrayList<Manga>> getLibraryList(int filter)
+    {
+        return Observable.create(subscriber ->
+        {
+            try
+            {
+                ArrayList<Manga> lMangaList = new ArrayList<>(mSession.getMangaDao()
+                                                                      .queryBuilder()
+                                                                      .where(MangaDao.Properties.Source
+                                                                              .eq(SharedPrefs.getSavedSource()))
+                                                                      .where(MangaDao.Properties.Following
+                                                                              .eq(filter))
+                                                                      .list());
+
+                subscriber.onNext(lMangaList);
+                subscriber.onComplete();
+            }
+            catch (Exception aException)
+            {
+                subscriber.onError(aException);
+            }
+        });
+    }
+
+    public Observable<Long> test(int... filters)
+    {
+        return Observable.create(subscriber ->
+        {
+            try
+            {
+                for (int filter : filters)
+                {
+                    long lFilterCount = mSession.getMangaDao()
+                                                .queryBuilder()
+                                                .where(MangaDao.Properties.Source.eq(SharedPrefs.getSavedSource()))
+                                                .where(MangaDao.Properties.Following.eq(filter))
+                                                .count();
+
+                    subscriber.onNext(lFilterCount);
+                }
+
+                subscriber.onComplete();
+            }
+            catch (Exception aException)
+            {
+                subscriber.onError(aException);
+            }
+        });
+
+
+    }
+
 
     /**
      * This function retrieves the source catalog from the database.
@@ -248,9 +314,10 @@ public class MangaDB extends SQLiteOpenHelper
             {
 
                 ArrayList<Manga> lMangaList = new ArrayList<>(mSession.getMangaDao()
-                                                                           .queryBuilder()
-                                                                           .where(MangaDao.Properties.Source.eq(SharedPrefs.getSavedSource()))
-                                                                           .list());
+                                                                      .queryBuilder()
+                                                                      .where(MangaDao.Properties.Source
+                                                                              .eq(SharedPrefs.getSavedSource()))
+                                                                      .list());
 
                 subscriber.onNext(lMangaList);
                 subscriber.onComplete();

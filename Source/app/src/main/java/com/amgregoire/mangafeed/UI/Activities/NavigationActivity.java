@@ -175,12 +175,21 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         {
             if (o instanceof UpdateSourceEvent)
             {
+                // Refresh fragment views
                 Fragment home = getSupportFragmentManager().findFragmentByTag(HomeFragment.TAG);
-                getSupportFragmentManager().beginTransaction().detach(home).attach(home).commit();
+                Fragment account = getSupportFragmentManager().findFragmentByTag(AccountFragment.TAG);
+
+                getSupportFragmentManager().beginTransaction()
+                                           .detach(home)
+                                           .attach(home)
+                                           .detach(account)
+                                           .attach(account)
+                                           .commit();
                 MangaFeed.getInstance()
-                         .makeSnackBarShort(findViewById(R.id.coordinatorLayoutSnack), "Source changed to " + MangaFeed.getInstance()
-                                                                                                .getCurrentSource()
-                                                                                                .getSourceName());
+                         .makeSnackBarShort(findViewById(R.id.coordinatorLayoutSnack), "Source changed to " + MangaFeed
+                                 .getInstance()
+                                 .getCurrentSource()
+                                 .getSourceName());
             }
         }, throwable -> Log.e(TAG, throwable.getMessage()));
     }

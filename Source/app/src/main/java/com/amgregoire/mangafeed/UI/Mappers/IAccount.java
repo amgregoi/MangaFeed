@@ -31,6 +31,11 @@ public interface IAccount
 
     }
 
+    interface AccountFilteredPres extends LifeCycleMap
+    {
+
+    }
+
     /***
      * Mapper interfaces for the Home presenters to communicate with their views.
      *
@@ -46,6 +51,11 @@ public interface IAccount
     }
 
     interface AccountStatseMap extends InitViewMap, ContextMap
+    {
+
+    }
+
+    interface AccountFilteredMap extends  RecycleAdapterMap, InitViewMap, ContextMap
     {
 
     }

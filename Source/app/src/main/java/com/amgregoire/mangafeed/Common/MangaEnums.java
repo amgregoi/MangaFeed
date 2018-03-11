@@ -4,7 +4,7 @@ package com.amgregoire.mangafeed.Common;
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceBase;
 import com.amgregoire.mangafeed.Common.WebSources.MangaEden;
 import com.amgregoire.mangafeed.Common.WebSources.MangaHere;
-import com.amgregoire.mangafeed.Common.WebSources.MangaJoy;
+import com.amgregoire.mangafeed.Common.WebSources.FunManga;
 import com.amgregoire.mangafeed.Common.WebSources.ReadLight;
 
 public class MangaEnums
@@ -95,7 +95,7 @@ public class MangaEnums
     public enum Source
     {
         ReadLight(new ReadLight()),
-        MangaJoy(new MangaJoy()),
+        FunManga(new FunManga()),
         MangaHere(new MangaHere()),
         MangaEden(new MangaEden());
 

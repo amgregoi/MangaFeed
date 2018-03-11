@@ -5,10 +5,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.amgregoire.mangafeed.Adapters.SearchRecyclerAdapter;
-import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Mappers.IHome;
-import com.amgregoire.mangafeed.Utils.BusEvents.UpdateItemEvent;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
 import java.util.ArrayList;
@@ -22,7 +20,7 @@ import io.reactivex.disposables.Disposable;
  * Created by Andy Gregoire on 3/8/2018.
  */
 
-public abstract class HomePresBase implements IHome.HomeBasePres, SearchRecyclerAdapter.ItemSelectedListener
+public abstract class HomePresBase implements IHome.HomeBasePres
 {
     public final static String TAG = HomePresBase.class.getSimpleName();
 
@@ -50,30 +48,6 @@ public abstract class HomePresBase implements IHome.HomeBasePres, SearchRecycler
 
     public void setupRxBus(){};
 
-    @Override
-    public void onItemSelected(int position)
-    {
-        try
-        {
-            Manga lManga = mAdapter.getItem(position);
-
-            //This will go into Manga Info fragment when implemented.
-            MangaFeed.getInstance().rxBus().send(new UpdateItemEvent(mAdapter.getItem(position)));
-
-            // launch new activity
-            // look into way of updating other instances of this object when returning
-
-//            if (mMap.setRecentSelection(manga.getMangaURL()))
-//            {
-//                Intent intent = MangaActivity.getNewInstance(mViewMapper.getContext(), manga.getMangaURL());
-//                mViewMapper.getContext().startActivity(intent);
-//            }
-        }
-        catch (Exception lException)
-        {
-            MangaLogger.logError(TAG, lException.getMessage());
-        }
-    }
 
 
     /***
@@ -105,7 +79,7 @@ public abstract class HomePresBase implements IHome.HomeBasePres, SearchRecycler
                 if (mAdapter == null)
                 {
                     mLayoutManager = new GridLayoutManager(mMap.getContext(), 3);
-                    mAdapter = new SearchRecyclerAdapter(mangaList, (pos) -> onItemSelected(pos));
+                    mAdapter = new SearchRecyclerAdapter(mangaList);
                     mAdapter.setHasStableIds(true);
                     mMap.registerAdapter(mAdapter, mLayoutManager, mNeedsItemSpacing);
                     mNeedsItemSpacing = false;
