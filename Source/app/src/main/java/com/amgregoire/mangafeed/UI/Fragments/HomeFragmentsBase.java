@@ -4,8 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 
 import com.amgregoire.mangafeed.Common.RecyclerViewSpaceDecoration;
-import com.amgregoire.mangafeed.UI.Mappers.IHome;
 import com.amgregoire.mangafeed.R;
+import com.amgregoire.mangafeed.UI.Mappers.IHome;
 import com.l4digital.fastscroll.FastScrollRecyclerView;
 
 import butterknife.BindView;
@@ -20,7 +20,7 @@ public abstract class HomeFragmentsBase extends Fragment implements IHome.HomeBa
     @BindView(R.id.recyclerViewHomeManga) FastScrollRecyclerView mRecyclerView;
 
     protected IHome.HomeBasePres mPresenter;
-
+    private RecyclerViewSpaceDecoration mSpaceDecor;
 
     @Override
     public void initViews() {}
@@ -32,13 +32,19 @@ public abstract class HomeFragmentsBase extends Fragment implements IHome.HomeBa
     public void stopRefresh() {}
 
     @Override
-    public void registerAdapter(RecyclerView.Adapter adapter, RecyclerView.LayoutManager manager, boolean needSpacing)
+    public void registerAdapter(RecyclerView.Adapter adapter, RecyclerView.LayoutManager manager)
     {
-        if(needSpacing)
+        if(mSpaceDecor == null)
         {
-            mRecyclerView.addItemDecoration(new RecyclerViewSpaceDecoration(20));
-            mRecyclerView.getItemAnimator().setChangeDuration(0);
+            mSpaceDecor = new RecyclerViewSpaceDecoration(20);
         }
+        else
+        {
+            mRecyclerView.removeItemDecoration(mSpaceDecor);
+        }
+
+        mRecyclerView.addItemDecoration(mSpaceDecor);
+        mRecyclerView.getItemAnimator().setChangeDuration(0);
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(adapter);
     }

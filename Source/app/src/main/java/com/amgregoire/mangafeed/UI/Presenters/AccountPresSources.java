@@ -19,7 +19,6 @@ public class AccountPresSources implements IAccount.AccountSourcePres
     private IAccount.AccountSourceMap mMap;
     private SourceRecycleAdapter mAdapter;
     private RecyclerView.LayoutManager mManager;
-    private boolean mNeedsDecor = true;
 
     public AccountPresSources(IAccount.AccountSourceMap map)
     {
@@ -38,7 +37,6 @@ public class AccountPresSources implements IAccount.AccountSourcePres
             mAdapter = new SourceRecycleAdapter(Arrays.asList(MangaEnums.Source.values()));
         }
 
-        mMap.registerAdapter(mAdapter,mManager, mNeedsDecor);
-        mNeedsDecor = false;
+        mMap.registerAdapter(mAdapter,mManager);
     }
 }

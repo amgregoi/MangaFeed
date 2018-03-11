@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?attr/background_color">
+    
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbarFilteredManga"
+        android:layout_width="match_parent"
+        android:background="@color/colorPrimary"
+        app:titleTextColor="@color/Manga_white"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationIcon="@drawable/navigation_back"
+        app:title="Completed"
+        />
+
+    <com.l4digital.fastscroll.FastScrollRecyclerView
+        android:layout_below="@+id/toolbarFilteredManga"
+        android:id="@+id/recyclerViewFilteredManga"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:bubbleColor="@color/colorAccent"
+        app:bubbleTextColor="@color/Manga_white"
+        app:handleColor="@color/colorAccent"
+        app:hideScrollbar="true"
+        app:showTrack="false"
+        app:trackColor="@color/colorAccent"
+        />
+
+</RelativeLayout>

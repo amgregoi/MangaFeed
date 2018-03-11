@@ -27,6 +27,7 @@ public class AccountFragmentSources extends Fragment implements IAccount.Account
     @BindView(R.id.recyclerViewAccountSource) RecyclerView mRecyclerView;
 
     private IAccount.AccountSourcePres mPresenter;
+    private RecyclerViewSpaceDecoration mSpaceDecor;
 
     /***
      * This function creates and returns a new instance of the OfflineFragment.
@@ -58,13 +59,19 @@ public class AccountFragmentSources extends Fragment implements IAccount.Account
     }
 
     @Override
-    public void registerAdapter(RecyclerView.Adapter adapter, RecyclerView.LayoutManager manager, boolean needsSpacing)
+    public void registerAdapter(RecyclerView.Adapter adapter, RecyclerView.LayoutManager manager)
     {
-        if(needsSpacing)
+        if(mSpaceDecor == null)
         {
-            mRecyclerView.addItemDecoration(new RecyclerViewSpaceDecoration(10));
-            mRecyclerView.getItemAnimator().setChangeDuration(0);
+            mSpaceDecor = new RecyclerViewSpaceDecoration(10);
         }
+        else
+        {
+            mRecyclerView.invalidateItemDecorations();
+        }
+
+        mRecyclerView.addItemDecoration(mSpaceDecor);
+        mRecyclerView.getItemAnimator().setChangeDuration(0);
 
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(adapter);

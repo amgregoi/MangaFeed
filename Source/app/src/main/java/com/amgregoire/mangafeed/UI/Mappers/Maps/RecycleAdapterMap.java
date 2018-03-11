@@ -8,5 +8,5 @@ import android.support.v7.widget.RecyclerView;
 
 public interface RecycleAdapterMap
 {
-    void registerAdapter(RecyclerView.Adapter adapter, RecyclerView.LayoutManager manager, boolean needsSpacing);
+    void registerAdapter(RecyclerView.Adapter adapter, RecyclerView.LayoutManager manager);
 }

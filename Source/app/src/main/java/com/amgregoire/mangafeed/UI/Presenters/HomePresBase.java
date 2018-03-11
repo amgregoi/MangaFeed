@@ -29,7 +29,6 @@ public abstract class HomePresBase implements IHome.HomeBasePres
     protected SearchRecyclerAdapter mAdapter;
 
     private RecyclerView.LayoutManager mLayoutManager;
-    private boolean mNeedsItemSpacing = true;
 
     public abstract void updateMangaList();
 
@@ -81,8 +80,7 @@ public abstract class HomePresBase implements IHome.HomeBasePres
                     mLayoutManager = new GridLayoutManager(mMap.getContext(), 3);
                     mAdapter = new SearchRecyclerAdapter(mangaList);
                     mAdapter.setHasStableIds(true);
-                    mMap.registerAdapter(mAdapter, mLayoutManager, mNeedsItemSpacing);
-                    mNeedsItemSpacing = false;
+                    mMap.registerAdapter(mAdapter, mLayoutManager);
                 }
                 else
                 {
