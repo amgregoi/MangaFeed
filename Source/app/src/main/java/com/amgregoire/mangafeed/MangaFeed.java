@@ -11,6 +11,8 @@ import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.RxBus;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
 
+import java.util.Date;
+
 /**
  * Created by Andy Gregoire on 3/8/2018.
  */
@@ -34,6 +36,7 @@ public class MangaFeed extends Application
 
         MangaDB.getInstance().createDB(); // Copy pre-loaded database if not already done.
         MangaDB.getInstance().initDao();
+        updateCatalogs(); // check if we should update local database on application open
     }
 
     /***
@@ -103,6 +106,26 @@ public class MangaFeed extends Application
     {
         return MangaEnums.Source.valueOf(SharedPrefs.getSavedSource()).getSource();
     }
+
+    public void updateCatalogs()
+    {
+        int lWeekSeconds = 604800;
+        int lWeekMs = lWeekSeconds * 1000;
+
+        // Check if we updated in the last week, if we have we'll skip.
+        Date lLowerLimit = new Date(SharedPrefs.getLastCatalogUpdate().getTime() + lWeekMs);
+        if(lLowerLimit.before(new Date()))
+        {
+            SharedPrefs.setLastCatalogUpdate();
+            MangaEnums.Source[] lSources = MangaEnums.Source.values();
+
+            for (MangaEnums.Source source : lSources)
+            {
+                source.getSource().updateLocalCatalog();
+            }
+        }
+    }
+
 
 
 }

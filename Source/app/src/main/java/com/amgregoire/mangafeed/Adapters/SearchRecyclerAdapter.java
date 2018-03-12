@@ -249,11 +249,12 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         @OnClick(R.id.cardViewMangaGridItem)
         public void onCardItemClick()
         {
+
+            // TODO : launch manga info fragment
             notifyItemChanged(getLayoutPosition());
             MangaFeed.getInstance()
                      .rxBus()
                      .send(new UpdateItemEvent(mFilteredData.get(getLayoutPosition())));
-
         }
 
         /***

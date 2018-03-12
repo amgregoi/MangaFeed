@@ -166,6 +166,10 @@ public class MangaDB extends SQLiteOpenHelper
         }
     }
 
+    public void putManga(Manga manga, boolean derp){
+
+    }
+
     /***
      * This function retrieves a unique manga object from the local database specified by its url.
      *
@@ -178,6 +182,14 @@ public class MangaDB extends SQLiteOpenHelper
                        .queryBuilder()
                        .where(MangaDao.Properties.Link.eq(link))
                        .unique();
+    }
+
+    public boolean containsManga(String link)
+    {
+        return mSession.getMangaDao()
+                       .queryBuilder()
+                       .where(MangaDao.Properties.Link.eq(link))
+                       .count() > 0;
     }
 
 

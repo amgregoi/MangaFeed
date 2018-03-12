@@ -4,8 +4,10 @@ package com.amgregoire.mangafeed.Common.WebSources;
 import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Common.RequestWrapper;
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceManga;
+import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Utils.BusEvents.UpdateItemEvent;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
@@ -17,8 +19,6 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.schedulers.Schedulers;
-
 public class FunManga extends SourceManga
 {
     final public static String TAG = FunManga.class.getSimpleName();
@@ -26,6 +26,7 @@ public class FunManga extends SourceManga
     final private String SourceKey = "FunManga";
     final private String mBaseUrl = "http://funmanga.com/";
     final private String mUpdatesUrl = "http://funmanga.com/latest-chapters";
+    final private String mCatalogUrl = "http://funmanga.com/manga-list/";
     final private String mGenres[] = {"Joy",
             "Action",
             "Adult",
@@ -111,12 +112,12 @@ public class FunManga extends SourceManga
                 {
                     String lMangaTitle = iUsefulElement.select("a").attr("title");
                     String lMangaUrl = iUsefulElement.select("a").attr("href");
-                    lMangaUrl = lMangaUrl.replace("www.", "");
 
                     if (lMangaUrl.charAt(lMangaUrl.length() - 1) != '/')
                     {
                         lMangaUrl += "/"; //add ending slash to url if missing
                     }
+
                     Manga lManga = MangaDB.getInstance().getManga(lMangaUrl);
                     if (lManga != null)
                     {
@@ -128,10 +129,12 @@ public class FunManga extends SourceManga
                         lMangaList.add(lManga);
                         MangaDB.getInstance().putManga(lManga);
 
-                        updateMangaObservable(new RequestWrapper(lManga)).subscribeOn(Schedulers.computation())
-                                                                         .doOnError(aThrowable -> MangaLogger
-                                                                                 .logError(TAG, aThrowable.getMessage()))
-                                                                         .subscribe();
+                        // TODO: update manga info or atleast grab pic and update manga
+                        MangaFeed.getInstance()
+                                 .getCurrentSource()
+                                 .updateMangaObservable(new RequestWrapper(lManga))
+                                 .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
+                                         throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage()));
                     }
                 }
             }
@@ -148,8 +151,6 @@ public class FunManga extends SourceManga
             return null;
         }
         return lMangaList;
-
-
     }
 
     @Override
@@ -160,7 +161,9 @@ public class FunManga extends SourceManga
         try
         {
             Element lImageElement = lHtml.body().select("img.img-responsive.mobile-img").first();
-            Element lDescriptionElement = lHtml.body().select("div.note.note-default.margin-top-15").first();
+            Element lDescriptionElement = lHtml.body()
+                                               .select("div.note.note-default.margin-top-15")
+                                               .first();
             Elements lInfo = lHtml.body().select("dl.dl-horizontal").select("dd");
 
             String lImage = lImageElement.attr("src");
@@ -208,6 +211,7 @@ public class FunManga extends SourceManga
 
             MangaDB.getInstance().putManga(lManga);
 
+            MangaFeed.getInstance().rxBus().send(new UpdateItemEvent(lManga));
             MangaLogger.logInfo(TAG, "Finished creating/updating manga (" + lManga.getTitle() + ")");
             return MangaDB.getInstance().getManga(request.getMangaUrl());
         }
@@ -253,6 +257,52 @@ public class FunManga extends SourceManga
         String lLink = lParsedDocument.select("img.img-responsive").attr("src");
 
         return lLink;
+    }
+
+    @Override
+    public void updateLocalCatalog()
+    {
+        char lEndPoint = ' ';
+
+        while (lEndPoint != 'z')
+        {
+
+            updateCatalogObservable(mCatalogUrl + lEndPoint).subscribe(o ->
+                    {
+                        String responseBody = (String) o;
+                        MangaDB lDatabase = MangaDB.getInstance();
+                        Document lParsedDocument = Jsoup.parse(responseBody);
+                        Elements lLinks = lParsedDocument.select("ul.manga-list.circle-list").select("a");
+
+                        for (Element link : lLinks)
+                        {
+                            String name = link.text();
+                            String url = link.attr("href") + "/";
+
+                            if (!lDatabase.containsManga(url))
+                            {
+                                Manga lNewManga = new Manga(name, url, SourceKey);
+                                lDatabase.putManga(lNewManga);
+                                // update new entry info
+                                MangaFeed.getInstance()
+                                         .getCurrentSource()
+                                         .updateMangaObservable(new RequestWrapper(lNewManga))
+                                         .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
+                                                 throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage()));
+                            }
+                        }
+                    },
+                    throwable -> MangaLogger.logError(TAG, throwable.toString()));
+
+            if (lEndPoint == ' ')
+            {
+                lEndPoint = 'a';
+            }
+            else
+            {
+                lEndPoint++;
+            }
+        }
     }
 
     /***

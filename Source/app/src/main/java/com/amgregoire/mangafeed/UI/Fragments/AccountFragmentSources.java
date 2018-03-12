@@ -75,6 +75,5 @@ public class AccountFragmentSources extends Fragment implements IAccount.Account
 
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(adapter);
-
     }
 }

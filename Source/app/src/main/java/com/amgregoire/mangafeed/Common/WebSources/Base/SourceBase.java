@@ -92,6 +92,12 @@ public abstract class SourceBase
     public abstract String parseResponseToImageUrls(final String responseBody, final String responseUrl);
 
     /***
+     * This function parses the repsonse body and compares the list of links with the local database, adding anything new.
+     *
+     */
+    public void updateLocalCatalog() {}
+
+    /***
      * This function retrieves a list of recent updates from the current source.
      *
      * @return
@@ -128,8 +134,7 @@ public abstract class SourceBase
                              .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
                              .flatMap(aResponseBody -> Observable.just(parseResponseToChapters(request, aResponseBody)))
                              .observeOn(AndroidSchedulers.mainThread())
-                             .doOnError(aThrowable -> MangaLogger.logError(TAG, aThrowable.getMessage()))
-                             .onErrorReturn(null);
+                             .doOnError(aThrowable -> MangaLogger.logError(TAG, aThrowable.getMessage()));
     }
 
     /***
@@ -146,7 +151,22 @@ public abstract class SourceBase
                              .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
                              .flatMap(aResponseBody -> Observable.just(parseResponseToManga(request, aResponseBody)))
                              .doOnError(aThrowable -> MangaLogger.logError(TAG, aThrowable.getMessage()))
-                             .onErrorReturn(null);
+                             .subscribeOn(Schedulers.computation())
+                             .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    /***
+     * This function updates the local database with manga objects found at the specified link.
+     *
+     * @param link
+     * @return
+     */
+    public Observable updateCatalogObservable(String link)
+    {
+        return NetworkService.getPermanentInstance()
+                             .getResponseCustomHeaders(link, constructRequestHeaders())
+                             .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
+                             .doOnError(aThrowable -> MangaLogger.logError(TAG, aThrowable.getMessage()));
     }
 
     /***
@@ -205,7 +225,8 @@ public abstract class SourceBase
                         lOptions.skipMemoryCache(true)
                                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
 
-                        FutureTarget<Drawable> cacheFuture = Glide.with(MangaFeed.getInstance()).load(imageUrl)
+                        FutureTarget<Drawable> cacheFuture = Glide.with(MangaFeed.getInstance())
+                                                                  .load(imageUrl)
                                                                   .into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
 
                         subscriber.onNext(cacheFuture.get(30, TimeUnit.SECONDS));

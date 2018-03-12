@@ -2,6 +2,7 @@ package com.amgregoire.mangafeed.Common.WebSources;
 
 
 import com.amgregoire.mangafeed.Common.RequestWrapper;
+import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.Common.MangaEnums;
@@ -77,6 +78,13 @@ public class ReadLight extends SourceNovel
                     lManga = new Manga(lMangaTitle, lMangaUrl, SourceKey);
                     lManga.setPicUrl(lThumb);
                     MangaDB.getInstance().putManga(lManga);
+
+                    MangaFeed.getInstance()
+                             .getCurrentSource()
+                             .updateMangaObservable(new RequestWrapper(lManga))
+                             .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
+                                     throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage()));
+
                 }
 
                 if (!lNovelList.contains(lManga))

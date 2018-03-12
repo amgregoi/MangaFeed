@@ -15,7 +15,7 @@
     <string name="PREF_STORAGE_LOCATION">MangaPark</string>
     <string name="PREF_GOOGLE_EMAIL">EMAIL</string>
     <string name="PREF_CHAPTER_SCREEN_ORIENTATION">PREF_CHAPTER_SCREEN_ORIENTATION</string>
-
+    <string name="PREF_LAST_CATALOG_UPDATE">LAST_CATALOG_UPDATE_KEY</string>
 
     <string-array name="sources_array">
         <item>ReadLight</item>

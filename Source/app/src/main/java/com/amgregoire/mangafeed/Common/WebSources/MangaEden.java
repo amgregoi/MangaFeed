@@ -4,6 +4,7 @@ package com.amgregoire.mangafeed.Common.WebSources;
 import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Common.RequestWrapper;
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceManga;
+import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.Utils.MangaDB;
@@ -20,8 +21,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import io.reactivex.schedulers.Schedulers;
 
 public class MangaEden extends SourceManga
 {
@@ -115,9 +114,12 @@ public class MangaEden extends SourceManga
                 lManga = new Manga(lTitle, lUrl, SourceKey);
                 lMangaList.add(lManga);
                 MangaDB.getInstance().putManga(lManga);
-                updateMangaObservable(new RequestWrapper(lManga)).subscribeOn(Schedulers.computation())
-                                                                 .doOnError(aThrowable -> MangaLogger.logError(TAG, aThrowable.getMessage()))
-                                                                 .subscribe();
+
+                MangaFeed.getInstance()
+                         .getCurrentSource()
+                         .updateMangaObservable(new RequestWrapper(lManga))
+                         .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
+                                 throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage()));
             }
         }
 
