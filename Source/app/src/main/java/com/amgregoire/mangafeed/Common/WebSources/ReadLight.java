@@ -83,7 +83,8 @@ public class ReadLight extends SourceNovel
                              .getCurrentSource()
                              .updateMangaObservable(new RequestWrapper(lManga))
                              .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
-                                     throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage()));
+                                     throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable
+                                             .getMessage()));
 
                 }
 
@@ -113,8 +114,10 @@ public class ReadLight extends SourceNovel
 
             Elements lContentLeft = lParsedDocument.select("div.novel").select("div.novel-left");
             Elements lContentRight = lParsedDocument.select("div.novel").select("div.novel-right");
-            Elements lNovelDetailsLeft = lContentLeft.select("div.novel-details").select("div.novel-detail-item");
-            Elements lNovelDetailsRight = lContentRight.select("div.novel-details").select("div.novel-detail-item");
+            Elements lNovelDetailsLeft = lContentLeft.select("div.novel-details")
+                                                     .select("div.novel-detail-item");
+            Elements lNovelDetailsRight = lContentRight.select("div.novel-details")
+                                                       .select("div.novel-detail-item");
 
 
             Manga lManga = MangaDB.getInstance().getManga(request.getMangaUrl());
@@ -222,7 +225,9 @@ public class ReadLight extends SourceNovel
         try
         {
             Document lParsedDocument = Jsoup.parse(responseBody);
-            Elements lContent = lParsedDocument.select("div.col-lg-12.chapters").select("div.tab-content").select("a");
+            Elements lContent = lParsedDocument.select("div.col-lg-12.chapters")
+                                               .select("div.tab-content")
+                                               .select("a");
 
             int lCount = 1;
 
@@ -267,5 +272,44 @@ public class ReadLight extends SourceNovel
         }
 
         return "Failed to pull page.";
+    }
+
+    @Override
+    public void updateLocalCatalog()
+    {
+        String lCatalogUrl = "https://www.readlightnovel.org/novel-list";
+            updateCatalogObservable(lCatalogUrl).subscribe(o ->
+                    {
+                        String responseBody = (String) o;
+                        MangaDB lDatabase = MangaDB.getInstance();
+                        Document lParsedDocument = Jsoup.parse(responseBody);
+                        Elements lItemGroups = lParsedDocument.select("div.list-by-word-body");
+
+                        for (Element group : lItemGroups)
+                        {
+                            Elements lItems = group.select("li");
+
+                            for(Element item : lItems)
+                            {
+                                String name = item.select("a").first().text();
+                                String url = item.select("a").first().attr("href");
+
+                                if (!lDatabase.containsManga(url))
+                                {
+                                    Manga lNewManga = new Manga(name, url, SourceKey);
+                                    lDatabase.putManga(lNewManga);
+                                    // update new entry info
+                                    MangaFeed.getInstance()
+                                             .getSource(TAG)
+                                             .updateMangaObservable(new RequestWrapper(lNewManga))
+                                             .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating (" + TAG + ") " + manga.title),
+                                                     throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable
+                                                             .getMessage()));
+                                }
+                            }
+
+                        }
+                    },
+                    throwable -> MangaLogger.logError(TAG, throwable.toString()));
     }
 }

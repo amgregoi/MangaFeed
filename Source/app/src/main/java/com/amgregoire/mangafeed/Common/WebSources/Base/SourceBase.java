@@ -95,7 +95,7 @@ public abstract class SourceBase
      * This function parses the repsonse body and compares the list of links with the local database, adding anything new.
      *
      */
-    public void updateLocalCatalog() {}
+    public void updateLocalCatalog() { }
 
     /***
      * This function retrieves a list of recent updates from the current source.
@@ -133,6 +133,7 @@ public abstract class SourceBase
                              .getResponseCustomHeaders(request.getMangaUrl(), constructRequestHeaders())
                              .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
                              .flatMap(aResponseBody -> Observable.just(parseResponseToChapters(request, aResponseBody)))
+                             .subscribeOn(Schedulers.computation())
                              .observeOn(AndroidSchedulers.mainThread())
                              .doOnError(aThrowable -> MangaLogger.logError(TAG, aThrowable.getMessage()));
     }
@@ -166,6 +167,7 @@ public abstract class SourceBase
         return NetworkService.getPermanentInstance()
                              .getResponseCustomHeaders(link, constructRequestHeaders())
                              .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
+                             .subscribeOn(Schedulers.computation())
                              .doOnError(aThrowable -> MangaLogger.logError(TAG, aThrowable.getMessage()));
     }
 

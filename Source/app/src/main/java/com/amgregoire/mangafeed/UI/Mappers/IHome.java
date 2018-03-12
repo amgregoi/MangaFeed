@@ -3,6 +3,7 @@ package com.amgregoire.mangafeed.UI.Mappers;
 import android.support.v4.app.Fragment;
 
 import com.amgregoire.mangafeed.UI.Mappers.Maps.ContextMap;
+import com.amgregoire.mangafeed.UI.Mappers.Maps.EventBusMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.InitViewMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.LifeCycleMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.PagerAdapterMap;
@@ -23,7 +24,7 @@ public interface IHome
         Fragment getAdapterFragment(int position);
     }
 
-    interface HomeBasePres extends LifeCycleMap
+    interface HomeBasePres extends LifeCycleMap, EventBusMap
     {
         void updateMangaList();
     }

@@ -33,7 +33,7 @@ public class HomeFragmentRecent extends HomeFragmentsBase
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View lView = inflater.inflate(R.layout.fragment_home_pager_item_refresh, container, false);
+        View lView = inflater.inflate(R.layout.item_fragment_home_pager_refresh, container, false);
         ButterKnife.bind(this, lView);
 
         mPresenter = new HomePresRecent(this);

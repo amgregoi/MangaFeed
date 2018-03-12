@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.amgregoire.mangafeed.UI.Presenters.HomePresBase;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Presenters.HomePresLibrary;
 
@@ -33,7 +32,7 @@ public class HomeFragmentLibrary extends HomeFragmentsBase
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View lView = inflater.inflate(R.layout.fragment_home_pager_item, container, false);
+        View lView = inflater.inflate(R.layout.item_fragment_home_pager, container, false);
         ButterKnife.bind(this, lView);
 
         mPresenter = new HomePresLibrary(this);

@@ -17,7 +17,6 @@ import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateItemEvent;
 import com.l4digital.fastscroll.FastScroller;
-import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -53,7 +52,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
         View lView = LayoutInflater.from(parent.getContext())
-                                   .inflate(R.layout.manga_grid_item, parent, false);
+                                   .inflate(R.layout.item_manga_grid, parent, false);
         return new ViewHolderManga(lView);
     }
 
@@ -122,10 +121,15 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         }
 
         int lFilterPos = mFilteredData.indexOf(aManga);
+        int lOriginalPos = mOriginalData.indexOf(aManga);
+
+        if (lOriginalPos >= 0)
+        {
+            mOriginalData.set(lOriginalPos, aManga);
+        }
 
         if (lFilterPos >= 0)
         {
-            mOriginalData.set(mOriginalData.indexOf(aManga), aManga);
             mFilteredData.set(lFilterPos, aManga);
 
             notifyItemChanged(lFilterPos);
@@ -270,7 +274,6 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             mTitle.setBackgroundColor(backGroundFactory(status));
             mTitle.setTextColor(textColorFactory(status));
             mTitle.setText(manga.toString());
-
         }
 
         /***
@@ -283,7 +286,6 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             Picasso.get().load(manga.getPicUrl())
                    .error(mError)
                    .placeholder(mPlaceHolder)
-                   .memoryPolicy(MemoryPolicy.NO_STORE)
                    .into(mImageTarget);
 
         }

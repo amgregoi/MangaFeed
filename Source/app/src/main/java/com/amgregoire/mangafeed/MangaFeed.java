@@ -7,11 +7,20 @@ import android.widget.Toast;
 
 import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceBase;
+import com.amgregoire.mangafeed.Common.WebSources.FunManga;
+import com.amgregoire.mangafeed.Common.WebSources.MangaEden;
+import com.amgregoire.mangafeed.Common.WebSources.MangaHere;
+import com.amgregoire.mangafeed.Common.WebSources.ReadLight;
 import com.amgregoire.mangafeed.Utils.MangaDB;
+import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.Utils.RxBus;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
 
 import java.util.Date;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
@@ -19,6 +28,8 @@ import java.util.Date;
 
 public class MangaFeed extends Application
 {
+    public final static String TAG = MangaFeed.class.getSimpleName();
+
     private static MangaFeed mInstance;
     private RxBus mBus;
 
@@ -50,7 +61,7 @@ public class MangaFeed extends Application
 
     public RxBus rxBus()
     {
-        return  mBus;
+        return mBus;
     }
 
     /***
@@ -78,12 +89,10 @@ public class MangaFeed extends Application
         Snackbar.make(v, message, Snackbar.LENGTH_LONG).show();
     }
 
-
     /***
      * This function returns the current sources source type
      *
-     * NOVEL
-     * MANGA
+     * NOVEL, MANGA
      *
      * @return
      */
@@ -95,10 +104,7 @@ public class MangaFeed extends Application
     /***
      * This function returns the current source.
      *
-     * MangaEden
-     * MangaHere
-     * FunManga
-     * ReadLight
+     * MangaEden, MangaHere. FunManga, ReadLight
      *
      * @return
      */
@@ -107,6 +113,32 @@ public class MangaFeed extends Application
         return MangaEnums.Source.valueOf(SharedPrefs.getSavedSource()).getSource();
     }
 
+    public SourceBase getSource(String tag)
+    {
+        if (tag.equals(FunManga.TAG))
+        {
+            return new FunManga();
+        }
+        else if (tag.equals(MangaEden.TAG))
+        {
+            return new MangaEden();
+        }
+        else if (tag.equals(MangaHere.TAG))
+        {
+            return new MangaHere();
+        }
+        else
+        {
+            return new ReadLight();
+        }
+    }
+
+
+    /***
+     * This function updates source catalogs items on the local database, adding any missing items.
+     * Currently it is set to update no more than once a week.
+     *
+     */
     public void updateCatalogs()
     {
         int lWeekSeconds = 604800;
@@ -114,18 +146,30 @@ public class MangaFeed extends Application
 
         // Check if we updated in the last week, if we have we'll skip.
         Date lLowerLimit = new Date(SharedPrefs.getLastCatalogUpdate().getTime() + lWeekMs);
-        if(lLowerLimit.before(new Date()))
+        if (lLowerLimit.before(new Date()))
         {
-            SharedPrefs.setLastCatalogUpdate();
-            MangaEnums.Source[] lSources = MangaEnums.Source.values();
-
-            for (MangaEnums.Source source : lSources)
+            Observable.create((ObservableEmitter<SourceBase> subscriber) ->
             {
-                source.getSource().updateLocalCatalog();
-            }
+                try
+                {
+                    SharedPrefs.setLastCatalogUpdate();
+                    MangaEnums.Source[] lSources = MangaEnums.Source.values();
+
+                    for (MangaEnums.Source source : lSources)
+                    {
+                        source.getSource().updateLocalCatalog();
+                        subscriber.onNext(source.getSource());
+                    }
+                    subscriber.onComplete();
+                }
+                catch (Exception ex)
+                {
+                    subscriber.onError(ex);
+                }
+            }).subscribeOn(Schedulers.computation()).subscribe(
+                    source -> source.updateLocalCatalog(), // onNext
+                    throwable -> MangaLogger.logError(TAG, throwable.getMessage()) // onError
+            );
         }
     }
-
-
-
 }

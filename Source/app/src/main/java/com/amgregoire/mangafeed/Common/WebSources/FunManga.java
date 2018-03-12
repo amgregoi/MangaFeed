@@ -7,7 +7,6 @@ import com.amgregoire.mangafeed.Common.WebSources.Base.SourceManga;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
-import com.amgregoire.mangafeed.Utils.BusEvents.UpdateItemEvent;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
@@ -134,7 +133,8 @@ public class FunManga extends SourceManga
                                  .getCurrentSource()
                                  .updateMangaObservable(new RequestWrapper(lManga))
                                  .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
-                                         throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage()));
+                                         throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable
+                                                 .getMessage()));
                     }
                 }
             }
@@ -211,15 +211,15 @@ public class FunManga extends SourceManga
 
             MangaDB.getInstance().putManga(lManga);
 
-            MangaFeed.getInstance().rxBus().send(new UpdateItemEvent(lManga));
+//            MangaFeed.getInstance().rxBus().send(new UpdateItemEvent(lManga));
             MangaLogger.logInfo(TAG, "Finished creating/updating manga (" + lManga.getTitle() + ")");
-            return MangaDB.getInstance().getManga(request.getMangaUrl());
         }
         catch (Exception aException)
         {
-            MangaLogger.logError(TAG, aException.getMessage());
-            return null;
+            MangaLogger.logError(TAG, request.getMangaUrl(), aException.getMessage());
         }
+
+        return MangaDB.getInstance().getManga(request.getMangaUrl());
     }
 
     @Override
@@ -285,10 +285,12 @@ public class FunManga extends SourceManga
                                 lDatabase.putManga(lNewManga);
                                 // update new entry info
                                 MangaFeed.getInstance()
-                                         .getCurrentSource()
+                                         .getSource(TAG)
                                          .updateMangaObservable(new RequestWrapper(lNewManga))
-                                         .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
-                                                 throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage()));
+                                         .subscribe(
+                                                 manga -> MangaLogger.logInfo(TAG, "Finished updating (" + TAG + ") " + manga.title),
+                                                 throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage())
+                                         );
                             }
                         }
                     },

@@ -41,9 +41,7 @@ public class HomePresLibrary extends HomePresBase
                                             .getLibraryList().cache()
                                             .subscribeOn(Schedulers.io())
                                             .observeOn(AndroidSchedulers.mainThread())
-                                            .doOnError(throwable -> MangaFeed.getInstance()
-                                                                             .makeToastShort(throwable
-                                                                                     .getMessage()))
+                                            .doOnError(throwable -> MangaFeed.getInstance().makeToastShort(throwable.getMessage()))
                                             .subscribe(aManga -> updateMangaGridView(aManga));
         }
         catch (Exception aException)
@@ -55,14 +53,17 @@ public class HomePresLibrary extends HomePresBase
     @Override
     public void setupRxBus()
     {
-        MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
+        if (mRxBus == null || mRxBus.isDisposed())
         {
-            if (o instanceof UpdateItemEvent)
+            mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
             {
-                Manga manga = ((UpdateItemEvent) o).manga;
-                mAdapter.updateItem(manga, manga.isFollowing());
-                Log.e(TAG, manga.title);
-            }
-        }, throwable -> Log.e(TAG, throwable.getMessage()));
+                if (o instanceof UpdateItemEvent)
+                {
+                    Manga manga = ((UpdateItemEvent) o).manga;
+                    mAdapter.updateItem(manga, manga.isFollowing());
+                    Log.e(TAG, manga.title);
+                }
+            }, throwable -> Log.e(TAG, throwable.getMessage()));
+        }
     }
 }

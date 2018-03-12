@@ -48,4 +48,18 @@ public abstract class HomeFragmentsBase extends Fragment implements IHome.HomeBa
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(adapter);
     }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        mPresenter.unSubEventBus();
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        mPresenter.subEventBus();
+    }
 }
