@@ -41,9 +41,11 @@ public class HomePresLibrary extends HomePresBase
                                             .getLibraryList().cache()
                                             .subscribeOn(Schedulers.io())
                                             .observeOn(AndroidSchedulers.mainThread())
-                                            .doOnError(throwable -> MangaFeed.getInstance().makeToastShort(throwable.getMessage()))
-                                            .subscribe(aManga -> updateMangaGridView(aManga));
-        }
+                                            .subscribe
+                                                    (
+                                                            mangas -> updateMangaGridView(mangas),
+                                                            throwable -> MangaLogger.logError(TAG, "Failed to retrieve library list", throwable.getMessage())
+                                                    );        }
         catch (Exception aException)
         {
             MangaLogger.logError(TAG, aException.getMessage());

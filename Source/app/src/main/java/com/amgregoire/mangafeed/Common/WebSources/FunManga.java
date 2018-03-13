@@ -128,13 +128,12 @@ public class FunManga extends SourceManga
                         lMangaList.add(lManga);
                         MangaDB.getInstance().putManga(lManga);
 
-                        // TODO: update manga info or atleast grab pic and update manga
-                        MangaFeed.getInstance()
-                                 .getCurrentSource()
-                                 .updateMangaObservable(new RequestWrapper(lManga))
-                                 .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
-                                         throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable
-                                                 .getMessage()));
+                        updateMangaObservable(new RequestWrapper(lManga))
+                                .subscribe
+                                        (
+                                                manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
+                                                throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage())
+                                        );
                     }
                 }
             }
@@ -289,7 +288,8 @@ public class FunManga extends SourceManga
                                          .updateMangaObservable(new RequestWrapper(lNewManga))
                                          .subscribe(
                                                  manga -> MangaLogger.logInfo(TAG, "Finished updating (" + TAG + ") " + manga.title),
-                                                 throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage())
+                                                 throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable
+                                                         .getMessage())
                                          );
                             }
                         }

@@ -4,7 +4,6 @@ package com.amgregoire.mangafeed.Common.WebSources;
 import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Common.RequestWrapper;
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceManga;
-import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.Utils.MangaDB;
@@ -101,7 +100,8 @@ public class MangaEden extends SourceManga
             Element iTitleElement = iMangaBlock.select("div.manga_tooltop_header > a").first();
 
             String lTitle = iTitleElement.text();
-            String lUrl = "https://www.mangaeden.com/api/manga/" + iUrlElement.id().substring(0, 24) + "/";
+            String lUrl = "https://www.mangaeden.com/api/manga/" + iUrlElement.id()
+                                                                              .substring(0, 24) + "/";
 
             Manga lManga = MangaDB.getInstance().getManga(lUrl);
 
@@ -115,11 +115,12 @@ public class MangaEden extends SourceManga
                 lMangaList.add(lManga);
                 MangaDB.getInstance().putManga(lManga);
 
-                MangaFeed.getInstance()
-                         .getCurrentSource()
-                         .updateMangaObservable(new RequestWrapper(lManga))
-                         .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
-                                 throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage()));
+                updateMangaObservable(new RequestWrapper(lManga))
+                        .subscribe
+                                (
+                                        manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
+                                        throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage())
+                                );
             }
         }
 

@@ -4,9 +4,9 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.amgregoire.mangafeed.UI.Adapters.SearchRecyclerAdapter;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.UI.Adapters.SearchRecyclerAdapter;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentFiltered;
 import com.amgregoire.mangafeed.UI.Mappers.IAccount;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateFollowStatusEvent;
@@ -62,10 +62,11 @@ public class AccountPresFiltered implements IAccount.AccountFilteredPres
                                  .getLibraryList(mFilterValue).cache()
                                  .subscribeOn(Schedulers.io())
                                  .observeOn(AndroidSchedulers.mainThread())
-                                 .doOnError(throwable -> MangaFeed.getInstance()
-                                                                  .makeToastShort(throwable
-                                                                          .getMessage()))
-                                 .subscribe(aManga -> updateMangaGridView(aManga));
+                                 .subscribe
+                                         (
+                                                 mangas -> updateMangaGridView(mangas),
+                                                 throwable -> MangaLogger.logError(TAG, "Failed to retrieve library list", throwable.getMessage())
+                                         );
         }
         catch (Exception aException)
         {

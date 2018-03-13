@@ -1,13 +1,13 @@
 package com.amgregoire.mangafeed.Common.WebSources;
 
 
+import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Common.RequestWrapper;
+import com.amgregoire.mangafeed.Common.WebSources.Base.SourceManga;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
-import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
-import com.amgregoire.mangafeed.Common.WebSources.Base.SourceManga;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,8 +16,6 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import io.reactivex.schedulers.Schedulers;
 
 
 public class MangaHere extends SourceManga
@@ -122,23 +120,33 @@ public class MangaHere extends SourceManga
             {
                 if (i == 2)
                 {
-                    lAlternate = lHeaderInfo.get(i).text().replace(lHeaderInfo.get(i).select("label").text(), "");
+                    lAlternate = lHeaderInfo.get(i)
+                                            .text()
+                                            .replace(lHeaderInfo.get(i).select("label").text(), "");
                 }
                 else if (i == 4)
                 {
-                    lAuthor = lHeaderInfo.get(i).text().replace(lHeaderInfo.get(i).select("label").text(), "");
+                    lAuthor = lHeaderInfo.get(i)
+                                         .text()
+                                         .replace(lHeaderInfo.get(i).select("label").text(), "");
                 }
                 else if (i == 5)
                 {
-                    lArtist = lHeaderInfo.get(i).text().replace(lHeaderInfo.get(i).select("label").text(), "");
+                    lArtist = lHeaderInfo.get(i)
+                                         .text()
+                                         .replace(lHeaderInfo.get(i).select("label").text(), "");
                 }
                 else if (i == 3)
                 {
-                    lGenres = lHeaderInfo.get(i).text().replace(lHeaderInfo.get(i).select("label").text(), "");
+                    lGenres = lHeaderInfo.get(i)
+                                         .text()
+                                         .replace(lHeaderInfo.get(i).select("label").text(), "");
                 }
                 else if (i == 6)
                 {
-                    lStatus = lHeaderInfo.get(i).text().replace(lHeaderInfo.get(i).select("label").text(), "");
+                    lStatus = lHeaderInfo.get(i)
+                                         .text()
+                                         .replace(lHeaderInfo.get(i).select("label").text(), "");
                 }
                 else if (i == 8)
                 {
@@ -170,7 +178,9 @@ public class MangaHere extends SourceManga
     public List<Chapter> parseResponseToChapters(RequestWrapper request, String resposneBody)
     {
         Document lParsedDocument = Jsoup.parse(resposneBody);
-        Elements lUpdates = lParsedDocument.select("div.detail_list").select("ul").not("ul.tab_comment.clearfix");
+        Elements lUpdates = lParsedDocument.select("div.detail_list")
+                                           .select("ul")
+                                           .not("ul.tab_comment.clearfix");
         lParsedDocument = Jsoup.parse(lUpdates.toString());
         List<Chapter> lChapterList = resolveChaptersFromParsedDocument(lParsedDocument, request.getMangaTitle());
 
@@ -184,7 +194,9 @@ public class MangaHere extends SourceManga
 
         //get base url for images
         Document lParsedDocumentForImage = Jsoup.parse(responseBody);
-        Elements lImageUpdates = lParsedDocumentForImage.select("select.wid60").first().select("option");
+        Elements lImageUpdates = lParsedDocumentForImage.select("select.wid60")
+                                                        .first()
+                                                        .select("option");
 
         for (Element iUrl : lImageUpdates)
         {
@@ -198,7 +210,9 @@ public class MangaHere extends SourceManga
     public String parseResponseToImageUrls(final String responseBody, final String responseUrl)
     {
         Document lParsedDocumentForImage = Jsoup.parse(responseBody);
-        String lUrl = lParsedDocumentForImage.select("section#viewer.read_img").select("img#image").attr("src");
+        String lUrl = lParsedDocumentForImage.select("section#viewer.read_img")
+                                             .select("img#image")
+                                             .attr("src");
 
         return lUrl;
     }
@@ -252,6 +266,9 @@ public class MangaHere extends SourceManga
             {
                 String lMangaTitle = iUsefulElement.select("a").attr("rel");
                 String lMangaUrl = iUsefulElement.select("a").attr("href");
+
+                lMangaUrl = lMangaUrl.replace("//", "http://");
+
                 Manga lManga = MangaDB.getInstance().getManga(lMangaUrl);
                 if (lManga != null)
                 {
@@ -262,9 +279,12 @@ public class MangaHere extends SourceManga
                     lManga = new Manga(lMangaTitle, lMangaUrl, SourceKey);
                     lMangaList.add(lManga);
                     MangaDB.getInstance().putManga(lManga);
-                    updateMangaObservable(new RequestWrapper(lManga)).subscribeOn(Schedulers.computation())
-                                                                     .doOnError(aThrowable -> MangaLogger.logError(TAG, aThrowable.getMessage()))
-                                                                     .subscribe();
+                    updateMangaObservable(new RequestWrapper(lManga))
+                            .subscribe
+                                    (
+                                            manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
+                                            throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable                                                    .getMessage())
+                                    );
                 }
             }
         }

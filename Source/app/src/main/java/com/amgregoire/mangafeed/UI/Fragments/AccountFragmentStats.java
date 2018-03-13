@@ -137,7 +137,7 @@ public class AccountFragmentStats extends Fragment implements IAccount.AccountSt
 
         mSourceName.setText(MangaFeed.getInstance().getCurrentSource().getSourceName());
         MangaDB.getInstance()
-               .test(1, 2, 3, 4)
+               .getLibraryFilterCount(1, 2, 3, 4)
                .subscribe(aLong -> lStatValues.add(aLong),
                        throwable -> MangaLogger.logError(TAG, throwable.getMessage()),
                        () ->

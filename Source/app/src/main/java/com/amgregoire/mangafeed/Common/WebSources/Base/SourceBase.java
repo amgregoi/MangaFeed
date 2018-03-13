@@ -7,7 +7,6 @@ import com.amgregoire.mangafeed.Common.RequestWrapper;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
-import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.Utils.NetworkService;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
 import com.bumptech.glide.Glide;
@@ -134,8 +133,7 @@ public abstract class SourceBase
                              .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
                              .flatMap(aResponseBody -> Observable.just(parseResponseToChapters(request, aResponseBody)))
                              .subscribeOn(Schedulers.computation())
-                             .observeOn(AndroidSchedulers.mainThread())
-                             .doOnError(aThrowable -> MangaLogger.logError(TAG, aThrowable.getMessage()));
+                             .observeOn(AndroidSchedulers.mainThread());
     }
 
     /***
@@ -151,7 +149,6 @@ public abstract class SourceBase
                              .getResponseCustomHeaders(request.getMangaUrl(), constructRequestHeaders())
                              .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
                              .flatMap(aResponseBody -> Observable.just(parseResponseToManga(request, aResponseBody)))
-                             .doOnError(aThrowable -> MangaLogger.logError(TAG, aThrowable.getMessage()))
                              .subscribeOn(Schedulers.computation())
                              .observeOn(AndroidSchedulers.mainThread());
     }
@@ -167,8 +164,7 @@ public abstract class SourceBase
         return NetworkService.getPermanentInstance()
                              .getResponseCustomHeaders(link, constructRequestHeaders())
                              .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
-                             .subscribeOn(Schedulers.computation())
-                             .doOnError(aThrowable -> MangaLogger.logError(TAG, aThrowable.getMessage()));
+                             .subscribeOn(Schedulers.computation());
     }
 
     /***

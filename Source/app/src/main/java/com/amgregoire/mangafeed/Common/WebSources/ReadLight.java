@@ -79,13 +79,12 @@ public class ReadLight extends SourceNovel
                     lManga.setPicUrl(lThumb);
                     MangaDB.getInstance().putManga(lManga);
 
-                    MangaFeed.getInstance()
-                             .getCurrentSource()
-                             .updateMangaObservable(new RequestWrapper(lManga))
-                             .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
-                                     throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable
-                                             .getMessage()));
-
+                    updateMangaObservable(new RequestWrapper(lManga))
+                            .subscribe
+                                    (
+                                            manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
+                                            throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage())
+                                    );
                 }
 
                 if (!lNovelList.contains(lManga))
@@ -278,38 +277,38 @@ public class ReadLight extends SourceNovel
     public void updateLocalCatalog()
     {
         String lCatalogUrl = "https://www.readlightnovel.org/novel-list";
-            updateCatalogObservable(lCatalogUrl).subscribe(o ->
+        updateCatalogObservable(lCatalogUrl).subscribe(o ->
+                {
+                    String responseBody = (String) o;
+                    MangaDB lDatabase = MangaDB.getInstance();
+                    Document lParsedDocument = Jsoup.parse(responseBody);
+                    Elements lItemGroups = lParsedDocument.select("div.list-by-word-body");
+
+                    for (Element group : lItemGroups)
                     {
-                        String responseBody = (String) o;
-                        MangaDB lDatabase = MangaDB.getInstance();
-                        Document lParsedDocument = Jsoup.parse(responseBody);
-                        Elements lItemGroups = lParsedDocument.select("div.list-by-word-body");
+                        Elements lItems = group.select("li");
 
-                        for (Element group : lItemGroups)
+                        for (Element item : lItems)
                         {
-                            Elements lItems = group.select("li");
+                            String name = item.select("a").first().text();
+                            String url = item.select("a").first().attr("href");
 
-                            for(Element item : lItems)
+                            if (!lDatabase.containsManga(url))
                             {
-                                String name = item.select("a").first().text();
-                                String url = item.select("a").first().attr("href");
-
-                                if (!lDatabase.containsManga(url))
-                                {
-                                    Manga lNewManga = new Manga(name, url, SourceKey);
-                                    lDatabase.putManga(lNewManga);
-                                    // update new entry info
-                                    MangaFeed.getInstance()
-                                             .getSource(TAG)
-                                             .updateMangaObservable(new RequestWrapper(lNewManga))
-                                             .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating (" + TAG + ") " + manga.title),
-                                                     throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable
-                                                             .getMessage()));
-                                }
+                                Manga lNewManga = new Manga(name, url, SourceKey);
+                                lDatabase.putManga(lNewManga);
+                                // update new entry info
+                                MangaFeed.getInstance()
+                                         .getSource(TAG)
+                                         .updateMangaObservable(new RequestWrapper(lNewManga))
+                                         .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating (" + TAG + ") " + manga.title),
+                                                 throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable
+                                                         .getMessage()));
                             }
-
                         }
-                    },
-                    throwable -> MangaLogger.logError(TAG, throwable.toString()));
+
+                    }
+                },
+                throwable -> MangaLogger.logError(TAG, throwable.toString()));
     }
 }

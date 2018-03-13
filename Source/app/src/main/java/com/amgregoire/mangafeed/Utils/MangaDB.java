@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
@@ -166,7 +169,8 @@ public class MangaDB extends SQLiteOpenHelper
         }
     }
 
-    public void putManga(Manga manga, boolean derp){
+    public void putManga(Manga manga, boolean derp)
+    {
 
     }
 
@@ -233,7 +237,7 @@ public class MangaDB extends SQLiteOpenHelper
      */
     public Observable<ArrayList<Manga>> getLibraryList()
     {
-        return Observable.create(subscriber ->
+        return Observable.create((ObservableEmitter<ArrayList<Manga>> subscriber) ->
         {
             try
             {
@@ -252,7 +256,7 @@ public class MangaDB extends SQLiteOpenHelper
             {
                 subscriber.onError(aException);
             }
-        });
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     /**
@@ -262,7 +266,7 @@ public class MangaDB extends SQLiteOpenHelper
      */
     public Observable<ArrayList<Manga>> getLibraryList(int filter)
     {
-        return Observable.create(subscriber ->
+        return Observable.create((ObservableEmitter<ArrayList<Manga>> subscriber) ->
         {
             try
             {
@@ -281,12 +285,18 @@ public class MangaDB extends SQLiteOpenHelper
             {
                 subscriber.onError(aException);
             }
-        });
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Observable<Long> test(int... filters)
+    /***
+     * This function returns the count of each filter type for a users library.
+     *
+     * @param filters
+     * @return
+     */
+    public Observable<Long> getLibraryFilterCount(int... filters)
     {
-        return Observable.create(subscriber ->
+        return Observable.create((ObservableEmitter<Long> subscriber) ->
         {
             try
             {
@@ -307,9 +317,7 @@ public class MangaDB extends SQLiteOpenHelper
             {
                 subscriber.onError(aException);
             }
-        });
-
-
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
 
@@ -320,15 +328,14 @@ public class MangaDB extends SQLiteOpenHelper
      */
     public Observable<ArrayList<Manga>> getCatalogList()
     {
-        return Observable.create(subscriber ->
+        return Observable.create((ObservableEmitter<ArrayList<Manga>> subscriber) ->
         {
             try
             {
 
                 ArrayList<Manga> lMangaList = new ArrayList<>(mSession.getMangaDao()
                                                                       .queryBuilder()
-                                                                      .where(MangaDao.Properties.Source
-                                                                              .eq(SharedPrefs.getSavedSource()))
+                                                                      .where(MangaDao.Properties.Source.eq(SharedPrefs.getSavedSource()))
                                                                       .list());
 
                 subscriber.onNext(lMangaList);
@@ -338,7 +345,7 @@ public class MangaDB extends SQLiteOpenHelper
             {
                 subscriber.onError(lException);
             }
-        });
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
 

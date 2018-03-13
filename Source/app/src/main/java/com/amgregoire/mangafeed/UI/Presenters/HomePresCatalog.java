@@ -1,6 +1,5 @@
 package com.amgregoire.mangafeed.UI.Presenters;
 
-import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.UI.Mappers.IHome;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
@@ -37,10 +36,11 @@ public class HomePresCatalog extends HomePresBase
                                             .getCatalogList()
                                             .subscribeOn(Schedulers.io())
                                             .observeOn(AndroidSchedulers.mainThread())
-                                            .doOnError(throwable -> MangaFeed.getInstance()
-                                                                             .makeToastShort(throwable
-                                                                                     .getMessage()))
-                                            .subscribe(aManga -> updateMangaGridView(aManga));
+                                            .subscribe
+                                                    (
+                                                            mangas -> updateMangaGridView(mangas),
+                                                            throwable -> MangaLogger.logError(TAG, "Failed to retrieve catalog list", throwable.getMessage())
+                                                    );
         }
         catch (Exception aException)
         {

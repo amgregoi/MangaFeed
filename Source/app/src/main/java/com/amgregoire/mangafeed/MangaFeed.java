@@ -52,6 +52,7 @@ public class MangaFeed extends Application
 
     /***
      * This function returns the MangaFeed application instance
+     *
      * @return
      */
     public static synchronized MangaFeed getInstance()
@@ -59,6 +60,11 @@ public class MangaFeed extends Application
         return mInstance;
     }
 
+    /***
+     * This function returns the application RxBus instance.
+     *
+     * @return
+     */
     public RxBus rxBus()
     {
         return mBus;
@@ -84,6 +90,13 @@ public class MangaFeed extends Application
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
+    /***
+     * This function creates and shows a short snackbar message.
+     *
+     * TODO: might remove and just use toasts.
+     * @param v
+     * @param message
+     */
     public void makeSnackBarShort(View v, String message)
     {
         Snackbar.make(v, message, Snackbar.LENGTH_LONG).show();
@@ -113,6 +126,12 @@ public class MangaFeed extends Application
         return MangaEnums.Source.valueOf(SharedPrefs.getSavedSource()).getSource();
     }
 
+    /***
+     * This function returns a new source specified by the source classes TAG.
+     *
+     * @param tag
+     * @return
+     */
     public SourceBase getSource(String tag)
     {
         if (tag.equals(FunManga.TAG))
