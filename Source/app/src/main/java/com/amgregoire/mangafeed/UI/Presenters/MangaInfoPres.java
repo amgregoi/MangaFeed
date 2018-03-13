@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.amgregoire.mangafeed.Adapters.MangaInfoChaptersAdapter;
+import com.amgregoire.mangafeed.UI.Adapters.MangaInfoChaptersAdapter;
 import com.amgregoire.mangafeed.Common.RequestWrapper;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Chapter;

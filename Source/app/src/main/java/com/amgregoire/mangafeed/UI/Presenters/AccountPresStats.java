@@ -3,7 +3,7 @@ package com.amgregoire.mangafeed.UI.Presenters;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 
-import com.amgregoire.mangafeed.Adapters.AccountViewPagerAdapter;
+import com.amgregoire.mangafeed.UI.Adapters.AccountViewPagerAdapter;
 import com.amgregoire.mangafeed.UI.Mappers.IAccount;
 
 /**

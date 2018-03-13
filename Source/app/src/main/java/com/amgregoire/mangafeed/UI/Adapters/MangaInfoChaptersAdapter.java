@@ -1,4 +1,4 @@
-package com.amgregoire.mangafeed.Adapters;
+package com.amgregoire.mangafeed.UI.Adapters;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -15,8 +15,8 @@ import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
-import com.amgregoire.mangafeed.Utils.BusEvents.MangaDownloadSelectEvent;
-import com.amgregoire.mangafeed.Utils.BusEvents.UpdateItemEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.DownloadSelectAllEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.UpdateFollowStatusEvent;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -208,7 +208,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         public void onFABFollowCompleteClick()
         {
             mManga.following = Manga.FOLLOW_COMPLETE;
-            MangaFeed.getInstance().rxBus().send(new UpdateItemEvent(mManga));
+            MangaFeed.getInstance().rxBus().send(new UpdateFollowStatusEvent(mManga));
             mFollowMenu.getMenuIconView().setImageDrawable(mFollowing);
             mFollowMenu.setMenuButtonColorNormal(mGreen);
             mContinueReading.setColorNormal(mGreen);
@@ -220,7 +220,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         public void onFABFollowOnHoldClick()
         {
             mManga.following = Manga.FOLLOW_ON_HOLD;
-            MangaFeed.getInstance().rxBus().send(new UpdateItemEvent(mManga));
+            MangaFeed.getInstance().rxBus().send(new UpdateFollowStatusEvent(mManga));
             mFollowMenu.getMenuIconView().setImageDrawable(mFollowing);
             mFollowMenu.setMenuButtonColorNormal(mRed);
             mContinueReading.setColorNormal(mRed);
@@ -232,7 +232,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         public void onFABFollowPlanToReadClick()
         {
             mManga.following = Manga.FOLLOW_PLAN_TO_READ;
-            MangaFeed.getInstance().rxBus().send(new UpdateItemEvent(mManga));
+            MangaFeed.getInstance().rxBus().send(new UpdateFollowStatusEvent(mManga));
             mFollowMenu.getMenuIconView().setImageDrawable(mFollowing);
             mFollowMenu.setMenuButtonColorNormal(mGray);
             mContinueReading.setColorNormal(mGray);
@@ -244,7 +244,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         public void onFABFollowReadingClick()
         {
             mManga.following = Manga.FOLLOW_READING;
-            MangaFeed.getInstance().rxBus().send(new UpdateItemEvent(mManga));
+            MangaFeed.getInstance().rxBus().send(new UpdateFollowStatusEvent(mManga));
             mFollowMenu.getMenuIconView().setImageDrawable(mFollowing);
             mFollowMenu.setMenuButtonColorNormal(mBlue);
             mContinueReading.setColorNormal(mBlue);
@@ -256,7 +256,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         public void onFABUnfollowReadingClick()
         {
             mManga.following = Manga.UNFOLLOW;
-            MangaFeed.getInstance().rxBus().send(new UpdateItemEvent(mManga));
+            MangaFeed.getInstance().rxBus().send(new UpdateFollowStatusEvent(mManga));
             mFollowMenu.getMenuIconView().setImageDrawable(mDrawableNotFollowing);
             mFollowMenu.setMenuButtonColorNormal(mAccent);
             mContinueReading.setColorNormal(mAccent);
@@ -428,7 +428,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         mDownloadViewFlag = false;
         mDownloadList.clear();
         notifyDataSetChanged();
-        MangaFeed.getInstance().rxBus().send(new MangaDownloadSelectEvent(mManga));
+        MangaFeed.getInstance().rxBus().send(new DownloadSelectAllEvent(mManga));
     }
 
     public void onDownloadDownload()
@@ -452,7 +452,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
     public void onDownloadViewEnabled()
     {
         mDownloadViewFlag = true; // Set it to true, after getting toolbar for downloads working
-        MangaFeed.getInstance().rxBus().send(new MangaDownloadSelectEvent(mManga));
+        MangaFeed.getInstance().rxBus().send(new DownloadSelectAllEvent(mManga));
         notifyDataSetChanged();
     }
 

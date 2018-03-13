@@ -60,6 +60,20 @@ public class AccountFragmentFiltered extends Fragment implements IAccount.Accoun
     }
 
     @Override
+    public void onResume()
+    {
+        super.onResume();
+        mPresenter.subEventBus();
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        mPresenter.unSubEventBus();
+    }
+
+    @Override
     public void initViews()
     {
         setupToolbar();
@@ -94,4 +108,5 @@ public class AccountFragmentFiltered extends Fragment implements IAccount.Accoun
             }
         });
     }
+
 }

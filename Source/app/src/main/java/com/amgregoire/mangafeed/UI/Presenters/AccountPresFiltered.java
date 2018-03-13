@@ -4,11 +4,12 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.amgregoire.mangafeed.Adapters.SearchRecyclerAdapter;
+import com.amgregoire.mangafeed.UI.Adapters.SearchRecyclerAdapter;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentFiltered;
 import com.amgregoire.mangafeed.UI.Mappers.IAccount;
+import com.amgregoire.mangafeed.Utils.BusEvents.UpdateFollowStatusEvent;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
@@ -30,6 +31,7 @@ public class AccountPresFiltered implements IAccount.AccountFilteredPres
     private IAccount.AccountFilteredMap mMap;
     private SearchRecyclerAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private Disposable mDisposableRxBus;
 
     private int mFilterValue;
 
@@ -86,5 +88,27 @@ public class AccountPresFiltered implements IAccount.AccountFilteredPres
                 mAdapter.updateOriginalData(manga);
             }
         }
+    }
+
+
+    @Override
+    public void unSubEventBus()
+    {
+        mDisposableRxBus.dispose();
+    }
+
+    @Override
+    public void subEventBus()
+    {
+        mDisposableRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(
+                o ->
+                {
+                    if (o instanceof UpdateFollowStatusEvent)
+                    {
+                        UpdateFollowStatusEvent lEvent = ((UpdateFollowStatusEvent) o);
+                        mAdapter.updateItem(lEvent.manga);
+                    }
+                },
+                throwable -> MangaLogger.logError(TAG, throwable.getMessage()));
     }
 }

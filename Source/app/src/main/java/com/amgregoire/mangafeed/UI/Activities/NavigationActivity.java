@@ -23,7 +23,7 @@ import com.amgregoire.mangafeed.UI.Fragments.DownloadsFragment;
 import com.amgregoire.mangafeed.UI.Fragments.HomeFragment;
 import com.amgregoire.mangafeed.UI.Fragments.MangaInfoFragment;
 import com.amgregoire.mangafeed.UI.Fragments.OfflineFragment;
-import com.amgregoire.mangafeed.Utils.BusEvents.MangaDownloadSelectEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.DownloadSelectAllEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.MangaSelectedEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateSourceEvent;
 
@@ -321,7 +321,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                 mMenuFlag = Menus.MENU_MANGA_INFO;
                 invalidateOptionsMenu();
             }
-            else if (o instanceof MangaDownloadSelectEvent)
+            else if (o instanceof DownloadSelectAllEvent)
             {
                 MangaInfoFragment lMangaFragment = (MangaInfoFragment) getSupportFragmentManager().findFragmentByTag(MangaInfoFragment.TAG);
 
@@ -333,7 +333,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                 }
                 else
                 {
-                    setTitle(((MangaDownloadSelectEvent) o).manga.title);
+                    setTitle(((DownloadSelectAllEvent) o).manga.title);
                     mMenuFlag = Menus.MENU_MANGA_INFO;
                     invalidateOptionsMenu();
                 }

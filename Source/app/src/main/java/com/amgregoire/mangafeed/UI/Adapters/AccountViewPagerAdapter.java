@@ -1,4 +1,4 @@
-package com.amgregoire.mangafeed.Adapters;
+package com.amgregoire.mangafeed.UI.Adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

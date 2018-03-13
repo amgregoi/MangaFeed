@@ -1,6 +1,7 @@
 package com.amgregoire.mangafeed.UI.Mappers;
 
 import com.amgregoire.mangafeed.UI.Mappers.Maps.ContextMap;
+import com.amgregoire.mangafeed.UI.Mappers.Maps.EventBusMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.InitViewMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.LifeCycleMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.PagerAdapterMap;
@@ -31,7 +32,7 @@ public interface IAccount
 
     }
 
-    interface AccountFilteredPres extends LifeCycleMap
+    interface AccountFilteredPres extends LifeCycleMap, EventBusMap
     {
 
     }

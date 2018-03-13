@@ -1,4 +1,4 @@
-package com.amgregoire.mangafeed.Adapters;
+package com.amgregoire.mangafeed.UI.Adapters;
 
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;

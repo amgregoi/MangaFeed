@@ -211,7 +211,7 @@ public class FunManga extends SourceManga
 
             MangaDB.getInstance().putManga(lManga);
 
-//            MangaFeed.getInstance().rxBus().send(new UpdateItemEvent(lManga));
+//            MangaFeed.getInstance().rxBus().send(new UpdateFollowStatusEvent(lManga));
             MangaLogger.logInfo(TAG, "Finished creating/updating manga (" + lManga.getTitle() + ")");
         }
         catch (Exception aException)

@@ -5,11 +5,11 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
-import com.amgregoire.mangafeed.Adapters.SearchRecyclerAdapter;
+import com.amgregoire.mangafeed.UI.Adapters.SearchRecyclerAdapter;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Mappers.IHome;
-import com.amgregoire.mangafeed.Utils.BusEvents.UpdateItemEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.UpdateFollowStatusEvent;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
 import java.util.ArrayList;
@@ -54,9 +54,9 @@ public abstract class HomePresBase implements IHome.HomeBasePres
         {
             mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
             {
-                if (o instanceof UpdateItemEvent)
+                if (o instanceof UpdateFollowStatusEvent)
                 {
-                    Manga manga = ((UpdateItemEvent) o).manga;
+                    Manga manga = ((UpdateFollowStatusEvent) o).manga;
                     mAdapter.updateItem(manga);
                     Log.e(TAG, manga.title);
                 }
