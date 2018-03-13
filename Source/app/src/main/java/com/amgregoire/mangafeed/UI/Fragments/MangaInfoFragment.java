@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.amgregoire.mangafeed.Adapters.MangaInfoChaptersAdapter;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Mappers.IManga;
@@ -74,7 +75,8 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
 
     public void onDownloadViewStart()
     {
-        mRecyclerView.scrollToPosition(1);
+        int lPosition = ((MangaInfoChaptersAdapter)mRecyclerView.getAdapter()).getFirstDownloadScrollPosition();
+        mRecyclerView.scrollToPosition(lPosition);
     }
 
     public void onDownloadCancel()
@@ -91,5 +93,11 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
     {
         mPresenter.onRefreshInfo();
     }
+
+    public void onDownloadViewEnabled()
+    {
+        mPresenter.onDownloadViewEnabled();
+    }
+
 
 }

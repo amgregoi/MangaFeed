@@ -57,15 +57,19 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         }
 
         mChapterData = new ArrayList<>(data);
+        mDownloadList = new ArrayList<>();
         mManga = manga;
     }
 
     @Override
     public int getItemViewType(int position)
     {
-        if (position == 0)
+        if (!mDownloadViewFlag)
         {
-            return VIEW_HEADER;
+            if (position == 0)
+            {
+                return VIEW_HEADER;
+            }
         }
 
         return VIEW_CHAPTER;
@@ -102,14 +106,19 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         }
         else
         {
-            ((ViewHolderChapter) holder).initViews(position - 1);
+            ((ViewHolderChapter) holder).initViews(position - getHeaderCount());
         }
     }
 
     @Override
     public int getItemCount()
     {
-        return mChapterData.size() + 1;
+        return mChapterData.size() + getHeaderCount();
+    }
+
+    private int getHeaderCount()
+    {
+        return mDownloadViewFlag ? 0 : 1;
     }
 
 
@@ -186,7 +195,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
                     onFABFollowPlanToReadClick();
                     break;
                 case Manga.FOLLOW_READING:
-                    onFABFollowPlanToReadClick();
+                    onFABFollowReadingClick();
                     break;
                 case Manga.UNFOLLOW:
                     onFABUnfollowReadingClick();
@@ -246,7 +255,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         @OnClick(R.id.fabMangaInfoFollowUnFollow)
         public void onFABUnfollowReadingClick()
         {
-            mManga.following = Manga.FOLLOW_READING;
+            mManga.following = Manga.UNFOLLOW;
             MangaFeed.getInstance().rxBus().send(new UpdateItemEvent(mManga));
             mFollowMenu.getMenuIconView().setImageDrawable(mDrawableNotFollowing);
             mFollowMenu.setMenuButtonColorNormal(mAccent);
@@ -333,7 +342,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         @OnClick(R.id.linearLayoutMangaInfoChapterRoot)
         public void onChapterRootClick()
         {
-            Chapter lChapter = mChapterData.get(getAdapterPosition() - 1);
+            Chapter lChapter = mChapterData.get(getAdapterPosition() - getHeaderCount());
             if (mDownloadViewFlag)
             {
                 boolean lIsChecked = mDownloadList.contains(lChapter);
@@ -360,11 +369,11 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             // activate multiple download view
             if (!mDownloadViewFlag)
             {
-                mDownloadViewFlag = true; // Set it to true, after getting toolbar for downloads working
                 mDownloadList = new ArrayList<>();
-                mDownloadList.add(mChapterData.get(getAdapterPosition() - 1));
-                MangaFeed.getInstance().rxBus().send(new MangaDownloadSelectEvent(mManga));
-                notifyDataSetChanged();
+                mDownloadList.add(mChapterData.get(getAdapterPosition() - getHeaderCount()));
+
+                onDownloadViewEnabled();
+
                 return true;
             }
 
@@ -426,6 +435,25 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
     {
         // TODO - implement download service
         // Send RX Bus event to signal start of download, and pass in chapter list to event
+    }
+
+    public int getFirstDownloadScrollPosition()
+    {
+        if (mDownloadList.size() == 0)
+        {
+            return 0;
+        }
+        else
+        {
+            return mChapterData.indexOf(mDownloadList.get(0));
+        }
+    }
+
+    public void onDownloadViewEnabled()
+    {
+        mDownloadViewFlag = true; // Set it to true, after getting toolbar for downloads working
+        MangaFeed.getInstance().rxBus().send(new MangaDownloadSelectEvent(mManga));
+        notifyDataSetChanged();
     }
 
 

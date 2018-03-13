@@ -93,50 +93,45 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
 
     }
 
-    public final static int MENU_HOME = 0;
-    public final static int MENU_ACCOUNT = 1;
-    public final static int MENU_DOWNLOADS = 2;
-    public final static int MENU_MANGA_INFO = 3;
-    public final static int MENU_MANGA_DOWNLOAD = 4;
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
         mToolbar.setNavigationIcon(null);
 
-        if (mMenuFlag == MENU_HOME || mMenuFlag == MENU_DOWNLOADS)
+        if (mMenuFlag == Menus.MENU_HOME)
         {
             MenuInflater lInflater = getMenuInflater();
             lInflater.inflate(R.menu.menu_toolbar_home, menu);
             setTitle(MangaFeed.getInstance().getCurrentSource().getSourceName());
             return true;
         }
-        else if (mMenuFlag == MENU_DOWNLOADS)
+        else if (mMenuFlag == Menus.MENU_DOWNLOADS)
         {
             MenuInflater lInflater = getMenuInflater();
             lInflater.inflate(R.menu.menu_toolbar_home, menu);
             setTitle(R.string.nav_bottom_title_download);
             return true;
         }
-        else if (mMenuFlag == MENU_ACCOUNT)
+        else if (mMenuFlag == Menus.MENU_ACCOUNT)
         {
             MenuInflater lInflater = getMenuInflater();
             lInflater.inflate(R.menu.menu_toolbar_account, menu);
             setTitle(R.string.nav_bottom_title_account);
             return true;
         }
-        else if (mMenuFlag == MENU_MANGA_INFO)
+        else if (mMenuFlag == Menus.MENU_MANGA_INFO)
         {
             MenuInflater lInflater = getMenuInflater();
             lInflater.inflate(R.menu.menu_toolbar_manga_info, menu);
             mToolbar.setNavigationIcon(mDrawBack);
             return true;
         }
-        else if (mMenuFlag == MENU_MANGA_DOWNLOAD)
+        else if (mMenuFlag == Menus.MENU_MANGA_DOWNLOAD)
         {
             MenuInflater lInflater = getMenuInflater();
             lInflater.inflate(R.menu.menu_toolbar_manga_info_download, menu);
             mToolbar.setNavigationIcon(mDrawWhiteOutline);
+            setTitle("Select Items");
             return true;
         }
 
@@ -147,6 +142,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     public boolean onOptionsItemSelected(MenuItem item)
     {
         MangaInfoFragment lMangaFragment = (MangaInfoFragment) getSupportFragmentManager().findFragmentByTag(MangaInfoFragment.TAG);
+
         switch (item.getItemId())
         {
             case R.id.menuAccountSettings:
@@ -158,19 +154,22 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
             case R.id.menuMangaInfoRefresh:
                 lMangaFragment.onRefreshInfo();
                 break;
+            case R.id.menuMangaInfoDownload:
+                lMangaFragment.onDownloadViewEnabled();
+                break;
             case R.id.menuMangaInfoDownloadCancel:
                 lMangaFragment.onDownloadCancel();
                 break;
             case R.id.menuMangaInfoDownloadDownload:
                 lMangaFragment.onDownloadDownload();
-                mMenuFlag = MENU_MANGA_INFO;
+                mMenuFlag = Menus.MENU_MANGA_INFO;
                 invalidateOptionsMenu();
                 MangaFeed.getInstance().makeToastShort("Starting downloads now");
                 break;
             case android.R.id.home:
-                if (mMenuFlag == MENU_MANGA_INFO)
+                if (mMenuFlag == Menus.MENU_MANGA_INFO)
                 {
-                    mMenuFlag = MENU_HOME;
+                    mMenuFlag = Menus.MENU_HOME;
                     invalidateOptionsMenu();
                     onBackPressed();
                 }
@@ -214,7 +213,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     {
         mInternetFlag = false;
 
-        if (mMenuFlag == MENU_HOME)
+        if (mMenuFlag == Menus.MENU_HOME)
         {
             setFragment(OfflineFragment.TAG);
         }
@@ -224,7 +223,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     @Override
     public void onBackPressed()
     {
-        if (mMenuFlag == MENU_MANGA_DOWNLOAD)
+        if (mMenuFlag == Menus.MENU_MANGA_DOWNLOAD)
         {
             MangaInfoFragment lMangaFragment = (MangaInfoFragment) getSupportFragmentManager().findFragmentByTag(MangaInfoFragment.TAG);
             lMangaFragment.onDownloadCancel();
@@ -232,6 +231,8 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         else if (getSupportFragmentManager().getBackStackEntryCount() > 0)
         {
             getSupportFragmentManager().popBackStack();
+            mMenuFlag = Menus.MENU_HOME;
+            invalidateOptionsMenu();
         }
         else
         {
@@ -248,11 +249,12 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     {
         mBottomNav.setOnNavigationItemSelectedListener(item ->
         {
-            mMenuFlag = MENU_HOME;
+            mMenuFlag = Menus.MENU_HOME;
+
             switch (item.getItemId())
             {
                 case R.id.menuBottomNavCatalog:
-                    mMenuFlag = MENU_HOME;
+                    mMenuFlag = Menus.MENU_HOME;
                     if (mInternetFlag)
                     {
                         setFragment(HomeFragment.TAG);
@@ -263,11 +265,11 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                     }
                     break;
                 case R.id.menuBottomNavDownloads:
-                    mMenuFlag = MENU_DOWNLOADS;
+                    mMenuFlag = Menus.MENU_DOWNLOADS;
                     setFragment(DownloadsFragment.TAG);
                     break;
                 case R.id.menuBottomNavAccount:
-                    mMenuFlag = MENU_ACCOUNT;
+                    mMenuFlag = Menus.MENU_ACCOUNT;
                     setFragment(AccountFragment.TAG);
                     break;
                 default:
@@ -279,6 +281,10 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         });
     }
 
+    /***
+     * this function subscribes to the relevant Rx event bus events.
+     *
+     */
     private void setupRxBus()
     {
         MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
@@ -312,25 +318,23 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                                            .commit();
 
                 setTitle(lEvent.manga.title);
-                mMenuFlag = MENU_MANGA_INFO;
+                mMenuFlag = Menus.MENU_MANGA_INFO;
                 invalidateOptionsMenu();
             }
             else if (o instanceof MangaDownloadSelectEvent)
             {
                 MangaInfoFragment lMangaFragment = (MangaInfoFragment) getSupportFragmentManager().findFragmentByTag(MangaInfoFragment.TAG);
 
-                if (mMenuFlag == MENU_MANGA_INFO)
+                if (mMenuFlag == Menus.MENU_MANGA_INFO)
                 {
-                    setTitle("Select Items");
-                    mMenuFlag = MENU_MANGA_DOWNLOAD;
+                    mMenuFlag = Menus.MENU_MANGA_DOWNLOAD;
                     invalidateOptionsMenu();
                     lMangaFragment.onDownloadViewStart(); // scroll to position 1 (under header)
                 }
                 else
                 {
                     setTitle(((MangaDownloadSelectEvent) o).manga.title);
-                    mToolbar.setNavigationIcon(mDrawBack);
-                    mMenuFlag = MENU_MANGA_INFO;
+                    mMenuFlag = Menus.MENU_MANGA_INFO;
                     invalidateOptionsMenu();
                 }
             }
@@ -392,5 +396,18 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     {
         setSupportActionBar(mToolbar);
         setTitle(MangaFeed.getInstance().getCurrentSource().getSourceName());
+    }
+
+    /***
+     * This class holds the various menu identifiers used to toggle between the different toolbar menus.
+     *
+     */
+    public class Menus
+    {
+        public final static int MENU_HOME = 0;
+        public final static int MENU_ACCOUNT = 1;
+        public final static int MENU_DOWNLOADS = 2;
+        public final static int MENU_MANGA_INFO = 3;
+        public final static int MENU_MANGA_DOWNLOAD = 4;
     }
 }

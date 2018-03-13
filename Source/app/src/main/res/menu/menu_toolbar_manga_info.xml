@@ -5,4 +5,10 @@
         android:icon="@drawable/ic_refresh_white_24dp"
         app:showAsAction="ifRoom|collapseActionView"
         android:title="Settings" />
+
+    <item
+        android:id="@+id/menuMangaInfoDownload"
+        android:icon="@drawable/ic_download_grey600_24dp"
+        app:showAsAction="collapseActionView"
+        android:title="Download" />
 </menu>

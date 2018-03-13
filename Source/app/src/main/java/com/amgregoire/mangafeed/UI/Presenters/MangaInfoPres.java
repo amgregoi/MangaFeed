@@ -42,9 +42,6 @@ public class MangaInfoPres implements IManga.MangaPres
     public void init(Bundle bundle)
     {
         mManga = bundle.getParcelable(MangaInfoFragment.MANGA_KEY);
-        // fetch header info
-        // fetch chapter list
-        // register adapter
 
         fetchMangaInfo();
         fetchChapterList();
@@ -147,5 +144,11 @@ public class MangaInfoPres implements IManga.MangaPres
     public void onDownloadDownload()
     {
         mAdapter.onDownloadCancel();
+    }
+
+    @Override
+    public void onDownloadViewEnabled()
+    {
+        mAdapter.onDownloadViewEnabled();
     }
 }

@@ -24,6 +24,8 @@ public interface IManga
         void onDownloadCancel();
 
         void onDownloadDownload();
+
+        void onDownloadViewEnabled();
     }
 
     /***
