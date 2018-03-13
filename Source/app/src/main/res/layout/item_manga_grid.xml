@@ -11,7 +11,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/Manga_charcoal"
+        android:background="@color/manga_charcoal"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -29,7 +29,7 @@
             android:id="@+id/linearLayoutMangaGridItemFooter"
             android:layout_width="match_parent"
             android:layout_height="@dimen/single_line_height_48dp"
-            android:background="@color/Manga_white"
+            android:background="@color/manga_white"
             android:orientation="horizontal"
             android:paddingLeft="@dimen/baseline_margin_unit_16dp"
             android:paddingRight="@dimen/baseline_margin_unit_16dp">
@@ -39,7 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:background="@color/Manga_white"
+                android:background="@color/manga_white"
                 android:gravity="center_horizontal"
                 android:maxLines="2"
                 android:textColor="@android:color/background_dark"

@@ -15,7 +15,7 @@ import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
-import com.amgregoire.mangafeed.Utils.BusEvents.UpdateItemEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.MangaSelectedEvent;
 import com.l4digital.fastscroll.FastScroller;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -212,14 +212,15 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         @BindView(R.id.imageViewMangaGridItem) ImageView mImage;
         @BindView(R.id.linearLayoutMangaGridItemFooter) LinearLayout mFooter;
 
-        @BindColor(R.color.Manga_white) int mWhite;
+        @BindColor(R.color.manga_white) int mWhite;
         @BindColor(R.color.colorPrimary) int mPrimary;
-        @BindColor(R.color.Manga_black) int mBlack;
-        @BindColor(R.color.Manga_red) int mRed;
-        @BindColor(R.color.Manga_green) int mGreen;
+        @BindColor(R.color.manga_black) int mBlack;
+        @BindColor(R.color.manga_red) int mRed;
+        @BindColor(R.color.manga_green) int mGreen;
+        @BindColor(R.color.manga_gray) int mGray;
 
-        @BindDrawable(R.drawable.intercom_input_gallery) Drawable mPlaceHolder;
-        @BindDrawable(R.drawable.intercom_error) Drawable mError;
+        @BindDrawable(R.drawable.manga_loading_image) Drawable mPlaceHolder;
+        @BindDrawable(R.drawable.manga_error) Drawable mError;
 
         private final Target mImageTarget = new Target()
         {
@@ -253,12 +254,9 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         @OnClick(R.id.cardViewMangaGridItem)
         public void onCardItemClick()
         {
-
-            // TODO : launch manga info fragment
-            notifyItemChanged(getLayoutPosition());
             MangaFeed.getInstance()
                      .rxBus()
-                     .send(new UpdateItemEvent(mFilteredData.get(getLayoutPosition())));
+                     .send(new MangaSelectedEvent(mFilteredData.get(getLayoutPosition())));
         }
 
         /***
@@ -310,12 +308,14 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         {
             switch (status)
             {
-                case 1:
+                case Manga.FOLLOW_READING:
                     return mPrimary;
-                case 2:
+                case Manga.FOLLOW_COMPLETE:
                     return mGreen;
-                case 3:
+                case Manga.FOLLOW_ON_HOLD:
                     return mRed;
+                case Manga.FOLLOW_PLAN_TO_READ:
+                    return mGray;
                 default:
                     return mWhite;
             }
@@ -334,6 +334,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 case 1:
                 case 2:
                 case 3:
+                case 4:
                     return mWhite;
                 default:
                     return mBlack;

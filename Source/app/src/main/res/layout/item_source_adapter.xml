@@ -16,7 +16,7 @@
             android:src="@drawable/funmanga_logo" />
 
         <View
-            android:background="@color/Manga_charcoal"
+            android:background="@color/manga_charcoal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:alpha=".85" />

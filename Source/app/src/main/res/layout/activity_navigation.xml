@@ -14,31 +14,41 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:background="@color/colorPrimary"
-        app:titleTextColor="@color/Manga_white" />
-
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:theme="@style/Widget.BottomNav.MangaFeed"
-        android:elevation="2dp"
-        app:itemIconTint="@drawable/nav_selector"
-        app:itemTextColor="@drawable/nav_selector"
-        app:menu="@menu/navigation" />
+        app:titleTextColor="@color/manga_white" />
 
     <FrameLayout
-        android:id="@+id/frameLayoutNavContainer"
+        android:id="@+id/frameLayoutMasterContainer"
+        android:layout_below="@id/navigationHomeToolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/navigation"
-        android:layout_below="@id/navigationHomeToolbar" />
+        android:layout_height="match_parent">
 
-    <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/coordinatorLayoutSnack"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="56dp"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
+            <android.support.design.widget.BottomNavigationView
+                android:id="@+id/navigation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:elevation="2dp"
+                android:theme="@style/Widget.BottomNav.MangaFeed"
+                app:itemIconTint="@drawable/nav_selector"
+                app:itemTextColor="@drawable/nav_selector"
+                app:menu="@menu/navigation" />
+
+            <FrameLayout
+                android:id="@+id/frameLayoutNavContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@id/navigation" />
+
+            <android.support.design.widget.CoordinatorLayout
+                android:id="@+id/coordinatorLayoutSnack"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="56dp" />
+        </RelativeLayout>
+    </FrameLayout>
 </RelativeLayout>

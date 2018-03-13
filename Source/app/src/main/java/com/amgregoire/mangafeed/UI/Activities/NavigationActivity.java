@@ -1,6 +1,7 @@
 package com.amgregoire.mangafeed.UI.Activities;
 
 import android.content.IntentFilter;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
@@ -11,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import com.amgregoire.mangafeed.Common.WifiBroadcastReceiver;
@@ -19,9 +21,13 @@ import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragment;
 import com.amgregoire.mangafeed.UI.Fragments.DownloadsFragment;
 import com.amgregoire.mangafeed.UI.Fragments.HomeFragment;
+import com.amgregoire.mangafeed.UI.Fragments.MangaInfoFragment;
 import com.amgregoire.mangafeed.UI.Fragments.OfflineFragment;
+import com.amgregoire.mangafeed.Utils.BusEvents.MangaDownloadSelectEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.MangaSelectedEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateSourceEvent;
 
+import butterknife.BindDrawable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -32,6 +38,10 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     @BindView(R.id.navigationHomeToolbar) Toolbar mToolbar;
     @BindView(R.id.navigation) BottomNavigationView mBottomNav;
     @BindView(R.id.frameLayoutNavContainer) FrameLayout mFragmentContainer;
+
+    @BindDrawable(R.drawable.ic_checkbox_blank_circle_outline_white_24dp) Drawable mDrawWhiteOutline;
+    @BindDrawable(R.drawable.ic_check_circle_outline_white_24dp) Drawable mDrawWhiteChecked;
+    @BindDrawable(R.drawable.navigation_back) Drawable mDrawBack;
 
     private WifiBroadcastReceiver mReceiver;
     private int mMenuFlag = 0;
@@ -83,24 +93,107 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
 
     }
 
+    public final static int MENU_HOME = 0;
+    public final static int MENU_ACCOUNT = 1;
+    public final static int MENU_DOWNLOADS = 2;
+    public final static int MENU_MANGA_INFO = 3;
+    public final static int MENU_MANGA_DOWNLOAD = 4;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        if (mMenuFlag == 0)
+        mToolbar.setNavigationIcon(null);
+
+        if (mMenuFlag == MENU_HOME || mMenuFlag == MENU_DOWNLOADS)
         {
             MenuInflater lInflater = getMenuInflater();
             lInflater.inflate(R.menu.menu_toolbar_home, menu);
+            setTitle(MangaFeed.getInstance().getCurrentSource().getSourceName());
             return true;
         }
-        else if (mMenuFlag == 2)
+        else if (mMenuFlag == MENU_DOWNLOADS)
+        {
+            MenuInflater lInflater = getMenuInflater();
+            lInflater.inflate(R.menu.menu_toolbar_home, menu);
+            setTitle(R.string.nav_bottom_title_download);
+            return true;
+        }
+        else if (mMenuFlag == MENU_ACCOUNT)
         {
             MenuInflater lInflater = getMenuInflater();
             lInflater.inflate(R.menu.menu_toolbar_account, menu);
+            setTitle(R.string.nav_bottom_title_account);
+            return true;
+        }
+        else if (mMenuFlag == MENU_MANGA_INFO)
+        {
+            MenuInflater lInflater = getMenuInflater();
+            lInflater.inflate(R.menu.menu_toolbar_manga_info, menu);
+            mToolbar.setNavigationIcon(mDrawBack);
+            return true;
+        }
+        else if (mMenuFlag == MENU_MANGA_DOWNLOAD)
+        {
+            MenuInflater lInflater = getMenuInflater();
+            lInflater.inflate(R.menu.menu_toolbar_manga_info_download, menu);
+            mToolbar.setNavigationIcon(mDrawWhiteOutline);
             return true;
         }
 
         return super.onCreateOptionsMenu(menu);
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        MangaInfoFragment lMangaFragment = (MangaInfoFragment) getSupportFragmentManager().findFragmentByTag(MangaInfoFragment.TAG);
+        switch (item.getItemId())
+        {
+            case R.id.menuAccountSettings:
+                // start settings fragment
+                break;
+            case R.id.menuHomeSearch:
+                // send query listener update
+                break;
+            case R.id.menuMangaInfoRefresh:
+                lMangaFragment.onRefreshInfo();
+                break;
+            case R.id.menuMangaInfoDownloadCancel:
+                lMangaFragment.onDownloadCancel();
+                break;
+            case R.id.menuMangaInfoDownloadDownload:
+                lMangaFragment.onDownloadDownload();
+                mMenuFlag = MENU_MANGA_INFO;
+                invalidateOptionsMenu();
+                MangaFeed.getInstance().makeToastShort("Starting downloads now");
+                break;
+            case android.R.id.home:
+                if (mMenuFlag == MENU_MANGA_INFO)
+                {
+                    mMenuFlag = MENU_HOME;
+                    invalidateOptionsMenu();
+                    onBackPressed();
+                }
+                else
+                {
+                    Drawable lCurrent = mToolbar.getNavigationIcon();
+
+                    if (lCurrent == mDrawWhiteOutline)
+                    {
+                        mToolbar.setNavigationIcon(mDrawWhiteChecked);
+                        lMangaFragment.onSelectAllOrNone(true);
+                    }
+                    else
+                    {
+                        mToolbar.setNavigationIcon(mDrawWhiteOutline);
+                        lMangaFragment.onSelectAllOrNone(false);
+                    }
+                }
+        }
+
+        return true;
+    }
+
 
     @Override
     public void hasInternet()
@@ -121,9 +214,29 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     {
         mInternetFlag = false;
 
-        if (mMenuFlag == 0)
+        if (mMenuFlag == MENU_HOME)
         {
             setFragment(OfflineFragment.TAG);
+        }
+    }
+
+
+    @Override
+    public void onBackPressed()
+    {
+        if (mMenuFlag == MENU_MANGA_DOWNLOAD)
+        {
+            MangaInfoFragment lMangaFragment = (MangaInfoFragment) getSupportFragmentManager().findFragmentByTag(MangaInfoFragment.TAG);
+            lMangaFragment.onDownloadCancel();
+        }
+        else if (getSupportFragmentManager().getBackStackEntryCount() > 0)
+        {
+            getSupportFragmentManager().popBackStack();
+        }
+        else
+        {
+            // implement double back to exit
+            super.onBackPressed();
         }
     }
 
@@ -135,12 +248,11 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     {
         mBottomNav.setOnNavigationItemSelectedListener(item ->
         {
-            mMenuFlag = 0;
+            mMenuFlag = MENU_HOME;
             switch (item.getItemId())
             {
-                case R.id.navigation_home:
-                    mMenuFlag = 0;
-                    setTitle(MangaFeed.getInstance().getCurrentSource().getSourceName());
+                case R.id.menuBottomNavCatalog:
+                    mMenuFlag = MENU_HOME;
                     if (mInternetFlag)
                     {
                         setFragment(HomeFragment.TAG);
@@ -150,14 +262,12 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                         setFragment(OfflineFragment.TAG);
                     }
                     break;
-                case R.id.navigation_downloads:
-                    mMenuFlag = -1;
-                    setTitle(R.string.nav_bottom_title_download);
+                case R.id.menuBottomNavDownloads:
+                    mMenuFlag = MENU_DOWNLOADS;
                     setFragment(DownloadsFragment.TAG);
                     break;
-                case R.id.navigation_account:
-                    mMenuFlag = 2;
-                    setTitle(R.string.nav_bottom_title_account);
+                case R.id.menuBottomNavAccount:
+                    mMenuFlag = MENU_ACCOUNT;
                     setFragment(AccountFragment.TAG);
                     break;
                 default:
@@ -190,6 +300,39 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                                  .getInstance()
                                  .getCurrentSource()
                                  .getSourceName());
+            }
+            else if (o instanceof MangaSelectedEvent)
+            {
+                MangaSelectedEvent lEvent = (MangaSelectedEvent) o;
+                Fragment lMangaFragment = MangaInfoFragment.newInstance(lEvent.manga);
+
+                getSupportFragmentManager().beginTransaction()
+                                           .add(R.id.frameLayoutMasterContainer, lMangaFragment, MangaInfoFragment.TAG)
+                                           .addToBackStack(MangaInfoFragment.TAG)
+                                           .commit();
+
+                setTitle(lEvent.manga.title);
+                mMenuFlag = MENU_MANGA_INFO;
+                invalidateOptionsMenu();
+            }
+            else if (o instanceof MangaDownloadSelectEvent)
+            {
+                MangaInfoFragment lMangaFragment = (MangaInfoFragment) getSupportFragmentManager().findFragmentByTag(MangaInfoFragment.TAG);
+
+                if (mMenuFlag == MENU_MANGA_INFO)
+                {
+                    setTitle("Select Items");
+                    mMenuFlag = MENU_MANGA_DOWNLOAD;
+                    invalidateOptionsMenu();
+                    lMangaFragment.onDownloadViewStart(); // scroll to position 1 (under header)
+                }
+                else
+                {
+                    setTitle(((MangaDownloadSelectEvent) o).manga.title);
+                    mToolbar.setNavigationIcon(mDrawBack);
+                    mMenuFlag = MENU_MANGA_INFO;
+                    invalidateOptionsMenu();
+                }
             }
         }, throwable -> Log.e(TAG, throwable.getMessage()));
     }

@@ -4,15 +4,16 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FFA500</color>
 
-    <color name="Manga_white">#FFFFFFFF</color>
-    <color name="Manga_black">#FF000000</color>
-    <color name="Manga_off_white">#FFF5F5F5</color>
-    <color name="Manga_white_alpha50">#80FFFFFF</color>
-    <color name="Manga_charcoal">#FF222222</color>
-    <color name="Manga_red">#ffff3030</color>
-    <color name="Manga_yellow">#FFFFFC4C</color>
-    <color name="Manga_green">#FF2DED4D</color>
-    <color name="Manga_blue">#FF3F51B5</color>
-    <color name="Manga_gray">#FFC4C4C4</color>
+    <color name="manga_white">#FFFFFFFF</color>
+    <color name="manga_black">#FF000000</color>
+    <color name="manga_off_white">#FFF5F5F5</color>
+    <color name="manga_white_alpha50">#80FFFFFF</color>
+    <color name="manga_charcoal">#FF222222</color>
+    <color name="manga_light_charcoal">#282828</color>
+    <color name="manga_red">#ffff3030</color>
+    <color name="manga_yellow">#FFFFFC4C</color>
+    <color name="manga_green">#FF2DED4D</color>
+    <color name="manga_blue">#FF3F51B5</color>
+    <color name="manga_gray">#FFC4C4C4</color>
 
 </resources>

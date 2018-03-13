@@ -81,7 +81,7 @@ public class SourceRecycleAdapter extends RecyclerView.Adapter<RecyclerView.View
         @BindView(R.id.imageViewSourceBackground) ImageView mBackGround;
         @BindView(R.id.textViewSourceUrl) TextView mLink;
 
-        @BindColor(R.color.Manga_white) int mWhite;
+        @BindColor(R.color.manga_white) int mWhite;
         @BindColor(R.color.colorAccent) int mAccent;
 
         @BindDrawable(R.drawable.funmanga_logo) Drawable mFunMangaLogo;

@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@id/textViewUserName"
                 android:layout_marginStart="@dimen/baseline_margin_unit_16dp"
-                android:background="@color/Manga_black">
+                android:background="@color/manga_black">
 
                 <ImageView
                     android:id="@+id/imageviewAccountProfile"

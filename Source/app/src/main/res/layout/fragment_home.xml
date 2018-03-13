@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:background="@color/colorPrimary"
-        app:tabTextColor="@color/Manga_white"
+        app:tabTextColor="@color/manga_white"
         app:tabSelectedTextColor="@color/colorAccent"
         />
 

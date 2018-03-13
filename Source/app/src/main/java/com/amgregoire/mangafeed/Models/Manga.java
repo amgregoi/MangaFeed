@@ -13,6 +13,14 @@ public class Manga implements Parcelable
 {
     public final static String TAG = "MANGA";
 
+
+    public final static int UNFOLLOW = 0;
+    public final static int FOLLOW_READING = 1;
+    public final static int FOLLOW_COMPLETE = 2;
+    public final static int FOLLOW_ON_HOLD = 3;
+    public final static int FOLLOW_PLAN_TO_READ = 4;
+
+
     @Id(autoincrement = true)
     public Long _id;
 

@@ -1,14 +1,10 @@
 package com.amgregoire.mangafeed.Utils;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.amgregoire.mangafeed.MangaFeed;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 
 public class MangaLogger
@@ -48,7 +44,7 @@ public class MangaLogger
      * @param aError
      * @param aExtra
      */
-    public static void logError(String aTag, String aError, String aExtra)
+    public static void logError(String aTag, String aExtra, String aError)
     {
         String lMethod = Thread.currentThread().getStackTrace()[3].getMethodName();
         String lMessage = "ERROR >> " + MessageFormat.format("{0}.class >> {1}() > {2} > {3}", aTag, lMethod, aExtra, aError);

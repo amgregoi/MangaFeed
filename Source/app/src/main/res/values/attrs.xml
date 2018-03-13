@@ -3,4 +3,5 @@
     <attr name="background_color" format="reference|color"/>
     <attr name="background_color2" format="reference|color"/>
     <attr name="text_color" format="reference|color"/>
+    <attr name="text_color2" format="reference|color"/>
 </resources>

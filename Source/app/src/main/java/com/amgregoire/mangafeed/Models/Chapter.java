@@ -33,8 +33,11 @@ public class Chapter implements Parcelable
     @Property(nameInDb = "totalPages")
     private int totalPages;
 
+    public boolean mDownloadChecked = false;
+
     public Chapter()
     {
+
     }
 
     public Chapter(String aTitle)
@@ -89,10 +92,9 @@ public class Chapter implements Parcelable
         totalPages = aIn.readInt();
     }
 
-    @Generated(hash = 1033740971)
+    @Generated(hash = 1273349077)
     public Chapter(String url, String date, String mangaTitle, String chapterTitle, int chapterNumber,
-                   int currentPage, int totalPages)
-    {
+            int currentPage, int totalPages, boolean mDownloadChecked) {
         this.url = url;
         this.date = date;
         this.mangaTitle = mangaTitle;
@@ -100,6 +102,7 @@ public class Chapter implements Parcelable
         this.chapterNumber = chapterNumber;
         this.currentPage = currentPage;
         this.totalPages = totalPages;
+        this.mDownloadChecked = mDownloadChecked;
     }
 
     public static final Creator<Chapter> CREATOR = new Creator<Chapter>()
@@ -210,6 +213,14 @@ public class Chapter implements Parcelable
     public void setDate(String date)
     {
         this.date = date;
+    }
+
+    public boolean getMDownloadChecked() {
+        return this.mDownloadChecked;
+    }
+
+    public void setMDownloadChecked(boolean mDownloadChecked) {
+        this.mDownloadChecked = mDownloadChecked;
     }
 
 

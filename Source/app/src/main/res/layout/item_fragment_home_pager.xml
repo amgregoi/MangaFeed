@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:bubbleColor="@color/colorAccent"
-        app:bubbleTextColor="@color/Manga_white"
+        app:bubbleTextColor="@color/manga_white"
         app:handleColor="@color/colorAccent"
         app:hideScrollbar="true"
         app:showTrack="false"

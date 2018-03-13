@@ -6,24 +6,58 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:actionMenuTextColor">@color/manga_white</item>
+
     </style>
 
     <style name="AppTheme.Dark" parent="AppTheme">
         <!-- Add Dark theme styles -->
-        <item name="background_color">@color/Manga_charcoal</item>
-        <item name="background_color2">#282828</item>
-        <item name="text_color">@color/Manga_white</item>
+        <item name="background_color">@color/manga_charcoal</item>
+        <item name="background_color2">@color/manga_light_charcoal</item>
+        <item name="text_color">@color/manga_white</item>
+        <item name="text_color2">@color/manga_white_alpha50</item>
     </style>
 
     <style name="AppTheme.Light" parent="AppTheme">
         <!-- Add Dark theme styles -->
-        <item name="background_color">@color/Manga_off_white</item>
-        <item name="text_color">@color/Manga_charcoal</item>
+        <item name="background_color">@color/manga_off_white</item>
+        <item name="text_color">@color/manga_charcoal</item>
+        <item name="text_color2">@color/manga_light_charcoal</item>
     </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <style name="Widget.ViewPager.MangaFeed" parent="android:Widget">
         <item name="android:background">?attr/background_color</item>
     </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <style name="Widget.BottomNav.MangaFeed" parent="android:Widget">
         <item name="android:background">?attr/background_color2</item>

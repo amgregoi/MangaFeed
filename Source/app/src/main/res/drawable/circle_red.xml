@@ -3,7 +3,7 @@
     android:shape="oval">
 
     <solid
-        android:color="@color/Manga_red"/>
+        android:color="@color/manga_red"/>
 
     <size
         android:width="80dp"
