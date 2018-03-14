@@ -294,7 +294,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
          */
         public void recycleImage()
         {
-//            Glide.with(itemView.getContext()).clear(mImage);
+//            Glide.with(itemView.getContext()).clear(mBackgroundImage);
             mImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         }
 

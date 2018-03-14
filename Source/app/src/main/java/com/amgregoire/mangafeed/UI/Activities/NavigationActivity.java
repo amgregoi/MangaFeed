@@ -155,6 +155,8 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                 lMangaFragment.onRefreshInfo();
                 break;
             case R.id.menuMangaInfoDownload:
+                mMenuFlag = Menus.MENU_MANGA_DOWNLOAD;
+                invalidateOptionsMenu();
                 lMangaFragment.onDownloadViewEnabled();
                 break;
             case R.id.menuMangaInfoDownloadCancel:
@@ -329,7 +331,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                 {
                     mMenuFlag = Menus.MENU_MANGA_DOWNLOAD;
                     invalidateOptionsMenu();
-                    lMangaFragment.onDownloadViewStart(); // scroll to position 1 (under header)
+                    lMangaFragment.onDownloadViewEnabled();
                 }
                 else
                 {

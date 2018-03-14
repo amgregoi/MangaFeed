@@ -8,6 +8,7 @@ import com.amgregoire.mangafeed.UI.Mappers.Maps.InitViewMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.LifeCycleMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.PagerAdapterMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.RecycleAdapterMap;
+import com.amgregoire.mangafeed.UI.Mappers.Maps.SwipeRefreshMap;
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
@@ -38,10 +39,9 @@ public interface IHome
 
     }
 
-    interface HomeBaseMap extends RecycleAdapterMap, InitViewMap, ContextMap
+    interface HomeBaseMap extends RecycleAdapterMap, InitViewMap, ContextMap, SwipeRefreshMap
     {
         //Swipe layout functions
-        void startRefresh();
-        void stopRefresh();
+
     }
 }

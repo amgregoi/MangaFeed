@@ -4,6 +4,7 @@ import com.amgregoire.mangafeed.UI.Mappers.Maps.ContextMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.InitViewMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.LifeCycleMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.RecycleAdapterMap;
+import com.amgregoire.mangafeed.UI.Mappers.Maps.SwipeRefreshMap;
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
@@ -26,14 +27,16 @@ public interface IManga
         void onDownloadDownload();
 
         void onDownloadViewEnabled();
+
+        void onUpdateFollowStatus(int status);
     }
 
     /***
      * Mapper interfaces for the Home presenters to communicate with their views.
      *
      */
-    interface MangaMap extends RecycleAdapterMap, InitViewMap, ContextMap
+    interface MangaMap extends RecycleAdapterMap, InitViewMap, ContextMap, SwipeRefreshMap
     {
-
+        void setInitialFollowIcon(int followIcon, String readText);
     }
 }

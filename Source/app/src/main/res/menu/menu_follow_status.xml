@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menuFollowStatusUnfollow"
+        android:icon="@drawable/ic_heart_outline_white_24dp"
+        android:title="Unfollow"
+        app:showAsAction="ifRoom|collapseActionView" />
+
+    <item
+        android:id="@+id/menuFollowStatusOnHold"
+        android:icon="@drawable/ic_heart_white_24dp"
+        android:title="On-Hold"
+        app:showAsAction="ifRoom|collapseActionView" />
+    
+    <item
+        android:id="@+id/menuFollowStatusPlanToRead"
+        android:icon="@drawable/ic_heart_white_24dp"
+        android:title="Plan to Read"
+        app:showAsAction="ifRoom|collapseActionView" />
+
+    <item
+        android:id="@+id/menuFollowStatusCompleted"
+        android:icon="@drawable/ic_heart_white_24dp"
+        android:title="Completed"
+        app:showAsAction="ifRoom|collapseActionView" />
+
+    <item
+        android:id="@+id/menuFollowStatusReading"
+        android:icon="@drawable/ic_heart_white_24dp"
+        android:title="Reading"
+        app:showAsAction="ifRoom|collapseActionView" />
+
+</menu>

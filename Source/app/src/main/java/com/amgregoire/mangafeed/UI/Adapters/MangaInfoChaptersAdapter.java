@@ -16,10 +16,9 @@ import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.Utils.BusEvents.DownloadSelectAllEvent;
-import com.amgregoire.mangafeed.Utils.BusEvents.UpdateFollowStatusEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.StartDownloadEvent;
+import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -41,24 +40,27 @@ import butterknife.OnLongClick;
 public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
     public final static String TAG = MangaInfoChaptersAdapter.class.getSimpleName();
-    public final static int VIEW_HEADER = 1;
-    public final static int VIEW_CHAPTER = 2;
+
+    private final static int VIEW_HEADER = 1;
+    private final static int VIEW_CHAPTER = 2;
+    private final static int VIEW_CHAPTER_HEADER = 3;
 
     private List<Chapter> mChapterData;
+    private List<Chapter> mDownloadList;
     private Manga mManga;
-    private boolean mHasChapters = false;
     private boolean mDownloadViewFlag = false;
 
     public MangaInfoChaptersAdapter(List<Chapter> data, Manga manga)
     {
-        if (data.size() > 0)
-        {
-            mHasChapters = true;
-        }
-
         mChapterData = new ArrayList<>(data);
         mDownloadList = new ArrayList<>();
         mManga = manga;
+    }
+
+    public MangaInfoChaptersAdapter()
+    {
+        mChapterData = new ArrayList<>();
+        mManga = null;
     }
 
     @Override
@@ -70,6 +72,17 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             {
                 return VIEW_HEADER;
             }
+            else if (position == 1)
+            {
+                return VIEW_CHAPTER_HEADER;
+            }
+
+            return VIEW_CHAPTER;
+        }
+
+        if (position == 0)
+        {
+            return VIEW_CHAPTER_HEADER;
         }
 
         return VIEW_CHAPTER;
@@ -88,10 +101,15 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             lView = lInflater.inflate(R.layout.item_manga_info_header, parent, false);
             lHolder = new ViewHolderHeader(lView);
         }
-        else
+        else if (viewType == VIEW_CHAPTER)
         {
             lView = lInflater.inflate(R.layout.item_manga_info_chapter, parent, false);
             lHolder = new ViewHolderChapter(lView);
+        }
+        else
+        {
+            lView = lInflater.inflate(R.layout.item_manga_info_chapter_header, parent, false);
+            lHolder = new ViewHolderChapterHeader(lView);
         }
 
         return lHolder;
@@ -104,21 +122,36 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         {
             ((ViewHolderHeader) holder).initViews();
         }
-        else
+        else if (holder instanceof ViewHolderChapter)
         {
             ((ViewHolderChapter) holder).initViews(position - getHeaderCount());
+        }
+        else
+        {
+            ((ViewHolderChapterHeader) holder).initViews();
         }
     }
 
     @Override
     public int getItemCount()
     {
+        if (mManga == null)
+        {
+            return 0;
+        }
+
         return mChapterData.size() + getHeaderCount();
     }
 
+    /***
+     * This function returns the header offsets for the item count in the adapter.
+     * We will have atleast 1 header visible, and at most 2.
+     *
+     * @return the header count.
+     */
     private int getHeaderCount()
     {
-        return mDownloadViewFlag ? 0 : 1;
+        return (mDownloadViewFlag ? 0 : 1) + 1; // Always have Chapter Header,
     }
 
 
@@ -131,13 +164,9 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         @BindView(R.id.textViewMangaInfoDescription) TextView mDescription;
         @BindView(R.id.textViewMangaInfoHeaderStatus) TextView mStatus;
         @BindView(R.id.textViewMangaInfoHeaderGenres) TextView mGenres;
-        @BindView(R.id.textViewMangaInfoHeaderChapterLabel) TextView mChapterHeaderLabel;
         @BindView(R.id.textViewMangaInfoHeaderTitle) TextView mTitle;
-        @BindView(R.id.imageViewMangaInfoHeader) ImageView mImage;
-
-        // change continue reading to button instead of menu
-        @BindView(R.id.famMangaInfoHeaderContinueReading) FloatingActionButton mContinueReading;
-        @BindView(R.id.famMangaInfoHeaderFollow) FloatingActionMenu mFollowMenu;
+        @BindView(R.id.imageViewMangaInfoHeader) ImageView mBackgroundImage;
+        @BindView(R.id.imageViewMangaInfoHeader2) ImageView mMainImage;
 
         @BindColor(R.color.manga_red) int mRed;
         @BindColor(R.color.manga_blue) int mBlue;
@@ -163,6 +192,10 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             ButterKnife.bind(this, itemView);
         }
 
+        /***
+         * This function sets the views for the manga information header view holder when it is being bound.
+         *
+         */
         public void initViews()
         {
             mTitle.setText(mManga.title);
@@ -173,95 +206,12 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             mStatus.setText(mManga.status);
             mGenres.setText(mManga.genres);
 
-            if (!mHasChapters)
-            {
-                mChapterHeaderLabel.setVisibility(View.INVISIBLE);
-            }
-
             Picasso.get().load(mManga.image)
                    .error(mError)
                    .placeholder(mPlaceHolder)
                    .into(mImageTarget);
 
-            switch (mManga.following)
-            {
-                case Manga.FOLLOW_COMPLETE:
-                    onFABFollowCompleteClick();
-                    break;
-                case Manga.FOLLOW_ON_HOLD:
-                    onFABFollowOnHoldClick();
-                    break;
-                case Manga.FOLLOW_PLAN_TO_READ:
-                    onFABFollowPlanToReadClick();
-                    break;
-                case Manga.FOLLOW_READING:
-                    onFABFollowReadingClick();
-                    break;
-                case Manga.UNFOLLOW:
-                    onFABUnfollowReadingClick();
-                    break;
-            }
 
-        }
-
-        @OnClick(R.id.fabMangaInfoFollowComplete)
-        public void onFABFollowCompleteClick()
-        {
-            mManga.following = Manga.FOLLOW_COMPLETE;
-            MangaFeed.getInstance().rxBus().send(new UpdateFollowStatusEvent(mManga));
-            mFollowMenu.getMenuIconView().setImageDrawable(mFollowing);
-            mFollowMenu.setMenuButtonColorNormal(mGreen);
-            mContinueReading.setColorNormal(mGreen);
-            mFollowMenu.setMenuButtonLabelText(mCompleteText);
-            mFollowMenu.close(true);
-        }
-
-        @OnClick(R.id.fabMangaInfoFollowOnHold)
-        public void onFABFollowOnHoldClick()
-        {
-            mManga.following = Manga.FOLLOW_ON_HOLD;
-            MangaFeed.getInstance().rxBus().send(new UpdateFollowStatusEvent(mManga));
-            mFollowMenu.getMenuIconView().setImageDrawable(mFollowing);
-            mFollowMenu.setMenuButtonColorNormal(mRed);
-            mContinueReading.setColorNormal(mRed);
-            mFollowMenu.setMenuButtonLabelText(mOnHoldText);
-            mFollowMenu.close(true);
-        }
-
-        @OnClick(R.id.fabMangaInfoFollowPlanToRead)
-        public void onFABFollowPlanToReadClick()
-        {
-            mManga.following = Manga.FOLLOW_PLAN_TO_READ;
-            MangaFeed.getInstance().rxBus().send(new UpdateFollowStatusEvent(mManga));
-            mFollowMenu.getMenuIconView().setImageDrawable(mFollowing);
-            mFollowMenu.setMenuButtonColorNormal(mGray);
-            mContinueReading.setColorNormal(mGray);
-            mFollowMenu.setMenuButtonLabelText(mPlanToReadText);
-            mFollowMenu.close(true);
-        }
-
-        @OnClick(R.id.fabMangaInfoFollowReading)
-        public void onFABFollowReadingClick()
-        {
-            mManga.following = Manga.FOLLOW_READING;
-            MangaFeed.getInstance().rxBus().send(new UpdateFollowStatusEvent(mManga));
-            mFollowMenu.getMenuIconView().setImageDrawable(mFollowing);
-            mFollowMenu.setMenuButtonColorNormal(mBlue);
-            mContinueReading.setColorNormal(mBlue);
-            mFollowMenu.setMenuButtonLabelText(mReadingText);
-            mFollowMenu.close(true);
-        }
-
-        @OnClick(R.id.fabMangaInfoFollowUnFollow)
-        public void onFABUnfollowReadingClick()
-        {
-            mManga.following = Manga.UNFOLLOW;
-            MangaFeed.getInstance().rxBus().send(new UpdateFollowStatusEvent(mManga));
-            mFollowMenu.getMenuIconView().setImageDrawable(mDrawableNotFollowing);
-            mFollowMenu.setMenuButtonColorNormal(mAccent);
-            mContinueReading.setColorNormal(mAccent);
-            mFollowMenu.setMenuButtonLabelText(mUnfollowText);
-            mFollowMenu.close(true);
         }
 
         private final Target mImageTarget = new Target()
@@ -269,26 +219,58 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from)
             {
-                mImage.setImageBitmap(bitmap);
-                mImage.setScaleType(ImageView.ScaleType.FIT_XY);
+                mBackgroundImage.setImageBitmap(bitmap);
+                mBackgroundImage.setScaleType(ImageView.ScaleType.FIT_XY);
+
+                mMainImage.setImageBitmap(bitmap);
+                mMainImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
             }
 
             @Override
             public void onBitmapFailed(Exception e, Drawable errorDrawable)
             {
-                mImage.setImageDrawable(errorDrawable);
+                mMainImage.setBackgroundColor(mAccent); //TODO: might remove
+                mMainImage.setImageDrawable(errorDrawable);
             }
 
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable)
             {
-                mImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                mImage.setImageDrawable(placeHolderDrawable);
+                mMainImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                mMainImage.setImageDrawable(placeHolderDrawable);
+                mBackgroundImage.setImageDrawable(null);
+
             }
         };
     }
 
-    private List<Chapter> mDownloadList;
+    public class ViewHolderChapterHeader extends RecyclerView.ViewHolder
+    {
+        @BindView(R.id.textViewMangaInfoHeaderChapterLabel) TextView mChapterHeaderLabel;
+
+
+        public ViewHolderChapterHeader(View itemView)
+        {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+        /***
+         * This function sets the views for the chapter header view holder when it is being bound.
+         *
+         */
+        public void initViews()
+        {
+            if (mChapterData.size() == 0)
+            {
+                mChapterHeaderLabel.setText(R.string.manga_info_adapter_chapter_header_none);
+            }
+            else
+            {
+                mChapterHeaderLabel.setText(R.string.manga_info_adapter_chapter_header);
+            }
+        }
+    }
 
     public class ViewHolderChapter extends RecyclerView.ViewHolder
     {
@@ -311,7 +293,11 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             ButterKnife.bind(this, itemView);
         }
 
-
+        /***
+         * This function sets the views for the chapter view holder when it is being bound.
+         *
+         * @param position the layout position of the view.
+         */
         public void initViews(int position)
         {
             Chapter lChapter = mChapterData.get(position);
@@ -360,6 +346,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             else
             {
                 // Launch reader activity
+                MangaLogger.logError(TAG, "NOT IMPLEMENTED", "Launch reader activity");
             }
         }
 
@@ -371,8 +358,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             {
                 mDownloadList = new ArrayList<>();
                 mDownloadList.add(mChapterData.get(getAdapterPosition() - getHeaderCount()));
-
-                onDownloadViewEnabled();
+                MangaFeed.getInstance().rxBus().send(new DownloadSelectAllEvent(mManga));
 
                 return true;
             }
@@ -388,6 +374,13 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             // download chapter
         }
 
+        /***
+         * This function returns the correct sets of icons for the chapter items, based on user settings and
+         * the state of each chapter item.
+         *
+         * @param checked the current state of the chapter item.
+         * @return the requested drawable.
+         */
         private Drawable iconFactory(boolean checked)
         {
             if (SharedPrefs.getLayoutTheme())
@@ -409,6 +402,12 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         }
     }
 
+    /***
+     * This function toggles the selector option for each chapter, either adding or removing all chapters
+     * to the download list.
+     *
+     * @param isAll a flag specifying to check or un-check all items.
+     */
     public void onSelectAllOrNone(boolean isAll)
     {
         if (isAll)
@@ -423,6 +422,10 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         notifyDataSetChanged();
     }
 
+    /***
+     * This function exits the download view, and returns the adapter to its normal state.
+     *
+     */
     public void onDownloadCancel()
     {
         mDownloadViewFlag = false;
@@ -431,12 +434,29 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         MangaFeed.getInstance().rxBus().send(new DownloadSelectAllEvent(mManga));
     }
 
+    /***
+     * This function triggers the start download event for the selected chapters.
+     *
+     */
     public void onDownloadDownload()
     {
-        // TODO - implement download service
-        // Send RX Bus event to signal start of download, and pass in chapter list to event
+        if (mDownloadList.size() > 0)
+        {
+            MangaFeed.getInstance().rxBus().send(new StartDownloadEvent(mDownloadList));
+        }
+        else
+        {
+            MangaFeed.getInstance().makeToastShort("No items have been selected");
+        }
     }
 
+    /***
+     * This function retrieves the adapter position of the first item that caused the download view to be toggled.
+     * This is done via a long press click on a chapter, or from the overflow window.  If it did not occur from
+     * a long press we return the first chapter position.
+     *
+     * @return adapter position of the first download selection.
+     */
     public int getFirstDownloadScrollPosition()
     {
         if (mDownloadList.size() == 0)
@@ -449,10 +469,18 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         }
     }
 
+    /***
+     * This function enables the adapters mass download select view.
+     *
+     */
     public void onDownloadViewEnabled()
     {
-        mDownloadViewFlag = true; // Set it to true, after getting toolbar for downloads working
-        MangaFeed.getInstance().rxBus().send(new DownloadSelectAllEvent(mManga));
+        if (mDownloadList.size() > 1)
+        {
+            mDownloadList.clear();
+        }
+
+        mDownloadViewFlag = true;
         notifyDataSetChanged();
     }
 

@@ -3,19 +3,25 @@ package com.amgregoire.mangafeed.UI.Fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.amgregoire.mangafeed.UI.Adapters.MangaInfoChaptersAdapter;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
+import com.amgregoire.mangafeed.UI.Adapters.MangaInfoChaptersAdapter;
 import com.amgregoire.mangafeed.UI.Mappers.IManga;
 import com.amgregoire.mangafeed.UI.Presenters.MangaInfoPres;
+import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.l4digital.fastscroll.FastScrollRecyclerView;
 
+import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -29,6 +35,14 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
     public final static String MANGA_KEY = TAG + "MANGA";
 
     @BindView(R.id.recyclerViewMangaInfo) FastScrollRecyclerView mRecyclerView;
+    @BindView(R.id.bottomNavigationMangaInfo) BottomNavigationView mBottomNav;
+    @BindView(R.id.swipeRefreshLayoutMangaInfo) SwipeRefreshLayout mSwipeLayout;
+
+    @BindColor(R.color.manga_blue) int mColorBlue;
+    @BindColor(R.color.manga_red) int mColorRed;
+    @BindColor(R.color.manga_green) int mColorGreen;
+    @BindColor(R.color.manga_gray) int mColorGray;
+    @BindColor(R.color.manga_white) int mColorWhite;
 
     private IManga.MangaPres mPresenter;
 
@@ -58,7 +72,16 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
     public void initViews()
     {
         // do stuff
+        setupBottomNav();
     }
+
+    @Override
+    public void setInitialFollowIcon(int followIcon, String readText)
+    {
+        mBottomNav.getMenu().findItem(R.id.menuMangaInfoBottomNavFollow).setIcon(followIcon);
+        mBottomNav.getMenu().findItem(R.id.menuMangaInfoBottomContinueReading).setTitle(readText);
+    }
+
 
     @Override
     public void registerAdapter(RecyclerView.Adapter adapter, RecyclerView.LayoutManager manager)
@@ -67,37 +90,148 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
         mRecyclerView.setAdapter(adapter);
     }
 
+    /***
+     * This function tells the presenter the (un)select all button has been selected.
+     *
+     * @param isAll
+     */
     public void onSelectAllOrNone(boolean isAll)
     {
         mPresenter.onSelectAllOrNone(isAll);
-        onDownloadViewStart();
     }
 
+    /***
+     * This function makes the recyclerview scroll to the selected position when the download view is enabled.
+     *
+     */
     public void onDownloadViewStart()
     {
-        int lPosition = ((MangaInfoChaptersAdapter)mRecyclerView.getAdapter()).getFirstDownloadScrollPosition();
+        int lPosition = ((MangaInfoChaptersAdapter) mRecyclerView.getAdapter()).getFirstDownloadScrollPosition();
         mRecyclerView.scrollToPosition(lPosition);
     }
 
+    /***
+     * This function tells the presenter the cancel button has been selected.
+     *
+     */
     public void onDownloadCancel()
     {
         mPresenter.onDownloadCancel();
+        mBottomNav.setVisibility(View.VISIBLE);
     }
 
+    /***
+     * This function tells the presenter the download button has been selected.
+     *
+     */
     public void onDownloadDownload()
     {
         mPresenter.onDownloadDownload();
     }
 
+    /***
+     * This function tells the presenter to refresh the information view.
+     *
+     */
     public void onRefreshInfo()
     {
         mPresenter.onRefreshInfo();
     }
 
+    /***
+     * This function tells the presenter to enable Download view.
+     *
+     */
     public void onDownloadViewEnabled()
     {
         mPresenter.onDownloadViewEnabled();
+        mBottomNav.setVisibility(View.GONE);
+        onDownloadViewStart();
+    }
+
+    /***
+     * This function sets up the bottom navigation view interactions.
+     *
+     */
+    private void setupBottomNav()
+    {
+        mBottomNav.setOnNavigationItemSelectedListener((MenuItem item) ->
+        {
+            switch (item.getItemId())
+            {
+                case R.id.menuMangaInfoBottomNavFollow:
+                    // pop up menu
+                    try
+                    {
+                        PopupMenu lPopupMenu = new PopupMenu(getContext(), mBottomNav);
+                        lPopupMenu.getMenuInflater()
+                                  .inflate(R.menu.menu_follow_status, lPopupMenu.getMenu());
+
+                        lPopupMenu.setOnMenuItemClickListener(popupItem ->
+                        {
+                            int lStatus;
+
+                            switch (popupItem.getItemId())
+                            {
+                                case R.id.menuFollowStatusReading:
+                                    item.setTitle("Reading");
+                                    item.setIcon(R.drawable.ic_heart_white_24dp);
+                                    lStatus = Manga.FOLLOW_READING;
+                                    break;
+                                case R.id.menuFollowStatusCompleted:
+                                    item.setTitle("Completed");
+                                    item.setIcon(R.drawable.ic_heart_white_24dp);
+                                    lStatus = Manga.FOLLOW_COMPLETE;
+                                    break;
+                                case R.id.menuFollowStatusOnHold:
+                                    item.setTitle("On-Hold");
+                                    item.setIcon(R.drawable.ic_heart_white_24dp);
+                                    lStatus = Manga.FOLLOW_ON_HOLD;
+                                    break;
+                                case R.id.menuFollowStatusPlanToRead:
+                                    item.setTitle("Plan to Read");
+                                    item.setIcon(R.drawable.ic_heart_white_24dp);
+                                    lStatus = Manga.FOLLOW_PLAN_TO_READ;
+                                    break;
+                                default:
+                                    item.setTitle("Follow");
+                                    item.setIcon(R.drawable.ic_heart_outline_white_24dp);
+                                    lStatus = Manga.UNFOLLOW;
+                                    break;
+                            }
+
+                            mPresenter.onUpdateFollowStatus(lStatus);
+
+                            return true;
+                        });
+
+                        lPopupMenu.show(); //showing lPopupMenu menu
+                    }
+                    catch (NullPointerException npe)
+                    {
+                        MangaLogger.logError(TAG, "Context was null", npe.getMessage());
+                    }
+                    return true;
+                case R.id.menuMangaInfoBottomContinueReading:
+                    // Start Reading from latest chapter
+                    return true;
+            }
+            return false;
+        });
     }
 
 
+    @Override
+    public void startRefresh()
+    {
+        mSwipeLayout.setEnabled(true);
+        mSwipeLayout.setRefreshing(true);
+    }
+
+    @Override
+    public void stopRefresh()
+    {
+        mSwipeLayout.setRefreshing(false);
+        mSwipeLayout.setEnabled(false);
+    }
 }

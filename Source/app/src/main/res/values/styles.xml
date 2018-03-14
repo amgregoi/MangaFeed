@@ -2,17 +2,13 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:actionMenuTextColor">@color/manga_white</item>
-        <item name="android:actionOverflowMenuStyle">@color/manga_white</item>
-
+        <item name="android:textColorSecondary">@android:color/white</item>
     </style>
 
     <style name="AppTheme.Dark" parent="AppTheme">
-        <!-- Add Dark theme styles -->
         <item name="background_color">@color/manga_charcoal</item>
         <item name="background_color2">@color/manga_light_charcoal</item>
         <item name="text_color">@color/manga_white</item>
@@ -20,48 +16,19 @@
     </style>
 
     <style name="AppTheme.Light" parent="AppTheme">
-        <!-- Add Dark theme styles -->
         <item name="background_color">@color/manga_off_white</item>
         <item name="text_color">@color/manga_charcoal</item>
         <item name="text_color2">@color/manga_light_charcoal</item>
     </style>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <style name="Widget.ViewPager.MangaFeed" parent="android:Widget">
+    <style name="MangaFeed.Widget.ViewPager" parent="android:Widget">
         <item name="android:background">?attr/background_color</item>
     </style>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <style name="Widget.BottomNav.MangaFeed" parent="android:Widget">
+    <style name="MangaFeed.Widget.BottomNav" parent="android:Widget">
         <item name="android:background">?attr/background_color2</item>
     </style>
+
+
 
 </resources>

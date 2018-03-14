@@ -17,7 +17,7 @@
     <android.support.v4.view.ViewPager
         android:layout_below="@id/tabLayoutHome"
         android:id="@+id/viewPagerHome"
-        style="@style/Widget.ViewPager.MangaFeed"
+        style="@style/MangaFeed.Widget.ViewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

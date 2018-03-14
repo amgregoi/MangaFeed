@@ -27,6 +27,8 @@
     <string name="manga_info_header_fab_plan_to_read">Plan to read</string>
     <string name="manga_info_header_fab_complete">Completed</string>
     <string name="manga_info_header_fab_reading">Reading</string>
+    <string name="manga_info_adapter_chapter_header_none">No chapters available</string>
+    <string name="manga_info_adapter_chapter_header">Chapters</string>
 
     <string-array name="sources_array">
         <item>ReadLight</item>

@@ -1,18 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="fill_parent">
 
-    <com.l4digital.fastscroll.FastScrollRecyclerView
-        android:id="@+id/recyclerViewMangaInfo"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayoutMangaInfo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:bubbleColor="@color/colorAccent"
-        app:bubbleTextColor="@color/manga_white"
-        app:handleColor="@color/colorAccent"
-        app:hideScrollbar="true"
-        app:showTrack="false"
-        app:trackColor="@color/colorAccent"/>
+        android:background="?attr/background_color"
+        android:layout_above="@id/bottomNavigationMangaInfo">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.l4digital.fastscroll.FastScrollRecyclerView
+                android:id="@+id/recyclerViewMangaInfo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:bubbleColor="@color/colorAccent"
+                app:bubbleTextColor="@color/manga_white"
+                app:handleColor="@color/colorAccent"
+                app:hideScrollbar="true"
+                app:showTrack="false"
+                app:trackColor="@color/colorAccent" />
+
+        </RelativeLayout>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottomNavigationMangaInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/background_color2"
+        app:itemIconTint="@color/manga_white"
+        app:itemTextColor="@color/manga_white"
+        app:menu="@menu/menu_manga_info_bottom" />
 
 </RelativeLayout>

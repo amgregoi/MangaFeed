@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menuMangaInfoBottomNavFollow"
+        android:icon="@drawable/ic_heart_outline_white_24dp"
+        android:title="Follow" />
+
+    <item
+        android:id="@+id/menuMangaInfoBottomContinueReading"
+        android:icon="@drawable/ic_play_white_24dp"
+        android:title="Read"/>
+
+</menu>
