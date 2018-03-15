@@ -228,7 +228,7 @@ public class FunManga extends SourceManga
     public List<Chapter> parseResponseToChapters(RequestWrapper request, String responseBody)
     {
         Document lParsedDocument = Jsoup.parse(responseBody);
-        List<Chapter> lChapterList = resolveChaptersFromParsedDocument(lParsedDocument, request.getMangaTitle());
+        List<Chapter> lChapterList = resolveChaptersFromParsedDocument(lParsedDocument, request);
 
         return lChapterList;
     }
@@ -318,7 +318,7 @@ public class FunManga extends SourceManga
      * @param title
      * @return
      */
-    private List<Chapter> resolveChaptersFromParsedDocument(final Document parsedDocument, final String title)
+    private List<Chapter> resolveChaptersFromParsedDocument(final Document parsedDocument, final RequestWrapper request)
     {
         List<Chapter> lChapterList = new ArrayList<>();
         Elements lChapterElements = parsedDocument.select("ul.chapter-list").select("li");
@@ -332,7 +332,7 @@ public class FunManga extends SourceManga
             lChapterTitle = iChapterElement.select("span").first().text();
             lChapterDate = iChapterElement.select("span").get(1).text();
 
-            lChapterList.add(new Chapter(lChapterUrl, title, lChapterTitle, lChapterDate, lNumChapters));
+            lChapterList.add(new Chapter(lChapterUrl, request.getMangaTitle(), lChapterTitle, lChapterDate, lNumChapters, request.getMangaUrl()));
 
             lNumChapters--;
         }

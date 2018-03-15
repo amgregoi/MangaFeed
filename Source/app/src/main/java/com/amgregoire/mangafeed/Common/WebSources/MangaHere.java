@@ -183,7 +183,7 @@ public class MangaHere extends SourceManga
                                            .select("ul")
                                            .not("ul.tab_comment.clearfix");
         lParsedDocument = Jsoup.parse(lUpdates.toString());
-        List<Chapter> lChapterList = resolveChaptersFromParsedDocument(lParsedDocument, request.getMangaTitle());
+        List<Chapter> lChapterList = resolveChaptersFromParsedDocument(lParsedDocument, request);
 
         return lChapterList;
     }
@@ -226,7 +226,7 @@ public class MangaHere extends SourceManga
      * @param title
      * @return
      */
-    private List<Chapter> resolveChaptersFromParsedDocument(final Document parsedDocument, final String title)
+    private List<Chapter> resolveChaptersFromParsedDocument(final Document parsedDocument, final RequestWrapper request)
     {
         List<Chapter> lChapterList = new ArrayList<>();
         Elements lChapterElements = parsedDocument.getElementsByTag("li");
@@ -238,13 +238,13 @@ public class MangaHere extends SourceManga
             String lChapterTitle = iChapterElement.select("span.left").text();
             String lChapterDate = iChapterElement.select("span.right").text();
 
-            Chapter lCurChapter = new Chapter(lChapterUrl, title, lChapterTitle, lChapterDate, lNumChapters);
+            Chapter lCurChapter = new Chapter(lChapterUrl, request.getMangaTitle(), lChapterTitle, lChapterDate, lNumChapters, request.getMangaUrl());
             lNumChapters--;
 
             lChapterList.add(lCurChapter);
         }
 
-        MangaLogger.logInfo(TAG, " Finished parsing chapter list (" + title + ")");
+        MangaLogger.logInfo(TAG, " Finished parsing chapter list (" + request.getMangaTitle() + ")");
         return lChapterList;
     }
 

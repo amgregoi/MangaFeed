@@ -6,11 +6,15 @@ import android.os.Parcelable;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Transient;
 
 @Entity(nameInDb = "Chapter")
 public class Chapter implements Parcelable
 {
     public final static String TAG = "CHAPTER";
+
+    public final static int DOWNLOAD_STATUS_DOWNLOADING = 1;
+    public final static int DOWNLOAD_STATUS_FINISHED = 2;
 
     @Property(nameInDb = "url")
     public String url;
@@ -20,6 +24,9 @@ public class Chapter implements Parcelable
 
     @Property(nameInDb = "mangaTitle")
     public String mangaTitle;
+
+    @Property(nameInDb = "mangaUrl")
+    public String mangaUrl;
 
     @Property(nameInDb = "chapterTitle")
     public String chapterTitle;
@@ -31,8 +38,13 @@ public class Chapter implements Parcelable
     public int currentPage;
 
     @Property(nameInDb = "totalPages")
-    private int totalPages;
+    public int totalPages;
 
+    @Property(nameInDb = "downloadStatus")
+    public int downloadStatus;
+
+
+    @Transient
     public boolean mDownloadChecked = false;
 
     public Chapter()
@@ -40,27 +52,30 @@ public class Chapter implements Parcelable
 
     }
 
-    public Chapter(String aTitle)
+    public Chapter(String aTitle, String url)
     {
         mangaTitle = aTitle;
         chapterTitle = aTitle;
+        mangaUrl = url;
     }
 
-    public Chapter(String aUrl, String aMangaTitle, String aChapterTitle, String aDate, int aNum)
+    public Chapter(String aUrl, String aMangaTitle, String aChapterTitle, String aDate, int aNum, String aMangaUrl)
     {
         url = aUrl;
         date = aDate;
         mangaTitle = aMangaTitle;
         chapterTitle = aChapterTitle;
         chapterNumber = aNum;
+        mangaUrl = aMangaUrl;
     }
 
-    public Chapter(String aUrl, String aMangaTitle, String aChapterTitle, String aDate)
+    public Chapter(String aUrl, String aMangaTitle, String aChapterTitle, String aDate, String aMangaUrl)
     {
         url = aUrl;
         date = aDate;
         mangaTitle = aMangaTitle;
         chapterTitle = aChapterTitle;
+        mangaUrl = aMangaUrl;
     }
 
     @Override
@@ -92,17 +107,18 @@ public class Chapter implements Parcelable
         totalPages = aIn.readInt();
     }
 
-    @Generated(hash = 1273349077)
-    public Chapter(String url, String date, String mangaTitle, String chapterTitle, int chapterNumber,
-            int currentPage, int totalPages, boolean mDownloadChecked) {
+    @Generated(hash = 1911873980)
+    public Chapter(String url, String date, String mangaTitle, String mangaUrl, String chapterTitle, int chapterNumber,
+            int currentPage, int totalPages, int downloadStatus) {
         this.url = url;
         this.date = date;
         this.mangaTitle = mangaTitle;
+        this.mangaUrl = mangaUrl;
         this.chapterTitle = chapterTitle;
         this.chapterNumber = chapterNumber;
         this.currentPage = currentPage;
         this.totalPages = totalPages;
-        this.mDownloadChecked = mDownloadChecked;
+        this.downloadStatus = downloadStatus;
     }
 
     public static final Creator<Chapter> CREATOR = new Creator<Chapter>()
@@ -221,6 +237,22 @@ public class Chapter implements Parcelable
 
     public void setMDownloadChecked(boolean mDownloadChecked) {
         this.mDownloadChecked = mDownloadChecked;
+    }
+
+    public String getMangaUrl() {
+        return this.mangaUrl;
+    }
+
+    public void setMangaUrl(String mangaUrl) {
+        this.mangaUrl = mangaUrl;
+    }
+
+    public int getDownloadStatus() {
+        return this.downloadStatus;
+    }
+
+    public void setDownloadStatus(int downloadStatus) {
+        this.downloadStatus = downloadStatus;
     }
 
 

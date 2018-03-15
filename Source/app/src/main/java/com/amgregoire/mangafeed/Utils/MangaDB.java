@@ -1,6 +1,7 @@
 package com.amgregoire.mangafeed.Utils;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.Observable;
@@ -230,6 +232,61 @@ public class MangaDB extends SQLiteOpenHelper
                        .unique();
     }
 
+
+    public Observable<List<Manga>> getMangaWithDownloadedChapters()
+    {
+
+
+        return Observable.create((ObservableEmitter<List<Manga>> subscriber) ->
+        {
+            try
+            {
+                List<String> lUrls = new ArrayList<>();
+                try (Cursor cursor = getReadableDatabase().rawQuery("SELECT DISTINCT mangaUrl FROM Chapter WHERE downloadStatus = 2", new String[]{}))
+                {
+                    int index = cursor.getColumnIndex("mangaUrl");
+                    while (cursor.moveToNext())
+                    {
+                        lUrls.add(cursor.getString(index));
+                    }
+                }
+
+                // Return list of manga specified by the distinct list of mangaUrls contained in the downloaded chapters
+                subscriber.onNext(mSession.getMangaDao()
+                                          .queryBuilder()
+                                          .where(MangaDao.Properties.Link.in(lUrls))
+                                          .list());
+                subscriber.onComplete();
+            }
+            catch (Exception aException)
+            {
+                subscriber.onError(aException);
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<List<Chapter>> getSavedChapters(Manga manga)
+    {
+        return Observable.create((ObservableEmitter<List<Chapter>> subscriber) ->
+        {
+        try
+        {
+            subscriber.onNext(mSession.getChapterDao()
+                                      .queryBuilder()
+                                      .where(ChapterDao.Properties.MangaUrl.eq(manga.getMangaURL()))
+                                      .list());
+            subscriber.onComplete();
+        }
+        catch (Exception aException)
+        {
+            subscriber.onError(aException);
+        }
+    }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+
+}
+
+
+
     /**
      * This function retrieves the list of followed items from the database.
      *
@@ -335,7 +392,8 @@ public class MangaDB extends SQLiteOpenHelper
 
                 ArrayList<Manga> lMangaList = new ArrayList<>(mSession.getMangaDao()
                                                                       .queryBuilder()
-                                                                      .where(MangaDao.Properties.Source.eq(SharedPrefs.getSavedSource()))
+                                                                      .where(MangaDao.Properties.Source
+                                                                              .eq(SharedPrefs.getSavedSource()))
                                                                       .list());
 
                 subscriber.onNext(lMangaList);

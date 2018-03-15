@@ -237,7 +237,7 @@ public class ReadLight extends SourceNovel
             {
                 String lUrl = iChapter.attr("href");
                 String lChapterTitle = iChapter.text();
-                lChapterList.add(new Chapter(lUrl, request.getMangaTitle(), lChapterTitle, "-", lCount));
+                lChapterList.add(new Chapter(lUrl, request.getMangaTitle(), lChapterTitle, "-", lCount, request.getMangaUrl()));
                 lCount++;
             }
         }

@@ -38,9 +38,9 @@ public class DownloadManager
     private Chapter mChapter;
     private SourceBase mSource;
 
-    DownloadUpdater mUpdater;
-    List<String> mChapterUrls;
-    List<Target> mTargets;
+    private DownloadUpdater mUpdater;
+    private List<String> mChapterUrls;
+    private List<Target> mTargets;
 
     private File mChapterDirectory;
 
@@ -61,6 +61,8 @@ public class DownloadManager
      */
     public void startDownload()
     {
+        mChapter.downloadStatus = 2;
+        MangaDB.getInstance().putChapter(mChapter);
         getChapterPages();
     }
 
@@ -87,8 +89,7 @@ public class DownloadManager
                                                                              .append("/")
                                                                              .append(mSource.getSourceName())
                                                                              .append("/")
-                                                                             .append(mChapter.mangaTitle
-                                                                                     .replaceAll("\\W", ""))
+                                                                             .append(mChapter.mangaTitle.replaceAll("\\W", ""))
                                                                              .append("/")
                                                                              .append(mChapter.getChapterNumber())
                                                                              .append("/")
@@ -97,15 +98,6 @@ public class DownloadManager
         mChapterDirectory.mkdirs();
 
     }
-
-    /***
-     * This
-     */
-    public void getNovelPages()
-    {
-
-    }
-
 
     /***
      * This function retrieves the page urls for the download managers chapter.

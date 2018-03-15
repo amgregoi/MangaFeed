@@ -24,7 +24,7 @@ import java.util.List;
 public class MangaEden extends SourceManga
 {
     final public static String TAG = MangaEden.class.getSimpleName();
-    final public static String URL = "mangaeden";
+    final public static String URL = "funmanga";
 
     final private String SourceKey = "MangaEden";
     final private String mBaseUrl = "http://www.mangaeden.com";
@@ -184,7 +184,7 @@ public class MangaEden extends SourceManga
         {
             JSONObject lParsedJsonObject = new JSONObject(responseBody);
 
-            lChapterList = resolveChaptersFromParsedJson(lParsedJsonObject);
+            lChapterList = resolveChaptersFromParsedJson(lParsedJsonObject, request);
             lChapterList = setNumberForChapterList(lChapterList);
         }
         catch (JSONException aException)
@@ -241,7 +241,7 @@ public class MangaEden extends SourceManga
      * @return
      * @throws JSONException
      */
-    private List<Chapter> resolveChaptersFromParsedJson(JSONObject aParsedJson) throws JSONException
+    private List<Chapter> resolveChaptersFromParsedJson(JSONObject aParsedJson, RequestWrapper request) throws JSONException
     {
         List<Chapter> lChapterList = new ArrayList<>();
 
@@ -251,7 +251,7 @@ public class MangaEden extends SourceManga
         {
             JSONArray lCurrentChapterArray = lChapterArrayNodes.getJSONArray(i);
 
-            Chapter lCurrentChapter = constructChapterFromJSONArray(lCurrentChapterArray, lMangaTitle);
+            Chapter lCurrentChapter = constructChapterFromJSONArray(lCurrentChapterArray, request);
 
             lChapterList.add(lCurrentChapter);
         }
@@ -283,16 +283,15 @@ public class MangaEden extends SourceManga
      * Parent - resolveChaptersFromParsedJson();
      *
      * @param aChapterNode
-     * @param aMangaName
      * @return
      * @throws JSONException
      */
-    private Chapter constructChapterFromJSONArray(JSONArray aChapterNode, String aMangaName) throws JSONException
+    private Chapter constructChapterFromJSONArray(JSONArray aChapterNode, RequestWrapper request) throws JSONException
     {
-        Chapter lNewChapter = new Chapter(aMangaName);
+        Chapter lNewChapter = new Chapter(request.getMangaTitle(), request.getMangaUrl());
 
         lNewChapter.setChapterUrl("https://www.mangaeden.com/api/chapter/" + aChapterNode.getString(3) + "/");
-        lNewChapter.setChapterTitle(aMangaName + " " + aChapterNode.getDouble(0));
+        lNewChapter.setChapterTitle(request.getMangaTitle() + " " + aChapterNode.getDouble(0));
 
         Date lDate = new Date(aChapterNode.getLong(1) * 1000);
         lNewChapter.setChapterDate(lDate.toString());
