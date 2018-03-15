@@ -21,6 +21,7 @@ import java.util.List;
 public class MangaHere extends SourceManga
 {
     final public static String TAG = MangaHere.class.getSimpleName();
+    final public static String URL = "mangahere";
 
     final private String SourceKey = "MangaHere";
     final private String mBaseUrl = "http://mangahere.co/";

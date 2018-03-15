@@ -21,52 +21,54 @@ import java.util.List;
 public class FunManga extends SourceManga
 {
     final public static String TAG = FunManga.class.getSimpleName();
+    final public static String URL = "funmanga";
 
     final private String SourceKey = "FunManga";
-    final private String mBaseUrl = "http://funmanga.com/";
     final private String mUpdatesUrl = "http://funmanga.com/latest-chapters";
     final private String mCatalogUrl = "http://funmanga.com/manga-list/";
-    final private String mGenres[] = {"Joy",
-            "Action",
-            "Adult",
-            "Adventure",
-            "Comedy",
-            "Doujinshi",
-            "Drama",
-            "Ecchi",
-            "Fantasy",
-            "Gender Bender",
-            "Harem",
-            "Historical",
-            "Horror",
-            "Josei",
-            "Lolicon",
-            "Manga",
-            "Manhua",
-            "Manhwa",
-            "Martial Arts",
-            "Mature",
-            "Mecha",
-            "Mystery",
-            "One shot",
-            "Psychological",
-            "Romance",
-            "School Life",
-            "Sci fi",
-            "Seinen",
-            "Shotacon",
-            "Shoujo",
-            "Shoujo Ai",
-            "Shounen",
-            "Shounen Ai",
-            "Slice of Life",
-            "Smut",
-            "Sports",
-            "Supernatural",
-            "Tragedy",
-            "Yaoi",
-            "Yuri"
-    };
+    final private String mGenres[] =
+            {
+                    "Joy",
+                    "Action",
+                    "Adult",
+                    "Adventure",
+                    "Comedy",
+                    "Doujinshi",
+                    "Drama",
+                    "Ecchi",
+                    "Fantasy",
+                    "Gender Bender",
+                    "Harem",
+                    "Historical",
+                    "Horror",
+                    "Josei",
+                    "Lolicon",
+                    "Manga",
+                    "Manhua",
+                    "Manhwa",
+                    "Martial Arts",
+                    "Mature",
+                    "Mecha",
+                    "Mystery",
+                    "One shot",
+                    "Psychological",
+                    "Romance",
+                    "School Life",
+                    "Sci fi",
+                    "Seinen",
+                    "Shotacon",
+                    "Shoujo",
+                    "Shoujo Ai",
+                    "Shounen",
+                    "Shounen Ai",
+                    "Slice of Life",
+                    "Smut",
+                    "Sports",
+                    "Supernatural",
+                    "Tragedy",
+                    "Yaoi",
+                    "Yuri"
+            };
 
 
     @Override
@@ -132,7 +134,8 @@ public class FunManga extends SourceManga
                                 .subscribe
                                         (
                                                 manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
-                                                throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage())
+                                                throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable
+                                                        .getMessage())
                                         );
                     }
                 }
@@ -284,7 +287,7 @@ public class FunManga extends SourceManga
                                 lDatabase.putManga(lNewManga);
                                 // update new entry info
                                 MangaFeed.getInstance()
-                                         .getSource(TAG)
+                                         .getSourceByTag(TAG)
                                          .updateMangaObservable(new RequestWrapper(lNewManga))
                                          .subscribe(
                                                  manga -> MangaLogger.logInfo(TAG, "Finished updating (" + TAG + ") " + manga.title),

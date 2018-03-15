@@ -1,6 +1,7 @@
 package com.amgregoire.mangafeed.UI.Activities;
 
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -23,9 +24,10 @@ import com.amgregoire.mangafeed.UI.Fragments.DownloadsFragment;
 import com.amgregoire.mangafeed.UI.Fragments.HomeFragment;
 import com.amgregoire.mangafeed.UI.Fragments.MangaInfoFragment;
 import com.amgregoire.mangafeed.UI.Fragments.OfflineFragment;
-import com.amgregoire.mangafeed.Utils.BusEvents.DownloadSelectAllEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.MangaSelectedEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.ToggleDownloadViewEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateSourceEvent;
+import com.amgregoire.mangafeed.Utils.DownloadManager;
 
 import butterknife.BindDrawable;
 import butterknife.BindView;
@@ -155,6 +157,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                 lMangaFragment.onRefreshInfo();
                 break;
             case R.id.menuMangaInfoDownload:
+
                 mMenuFlag = Menus.MENU_MANGA_DOWNLOAD;
                 invalidateOptionsMenu();
                 lMangaFragment.onDownloadViewEnabled();
@@ -163,10 +166,12 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                 lMangaFragment.onDownloadCancel();
                 break;
             case R.id.menuMangaInfoDownloadDownload:
-                lMangaFragment.onDownloadDownload();
-                mMenuFlag = Menus.MENU_MANGA_INFO;
-                invalidateOptionsMenu();
-                MangaFeed.getInstance().makeToastShort("Starting downloads now");
+                if (DownloadManager.isStoragePermissionGranted(this))
+                {
+                    lMangaFragment.onDownloadDownload(); // start download
+                    lMangaFragment.onDownloadCancel(); // exit download view
+                    MangaFeed.getInstance().makeToastShort("Starting downloads now");
+                }
                 break;
             case android.R.id.home:
                 if (mMenuFlag == Menus.MENU_MANGA_INFO)
@@ -195,6 +200,16 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         return true;
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+        {
+            Log.v(TAG, "Permission: " + permissions[0] + "was " + grantResults[0]);
+            MangaFeed.getInstance().makeToastShort("You may now download chapters!");
+        }
+    }
 
     @Override
     public void hasInternet()
@@ -323,7 +338,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                 mMenuFlag = Menus.MENU_MANGA_INFO;
                 invalidateOptionsMenu();
             }
-            else if (o instanceof DownloadSelectAllEvent)
+            else if (o instanceof ToggleDownloadViewEvent)
             {
                 MangaInfoFragment lMangaFragment = (MangaInfoFragment) getSupportFragmentManager().findFragmentByTag(MangaInfoFragment.TAG);
 
@@ -335,7 +350,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                 }
                 else
                 {
-                    setTitle(((DownloadSelectAllEvent) o).manga.title);
+                    setTitle(((ToggleDownloadViewEvent) o).manga.title);
                     mMenuFlag = Menus.MENU_MANGA_INFO;
                     invalidateOptionsMenu();
                 }

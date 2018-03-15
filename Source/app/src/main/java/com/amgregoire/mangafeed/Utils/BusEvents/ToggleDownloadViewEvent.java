@@ -7,8 +7,7 @@ import com.amgregoire.mangafeed.Models.Manga;
  */
 
 /***
- * This class represents an event that is fired when a user interacts with the (un)select all button in the
- * MangaInfoFragment toolbar while the download view is enabled.
+ * This class represents an event that is fired when a user toggles the download view in the manga information fragment.
  *
  * Triggered in:
  * MangaInfoFragment
@@ -17,11 +16,11 @@ import com.amgregoire.mangafeed.Models.Manga;
  * NavigationActivity
  *
  */
-public class DownloadSelectAllEvent
+public class ToggleDownloadViewEvent
 {
     public Manga manga;
 
-    public DownloadSelectAllEvent(Manga m)
+    public ToggleDownloadViewEvent(Manga m)
     {
         manga = m;
     }

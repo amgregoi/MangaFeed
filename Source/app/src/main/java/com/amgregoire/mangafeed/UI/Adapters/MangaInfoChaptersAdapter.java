@@ -15,8 +15,9 @@ import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
-import com.amgregoire.mangafeed.Utils.BusEvents.DownloadSelectAllEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.ToggleDownloadViewEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.StartDownloadEvent;
+import com.amgregoire.mangafeed.Utils.DownloadManager;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
 import com.squareup.picasso.Picasso;
@@ -358,7 +359,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             {
                 mDownloadList = new ArrayList<>();
                 mDownloadList.add(mChapterData.get(getAdapterPosition() - getHeaderCount()));
-                MangaFeed.getInstance().rxBus().send(new DownloadSelectAllEvent(mManga));
+                MangaFeed.getInstance().rxBus().send(new ToggleDownloadViewEvent(mManga));
 
                 return true;
             }
@@ -366,12 +367,33 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             return false;
         }
 
-
+        DownloadManager manager;
         @OnClick(R.id.frameLayoutMangaInfoChapterDownload)
         public void onChapterDownloadButtonClick()
         {
             // TODO
             // download chapter
+
+            manager = new DownloadManager(mChapterData.get(getAdapterPosition() - getHeaderCount()), new DownloadManager.DownloadUpdater() {
+                int test = 0;
+                int count = 0;
+
+                @Override
+                public void incrementFinishedPages()
+                {
+                    MangaLogger.logError(TAG, test + "", count + "");
+                    test++;
+                }
+
+                @Override
+                public void onPageCountReceived(int count)
+                {
+                    MangaLogger.logError(TAG, "Received number of pages: " + count);
+                    this.count = count;
+                }
+            });
+
+            manager.startDownload();
         }
 
         /***
@@ -431,7 +453,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         mDownloadViewFlag = false;
         mDownloadList.clear();
         notifyDataSetChanged();
-        MangaFeed.getInstance().rxBus().send(new DownloadSelectAllEvent(mManga));
+        MangaFeed.getInstance().rxBus().send(new ToggleDownloadViewEvent(mManga));
     }
 
     /***

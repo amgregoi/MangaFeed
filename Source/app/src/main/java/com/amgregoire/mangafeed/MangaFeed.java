@@ -132,7 +132,7 @@ public class MangaFeed extends Application
      * @param tag
      * @return
      */
-    public SourceBase getSource(String tag)
+    public SourceBase getSourceByTag(String tag)
     {
         if (tag.equals(FunManga.TAG))
         {
@@ -143,6 +143,32 @@ public class MangaFeed extends Application
             return new MangaEden();
         }
         else if (tag.equals(MangaHere.TAG))
+        {
+            return new MangaHere();
+        }
+        else
+        {
+            return new ReadLight();
+        }
+    }
+
+    /***
+     * This function returns a new source specified by the source classes TAG.
+     *
+     * @param url
+     * @return
+     */
+    public SourceBase getSourceByUrl(String url)
+    {
+        if (url.contains(FunManga.URL))
+        {
+            return new FunManga();
+        }
+        else if (url.contains(MangaEden.URL))
+        {
+            return new MangaEden();
+        }
+        else if (url.contains(MangaHere.URL))
         {
             return new MangaHere();
         }

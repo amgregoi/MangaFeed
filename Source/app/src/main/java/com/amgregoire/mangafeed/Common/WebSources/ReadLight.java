@@ -13,6 +13,7 @@ import com.amgregoire.mangafeed.Common.WebSources.Base.SourceNovel;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ import java.util.List;
 public class ReadLight extends SourceNovel
 {
     public final static String TAG = ReadLight.class.getSimpleName();
+    final public static String URL = "readlight";
+
     private final String SourceKey = "ReadLight";
 
 
@@ -259,11 +262,10 @@ public class ReadLight extends SourceNovel
         try
         {
             Document lParsedDocument = Jsoup.parse(aResponseBody);
-            Elements lContent = lParsedDocument.select("div.chapter-content3");//.select("p");
+            Elements lContent = lParsedDocument.select("div.chapter-content3");
             lContent.select("div.row").first().remove();
-            //lContent.select("noscript").first().remove();
 
-            return lContent.toString();
+            return Jsoup.clean(lContent.toString(), Whitelist.relaxed());
         }
         catch (Exception aException)
         {
@@ -299,7 +301,7 @@ public class ReadLight extends SourceNovel
                                 lDatabase.putManga(lNewManga);
                                 // update new entry info
                                 MangaFeed.getInstance()
-                                         .getSource(TAG)
+                                         .getSourceByTag(TAG)
                                          .updateMangaObservable(new RequestWrapper(lNewManga))
                                          .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating (" + TAG + ") " + manga.title),
                                                  throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable

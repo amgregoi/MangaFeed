@@ -24,6 +24,7 @@ import java.util.List;
 public class MangaEden extends SourceManga
 {
     final public static String TAG = MangaEden.class.getSimpleName();
+    final public static String URL = "mangaeden";
 
     final private String SourceKey = "MangaEden";
     final private String mBaseUrl = "http://www.mangaeden.com";
