@@ -3,10 +3,17 @@ package com.amgregoire.mangafeed.Models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.amgregoire.mangafeed.Utils.MangaFeedRest;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.Generated;
+import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.Header;
 
 @Entity(nameInDb = "Manga")
 public class Manga implements Parcelable
@@ -298,6 +305,7 @@ public class Manga implements Parcelable
     public int setFollowing(int lVal)
     {
         following = lVal;
+        updateFollowItem();
         return following;
     }
 
@@ -365,4 +373,31 @@ public class Manga implements Parcelable
     {
         this.recentChapter = recentChapter;
     }
+
+
+    private void updateFollowItem()
+    {
+        RequestParams params = new RequestParams();
+        params.put("image", image);
+        params.put("url", link);
+        params.put("followStatus", following);
+
+        //TODO: implement login, to create and query person user id.
+        // Currently defaulting to 1
+
+        MangaFeedRest.postFollowedUpdate(1, params, new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response)
+            {
+                super.onSuccess(statusCode, headers, response);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse)
+            {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+        });
+    }
+
 }

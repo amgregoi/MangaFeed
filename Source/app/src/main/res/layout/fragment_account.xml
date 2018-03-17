@@ -34,28 +34,41 @@
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/textViewUserName"
+            <LinearLayout
+                android:id="@+id/linearLayoutUserContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_marginStart="18dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:text="Guest"
-                android:textColor="?attr/text_color"
-                android:textStyle="bold" />
+                android:layout_alignParentBottom="true">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="18dp"
+                    android:src="@drawable/ic_google_white_24dp" />
+
+                <TextView
+                    android:id="@+id/textViewUserName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:text="Guest"
+                    android:textColor="?attr/text_color"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/linearLayoutImageBorder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@id/textViewUserName"
+                android:layout_above="@id/container"
                 android:layout_marginStart="@dimen/baseline_margin_unit_16dp"
                 android:background="@color/manga_black">
 
                 <ImageView
-                    android:id="@+id/imageviewAccountProfile"
+                    android:id="@+id/imageViewAccountProfile"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:layout_centerVertical="true"

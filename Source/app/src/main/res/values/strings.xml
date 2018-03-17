@@ -13,7 +13,8 @@
     <string name="PREF_APP_LAYOUT_IS_GRID">APP_LAYOUT_IS_GRID</string>
     <string name="PREF_APP_THEME_IS_LIGHT">APP_THEME_IS_LIGHT</string>
     <string name="PREF_STORAGE_LOCATION">MangaPark</string>
-    <string name="PREF_GOOGLE_EMAIL">EMAIL</string>
+    <string name="PREF_GOOGLE_EMAIL">PREF_GOOGLE_EMAIL</string>
+    <string name="PREF_GOOGLE_NAME">PREF_GOOGLE_NAME</string>
     <string name="PREF_CHAPTER_SCREEN_ORIENTATION">PREF_CHAPTER_SCREEN_ORIENTATION</string>
     <string name="PREF_LAST_CATALOG_UPDATE">LAST_CATALOG_UPDATE_KEY</string>
     <string name="manga_info_label_author">Author</string>

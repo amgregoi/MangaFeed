@@ -50,11 +50,37 @@ public class SharedPrefs
      *
      * @return The users Google Email
      */
+    public static String getGoogleName()
+    {
+        Context lContext = MangaFeed.getInstance();
+        return PreferenceManager.getDefaultSharedPreferences(lContext)
+                                .getString(lContext.getString(R.string.PREF_GOOGLE_NAME), null);
+    }
+
+    /**
+     * Sets the users MyAnimeList(MAL) login credentials for authorized API calls
+     *
+     * @param name, The users Google email
+     */
+    public static void setGoogleName(String name)
+    {
+        Context lContext = MangaFeed.getInstance();
+        SharedPreferences.Editor lEditor = PreferenceManager.getDefaultSharedPreferences(lContext)
+                                                            .edit();
+        lEditor.putString(lContext.getString(R.string.PREF_GOOGLE_NAME), name);
+        lEditor.apply();
+    }
+
+    /**
+     * Get the users Google email
+     *
+     * @return The users Google Email
+     */
     public static String getGoogleEmail()
     {
         Context lContext = MangaFeed.getInstance();
         return PreferenceManager.getDefaultSharedPreferences(lContext)
-                                .getString(lContext.getString(R.string.PREF_GOOGLE_EMAIL), "Guest (Sign in)");
+                                .getString(lContext.getString(R.string.PREF_GOOGLE_EMAIL), null);
     }
 
     /**
