@@ -206,7 +206,7 @@ public class FunManga extends SourceManga
             lManga.setDescription(lDescription);
             lManga.setArtist(lArtist);
             lManga.setAuthor(lAuthor);
-            lManga.setmGenre(lGenres);
+            lManga.setGenres(lGenres);
             lManga.setStatus(lStatus);
             lManga.setSource(SourceKey);
             lManga.setMangaUrl(request.getMangaUrl());

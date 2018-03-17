@@ -256,16 +256,6 @@ public class Manga implements Parcelable
         artist = aArtist;
     }
 
-    public String getmGenre()
-    {
-        return genres;
-    }
-
-    public void setmGenre(String aGenres)
-    {
-        genres = aGenres;
-    }
-
     public String getStatus()
     {
         return status;
@@ -392,7 +382,7 @@ public class Manga implements Parcelable
         params.put("image", image);
         params.put("url", link);
         params.put("followStatus", following);
-        
+
         MangaFeedRest.postFollowedUpdate(lUserId, params, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response)

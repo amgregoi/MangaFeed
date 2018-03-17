@@ -153,7 +153,7 @@ public class ReadLight extends SourceNovel
                     default:
                         break;
                     case 1: //Genre
-                        lManga.setmGenre(lDetails.toString());
+                        lManga.setGenres(lDetails.toString());
                         break;
                     case 4: //Author
                         lManga.setAuthor(lDetails.toString());

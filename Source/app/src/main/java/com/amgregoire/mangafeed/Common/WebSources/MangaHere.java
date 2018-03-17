@@ -161,7 +161,7 @@ public class MangaHere extends SourceManga
             lNewManga.setDescription(lDescription);
             lNewManga.setArtist(lArtist);
             lNewManga.setAuthor(lAuthor);
-            lNewManga.setmGenre(lGenres);
+            lNewManga.setGenres(lGenres);
             lNewManga.setStatus(lStatus);
             lNewManga.setSource(SourceKey);
             lNewManga.setMangaUrl(request.getMangaUrl());

@@ -160,7 +160,7 @@ public class MangaEden extends SourceManga
             lNewManga.setArtist(lParsedJsonObject.getString("artist"));
             lNewManga.setAuthor(lParsedJsonObject.getString("author"));
             lNewManga.setDescription(lParsedJsonObject.getString("description").trim());
-            lNewManga.setmGenre(lGenres);
+            lNewManga.setGenres(lGenres);
             lNewManga.setPicUrl("https://cdn.mangaeden.com/mangasimg/" + lParsedJsonObject.getString("image"));
             lNewManga.setInitialized(1);
 
