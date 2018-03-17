@@ -7,18 +7,19 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.amgregoire.mangafeed.Utils.LoginManager;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Mappers.IAccount;
 import com.amgregoire.mangafeed.UI.Presenters.AccountPres;
 import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLoginSuccessEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLogoutEvent;
+import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaFeedRest;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
@@ -88,37 +89,12 @@ public class AccountFragment extends Fragment implements IAccount.AccountMap
     @OnClick({R.id.linearLayoutUserContainer, R.id.imageViewAccountProfile})
     public void onAttemptLogin()
     {
-        if (SharedPrefs.getGoogleEmail() == null)
-        {
-//            MangaFeed.getInstance().rxBus().send(new GoogleLoginAttemptEvent());
-
-            // TODO
-            // Remove this, and uncomment above line when done testing login features
-            // Login only succeeds with signed apks
-            MangaFeed.getInstance().rxBus().send(new GoogleLoginSuccessEvent(null));
-        }
-        else
-        {
-            AlertDialog lDialog = new AlertDialog.Builder(getContext()).create();
-            lDialog.setTitle("Logout");
-            lDialog.setMessage("Are you sure you want to logout?  \nThis will reset your library, until you log back in.");
-            lDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No", (dialogInterface, i) -> lDialog.dismiss());
-            lDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ok", (dialogInterface, i) ->
-            {
-                MangaFeed.getInstance().rxBus().send(new GoogleLogoutEvent());
-                SharedPrefs.setGoogleEmail(null);
-                SharedPrefs.setGoogleName(null);
-                setHeaderUserName();
-                // Clear library
-            });
-
-            lDialog.show();
-        }
+        LoginManager.interact(getContext());
     }
 
     private void setHeaderUserName()
     {
-        String lUserName = SharedPrefs.getGoogleName();
+        String lUserName = SharedPrefs.getUserName();
         mUserName.setText(lUserName == null ? "Guest" : lUserName);
     }
 
@@ -191,9 +167,12 @@ public class AccountFragment extends Fragment implements IAccount.AccountMap
                         {
                             JSONObject lUser = response.getJSONObject("user");
 
-                            SharedPrefs.setGoogleEmail(lUser.getString("email"));
-                            SharedPrefs.setGoogleName(lUser.getString("name"));
+                            SharedPrefs.setUserEmail(lUser.getString("email"));
+                            SharedPrefs.setUserName(lUser.getString("name"));
+                            SharedPrefs.setUserId(lUser.getInt("id"));
+
                             MangaFeed.getInstance().makeToastShort("Successfully signed in");
+                            MangaDB.getInstance().updateNewUsersLibrary();
                         }
                         catch (JSONException e)
                         {
@@ -210,6 +189,10 @@ public class AccountFragment extends Fragment implements IAccount.AccountMap
                         MangaLogger.logError(TAG, errorResponse.toString());
                     }
                 });
+            }
+            else if (o instanceof GoogleLogoutEvent)
+            {
+                setHeaderUserName();
             }
         }, throwable -> MangaLogger.logError(TAG, throwable.getMessage()));
     }

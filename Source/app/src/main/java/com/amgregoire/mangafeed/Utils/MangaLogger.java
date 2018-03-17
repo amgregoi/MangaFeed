@@ -24,6 +24,14 @@ public class MangaLogger
         Log.i(mApplication, lMessage);
     }
 
+    public static void logInfo(String aTag, String aExtra, String aMessage)
+    {
+        String lMethod = Thread.currentThread().getStackTrace()[3].getMethodName();
+        String lMessage = "INFO >> " + MessageFormat.format("{0}.class >> {1}() > {2} > {3}", aTag, lMethod, aExtra, aMessage);
+
+        Log.i(mApplication, lMessage);
+    }
+
     /***
      * This function logs errors to the console as well as to the in app logger.
      *

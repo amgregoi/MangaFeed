@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import com.amgregoire.mangafeed.Common.WifiBroadcastReceiver;
+import com.amgregoire.mangafeed.Utils.LoginManager;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragment;
@@ -26,21 +27,11 @@ import com.amgregoire.mangafeed.UI.Fragments.HomeFragment;
 import com.amgregoire.mangafeed.UI.Fragments.MangaInfoFragment;
 import com.amgregoire.mangafeed.UI.Fragments.OfflineFragment;
 import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLoginAttemptEvent;
-import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLoginSuccessEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLogoutEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.MangaSelectedEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.ToggleDownloadViewEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateSourceEvent;
 import com.amgregoire.mangafeed.Utils.DownloadManager;
-import com.amgregoire.mangafeed.Utils.MangaLogger;
-import com.amgregoire.mangafeed.Utils.SharedPrefs;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.Task;
 
 import butterknife.BindDrawable;
 import butterknife.BindView;
@@ -62,7 +53,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     private int mMenuFlag = 0;
     private boolean mInternetFlag;
     private String mCurrentTag;
-    private GoogleApiClient mGoogleApiClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -82,15 +73,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         setupFragmentBackStack();
         setupRxBus();
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this, connectionResult ->
-        {
-            // do nothing
-        }).addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
-
+        LoginManager.init(this);
     }
 
     @Override
@@ -380,11 +363,11 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
             }
             else if (o instanceof GoogleLoginAttemptEvent)
             {
-                googleSignIn();
+                LoginManager.login(this);
             }
             else if( o instanceof GoogleLogoutEvent)
             {
-                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                LoginManager.logout();
             }
         }, throwable -> Log.e(TAG, throwable.getMessage()));
     }
@@ -446,13 +429,6 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         setTitle(MangaFeed.getInstance().getCurrentSource().getSourceName());
     }
 
-    private void googleSignIn()
-    {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, 8008);
-
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -460,19 +436,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
 
         if (requestCode == 8008)
         {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try
-            {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                MangaFeed.getInstance().rxBus().send(new GoogleLoginSuccessEvent(account));
-                // TODO : API -> get user or create user logic
-            }
-            catch (ApiException e)
-            {
-                MangaFeed.getInstance().makeToastShort("Failed to login");
-                MangaLogger.logError(TAG, "failure code: " + e.getStatusCode());
-
-            }
+            LoginManager.loginResult(data);
         }
     }
 

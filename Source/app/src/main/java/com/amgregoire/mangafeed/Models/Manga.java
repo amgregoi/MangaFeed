@@ -3,7 +3,10 @@ package com.amgregoire.mangafeed.Models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaFeedRest;
+import com.amgregoire.mangafeed.Utils.MangaLogger;
+import com.amgregoire.mangafeed.Utils.SharedPrefs;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -305,6 +308,7 @@ public class Manga implements Parcelable
     public int setFollowing(int lVal)
     {
         following = lVal;
+        MangaDB.getInstance().putManga(this);
         updateFollowItem();
         return following;
     }
@@ -377,19 +381,24 @@ public class Manga implements Parcelable
 
     private void updateFollowItem()
     {
+        int lUserId = SharedPrefs.getUserId();
+
+        if(lUserId < 0)
+        {
+            return;
+        }
+
         RequestParams params = new RequestParams();
         params.put("image", image);
         params.put("url", link);
         params.put("followStatus", following);
-
-        //TODO: implement login, to create and query person user id.
-        // Currently defaulting to 1
-
-        MangaFeedRest.postFollowedUpdate(1, params, new JsonHttpResponseHandler(){
+        
+        MangaFeedRest.postFollowedUpdate(lUserId, params, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response)
             {
                 super.onSuccess(statusCode, headers, response);
+                MangaLogger.logError(TAG, response.toString());
             }
 
             @Override

@@ -12,7 +12,7 @@ import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Fragments.MangaInfoFragment;
 import com.amgregoire.mangafeed.UI.Mappers.IManga;
-import com.amgregoire.mangafeed.Utils.BusEvents.UpdateFollowStatusEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
 import java.util.ArrayList;
@@ -91,7 +91,7 @@ public class MangaInfoPres implements IManga.MangaPres
     public void onUpdateFollowStatus(int status)
     {
         mManga.setFollowing(status);
-        MangaFeed.getInstance().rxBus().send(new UpdateFollowStatusEvent(mManga));
+        MangaFeed.getInstance().rxBus().send(new UpdateMangaItemViewEvent(mManga));
     }
 
     @Override

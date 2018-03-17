@@ -20,12 +20,19 @@ import com.amgregoire.mangafeed.Models.Manga;
  * AccountFragmentFiltered
  *
  */
-public class UpdateFollowStatusEvent
+public class UpdateMangaItemViewEvent
 {
     public Manga manga;
+    public boolean isMulti;
 
-    public UpdateFollowStatusEvent(Manga m)
+    public UpdateMangaItemViewEvent(Manga m)
     {
         manga = m;
+        isMulti = false;
+    }
+
+    public UpdateMangaItemViewEvent()
+    {
+        isMulti = true;
     }
 }

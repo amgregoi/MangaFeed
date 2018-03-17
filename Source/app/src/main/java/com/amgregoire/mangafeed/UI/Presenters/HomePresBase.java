@@ -9,7 +9,7 @@ import com.amgregoire.mangafeed.UI.Adapters.SearchRecyclerAdapter;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Mappers.IHome;
-import com.amgregoire.mangafeed.Utils.BusEvents.UpdateFollowStatusEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
 import java.util.ArrayList;
@@ -54,11 +54,20 @@ public abstract class HomePresBase implements IHome.HomeBasePres
         {
             mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
             {
-                if (o instanceof UpdateFollowStatusEvent)
+                if (o instanceof UpdateMangaItemViewEvent)
                 {
-                    Manga manga = ((UpdateFollowStatusEvent) o).manga;
-                    mAdapter.updateItem(manga);
-                    Log.e(TAG, manga.title);
+                    UpdateMangaItemViewEvent lEvent = (UpdateMangaItemViewEvent) o;
+
+                    if (lEvent.isMulti)
+                    {
+                        updateMangaList();
+                    }
+                    else
+                    {
+                        Manga manga = lEvent.manga;
+                        mAdapter.updateItem(manga);
+                        MangaLogger.logInfo(TAG, "updated view", manga.title);
+                    }
                 }
             }, throwable -> Log.e(TAG, throwable.getMessage()));
         }

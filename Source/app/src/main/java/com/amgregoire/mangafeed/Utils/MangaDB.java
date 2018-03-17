@@ -1,5 +1,6 @@
 package com.amgregoire.mangafeed.Utils;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,6 +13,13 @@ import com.amgregoire.mangafeed.Models.DaoMaster;
 import com.amgregoire.mangafeed.Models.DaoSession;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.Models.MangaDao;
+import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import cz.msebera.android.httpclient.Header;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -171,11 +180,6 @@ public class MangaDB extends SQLiteOpenHelper
         }
     }
 
-    public void putManga(Manga manga, boolean derp)
-    {
-
-    }
-
     /***
      * This function retrieves a unique manga object from the local database specified by its url.
      *
@@ -190,6 +194,12 @@ public class MangaDB extends SQLiteOpenHelper
                        .unique();
     }
 
+    /***
+     * This function verifies if a manga is already in the database specified its url.
+     *
+     * @param link the url of the manga.
+     * @return true if the manga is in the database, false otherwise.
+     */
     public boolean containsManga(String link)
     {
         return mSession.getMangaDao()
@@ -233,6 +243,11 @@ public class MangaDB extends SQLiteOpenHelper
     }
 
 
+    /***
+     * This function retrieves a list of manga that have downloaded chapters for offline viewing.
+     *
+     * @return
+     */
     public Observable<List<Manga>> getMangaWithDownloadedChapters()
     {
 
@@ -265,26 +280,30 @@ public class MangaDB extends SQLiteOpenHelper
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Observable<List<Chapter>> getSavedChapters(Manga manga)
+    /***
+     * This function returns the list of cached chapters, representing what the user has viewed.
+     *
+     * @param manga
+     * @return
+     */
+    public Observable<List<Chapter>> getViewedChapters(Manga manga)
     {
         return Observable.create((ObservableEmitter<List<Chapter>> subscriber) ->
         {
-        try
-        {
-            subscriber.onNext(mSession.getChapterDao()
-                                      .queryBuilder()
-                                      .where(ChapterDao.Properties.MangaUrl.eq(manga.getMangaURL()))
-                                      .list());
-            subscriber.onComplete();
-        }
-        catch (Exception aException)
-        {
-            subscriber.onError(aException);
-        }
-    }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
-
-}
-
+            try
+            {
+                subscriber.onNext(mSession.getChapterDao()
+                                          .queryBuilder()
+                                          .where(ChapterDao.Properties.MangaUrl.eq(manga.getMangaURL()))
+                                          .list());
+                subscriber.onComplete();
+            }
+            catch (Exception aException)
+            {
+                subscriber.onError(aException);
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
 
 
     /**
@@ -406,38 +425,71 @@ public class MangaDB extends SQLiteOpenHelper
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-
     /***
-     * This inner class defines the sql column names for the Manga Table
+     * This function queries the server and retrieves the current users list of followed
+     * items, and updates the local database to reflect the status of these items.
+     *
+     * Afterwards its posts an event to let the application views know they need to be updated to reflect these changes.
      */
-    static class MangaTable
+    public void updateNewUsersLibrary()
     {
-        public final static String ID = "_id";
-        public final static String Title = "title";
-        public final static String Alternate = "alternate";
-        public final static String Image = "image";
-        public final static String Description = "description";
-        public final static String Artist = "artist";
-        public final static String Author = "author";
-        public final static String Genres = "genres";
-        public final static String Status = "status";
-        public final static String Source = "source";
-        public final static String RecentChapter = "recentChapter";
-        public final static String URL = "link";
-        public final static String Following = "following";
+        int lUserId = SharedPrefs.getUserId();
+        RequestParams lParams = new RequestParams();
+
+        MangaFeedRest.getUserLibrary(lUserId, lParams, new JsonHttpResponseHandler()
+        {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response)
+            {
+                super.onSuccess(statusCode, headers, response);
+                try
+                {
+                    JSONArray lFollowList = response.getJSONArray("library");
+                    JSONObject lFollow;
+                    for (int i = 0; i < lFollowList.length(); i++)
+                    {
+                        lFollow = lFollowList.getJSONObject(i);
+
+                        Manga lManga = getManga(lFollow.getString("url"));
+                        if (lManga != null)
+                        {
+                            lManga.following = lFollow.getInt("followType");
+                            lManga.image = lFollow.getString("image");
+                            putManga(lManga);
+                        }
+                    }
+
+                    mSession.clear();
+                    MangaFeed.getInstance().rxBus().send(new UpdateMangaItemViewEvent());
+                }
+                catch (JSONException e)
+                {
+                    MangaLogger.logError(TAG, e.getMessage());
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse)
+            {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+        });
     }
 
     /***
-     * This inner class defines the sql column names for the Chapter Table
+     * This function resets the local database, and sets all following flags to 0.
+     *
      */
-    static class ChapterTable
+    public void resetLibrary()
     {
-        public final static String TotalPages = "totalPages";
-        public final static String CurrentPage = "currentPage";
-        public final static String ChapterNumber = "chapterNumber";
-        public final static String ChapterTitle = "chapterTitle";
-        public final static String MangaTitle = "mangaTitle";
-        public final static String Date = "date";
-        public final static String URL = "url";
+        ContentValues cv = new ContentValues();
+        cv.put("following", 0);
+        getWritableDatabase().update("Manga", cv, "NOT following = ?", new String[]{"0"});
+
+        // Clear Dao cache, to get pull fresh db values
+        mSession.clear();
+        MangaFeed.getInstance().rxBus().send(new UpdateMangaItemViewEvent());
     }
+
 }

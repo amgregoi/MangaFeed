@@ -9,7 +9,7 @@ import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Adapters.SearchRecyclerAdapter;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentFiltered;
 import com.amgregoire.mangafeed.UI.Mappers.IAccount;
-import com.amgregoire.mangafeed.Utils.BusEvents.UpdateFollowStatusEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
@@ -104,9 +104,9 @@ public class AccountPresFiltered implements IAccount.AccountFilteredPres
         mDisposableRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(
                 o ->
                 {
-                    if (o instanceof UpdateFollowStatusEvent)
+                    if (o instanceof UpdateMangaItemViewEvent)
                     {
-                        UpdateFollowStatusEvent lEvent = ((UpdateFollowStatusEvent) o);
+                        UpdateMangaItemViewEvent lEvent = ((UpdateMangaItemViewEvent) o);
                         mAdapter.updateItem(lEvent.manga);
                     }
                 },

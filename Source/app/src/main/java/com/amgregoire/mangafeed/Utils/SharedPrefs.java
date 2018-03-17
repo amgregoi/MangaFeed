@@ -33,12 +33,12 @@ public class SharedPrefs
     }
 
     /***
-     * This function verifies if a user is signed into google.
+     * This function verifies if a user is signed in.
      * @return
      */
     public static boolean isSignedIn()
     {
-        if (getGoogleEmail().contains("Guest"))
+        if (getUserEmail().contains("Guest"))
         {
             return false;
         }
@@ -46,58 +46,87 @@ public class SharedPrefs
     }
 
     /**
-     * Get the users Google email
+     * This function retrieves the stored user name from the device.
      *
-     * @return The users Google Email
+     * @return The users name.
      */
-    public static String getGoogleName()
+    public static String getUserName()
     {
         Context lContext = MangaFeed.getInstance();
         return PreferenceManager.getDefaultSharedPreferences(lContext)
-                                .getString(lContext.getString(R.string.PREF_GOOGLE_NAME), null);
+                                .getString(lContext.getString(R.string.PREF_USER_NAME), null);
     }
 
     /**
-     * Sets the users MyAnimeList(MAL) login credentials for authorized API calls
+     * This function saves the current users name to the device.
      *
-     * @param name, The users Google email
+     * @param name The users name.
      */
-    public static void setGoogleName(String name)
+    public static void setUserName(String name)
     {
         Context lContext = MangaFeed.getInstance();
         SharedPreferences.Editor lEditor = PreferenceManager.getDefaultSharedPreferences(lContext)
                                                             .edit();
-        lEditor.putString(lContext.getString(R.string.PREF_GOOGLE_NAME), name);
+        lEditor.putString(lContext.getString(R.string.PREF_USER_NAME), name);
         lEditor.apply();
     }
 
     /**
-     * Get the users Google email
+     * This function retrieves the stored user email from the device.
      *
-     * @return The users Google Email
+     * @return The users email.
      */
-    public static String getGoogleEmail()
+    public static String getUserEmail()
     {
         Context lContext = MangaFeed.getInstance();
         return PreferenceManager.getDefaultSharedPreferences(lContext)
-                                .getString(lContext.getString(R.string.PREF_GOOGLE_EMAIL), null);
+                                .getString(lContext.getString(R.string.PREF_USER_EMAIL), null);
     }
 
     /**
-     * Sets the users MyAnimeList(MAL) login credentials for authorized API calls
+     * This function saves the current users email to the device.
      *
-     * @param aEmail, The users Google email
+     * @param aEmail, The users email.
      */
-    public static void setGoogleEmail(String aEmail)
+    public static void setUserEmail(String aEmail)
     {
         Context lContext = MangaFeed.getInstance();
         SharedPreferences.Editor lEditor = PreferenceManager.getDefaultSharedPreferences(lContext)
                                                             .edit();
-        lEditor.putString(lContext.getString(R.string.PREF_GOOGLE_EMAIL), aEmail);
+        lEditor.putString(lContext.getString(R.string.PREF_USER_EMAIL), aEmail);
         lEditor.apply();
     }
 
     /**
+     * This function saves the current users id to the device.
+     *
+     * @param id, The users id.
+     */
+    public static void setUserId(int id)
+    {
+        Context lContext = MangaFeed.getInstance();
+        SharedPreferences.Editor lEditor = PreferenceManager.getDefaultSharedPreferences(lContext)
+                                                            .edit();
+        lEditor.putInt(lContext.getString(R.string.PREF_USER_ID), id);
+        lEditor.apply();
+    }
+
+    /**
+     * This function retrieves the stored user id from the device.
+     *
+     * @return The users id.
+     */
+    public static int getUserId()
+    {
+        Context lContext = MangaFeed.getInstance();
+        return PreferenceManager.getDefaultSharedPreferences(lContext)
+                                .getInt(lContext.getString(R.string.PREF_USER_ID), -1);
+    }
+
+
+
+    /**
+     * TODO: Might remove.
      * Get the users application layout preferences
      *
      * @return The users App layout preference
@@ -112,6 +141,7 @@ public class SharedPrefs
     }
 
     /**
+     * TODO: Might remove.
      * Set the users application layout preference
      *
      * @param aGrid, User preference for application layout
@@ -236,6 +266,11 @@ public class SharedPrefs
         lEditor.apply();
     }
 
+    /***
+     * This function retrieves the date of the last catalog update that was run.
+     *
+     * @return date of catalog update.
+     */
     public static Date getLastCatalogUpdate()
     {
         Context lContext = MangaFeed.getInstance();
@@ -243,6 +278,10 @@ public class SharedPrefs
                                          .getLong(lContext.getString(R.string.PREF_LAST_CATALOG_UPDATE), 0));
     }
 
+    /***
+     * This function sets the current date for the last catalog update.
+     *
+     */
     public static void setLastCatalogUpdate()
     {
         Context lContext = MangaFeed.getInstance();

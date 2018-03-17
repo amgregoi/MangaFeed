@@ -5,7 +5,7 @@ import android.util.Log;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Mappers.IHome;
-import com.amgregoire.mangafeed.Utils.BusEvents.UpdateFollowStatusEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
@@ -59,11 +59,21 @@ public class HomePresLibrary extends HomePresBase
         {
             mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
             {
-                if (o instanceof UpdateFollowStatusEvent)
+                if (o instanceof UpdateMangaItemViewEvent)
                 {
-                    Manga manga = ((UpdateFollowStatusEvent) o).manga;
-                    mAdapter.updateItem(manga, manga.isFollowing());
-                    Log.e(TAG, manga.title);
+
+                    UpdateMangaItemViewEvent lEvent = (UpdateMangaItemViewEvent) o;
+
+                    if (lEvent.isMulti)
+                    {
+                        updateMangaList();
+                    }
+                    else
+                    {
+                        Manga manga = ((UpdateMangaItemViewEvent) o).manga;
+                        mAdapter.updateItem(manga, manga.isFollowing());
+                        MangaLogger.logInfo(TAG, "updated view", manga.title);
+                    }
                 }
             }, throwable -> Log.e(TAG, throwable.getMessage()));
         }
