@@ -19,7 +19,7 @@ public interface IAccount
      * Presenter interfaces for the Home Fragments to communicate with their presenters.
      *
      */
-    interface AccountPres extends LifeCycleMap
+    interface AccountPres extends LifeCycleMap, EventBusMap
     {
 
     }
@@ -45,7 +45,7 @@ public interface IAccount
      */
     interface AccountMap extends PagerAdapterMap, InitViewMap, ContextMap
     {
-
+        void setHeaderUserName();
     }
 
     interface AccountSourceMap extends RecycleAdapterMap, InitViewMap, ContextMap
