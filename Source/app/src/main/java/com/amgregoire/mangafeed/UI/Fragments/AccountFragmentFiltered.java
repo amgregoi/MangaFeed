@@ -93,7 +93,7 @@ public class AccountFragmentFiltered extends Fragment implements IAccount.Accoun
 
     /***
      * This function sets up the fragments toolbar.
-     * 
+     *
      */
     private void setupToolbar()
     {

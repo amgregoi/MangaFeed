@@ -60,12 +60,21 @@ public class HomeFragmentRecent extends HomeFragmentsBase
         mSwipeLayout.setRefreshing(false);
     }
 
+    /***
+     * This function ests up the views swipe refresh layout.
+     *
+     */
     private void setupSwipeLayout()
     {
         mSwipeLayout.setEnabled(true);
         mSwipeLayout.setOnRefreshListener(() -> ((HomePresRecent) mPresenter).onSwipeRefresh());
     }
 
+    /***
+     * This function is a message relay to let the Recent fragment know the device has an internet
+     * connection.
+     *
+     */
     public void hasInternetMessage()
     {
         if (mPresenter != null)

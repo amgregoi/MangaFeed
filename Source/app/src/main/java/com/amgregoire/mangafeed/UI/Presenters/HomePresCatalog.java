@@ -45,7 +45,6 @@ public class HomePresCatalog extends HomePresBase
         catch (Exception aException)
         {
             MangaLogger.logError(TAG, aException.getMessage());
-
         }
     }
 }
