@@ -44,13 +44,20 @@ public abstract class HomePresBase implements IHome.HomeBasePres
     @Override
     public void init(Bundle bundle)
     {
-        mMap.initViews();
-        updateMangaList();
+        try
+        {
+            mMap.initViews();
+            updateMangaList();
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
     }
 
     public void setupRxBus()
     {
-        if (mRxBus == null || mRxBus.isDisposed())
+        try
         {
             mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
             {
@@ -71,13 +78,24 @@ public abstract class HomePresBase implements IHome.HomeBasePres
                 }
             }, throwable -> Log.e(TAG, throwable.getMessage()));
         }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
     }
 
     @Override
     public void unSubEventBus()
     {
-        mRxBus.dispose();
-        mRxBus = null;
+        try
+        {
+            mRxBus.dispose();
+            mRxBus = null;
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
     }
 
     @Override

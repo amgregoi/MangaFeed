@@ -25,14 +25,15 @@ public class HomePresRecent extends HomePresBase
     @Override
     public void updateMangaList()
     {
-        if (mMangaListSubscription != null)
-        {
-            mMangaListSubscription.dispose();
-            mMangaListSubscription = null;
-        }
-
         try
         {
+            if (mMangaListSubscription != null)
+            {
+                mMangaListSubscription.dispose();
+                mMangaListSubscription = null;
+            }
+
+
             mMap.startRefresh();
             mMangaListSubscription = MangaFeed.getInstance()
                                               .getCurrentSource()
@@ -54,9 +55,9 @@ public class HomePresRecent extends HomePresBase
                                                   mMangaListSubscription.dispose();
                                               });
         }
-        catch (Exception aException)
+        catch (Exception ex)
         {
-            MangaLogger.logError(TAG, aException.getMessage());
+            MangaLogger.logError(TAG, ex.getMessage());
         }
     }
 
@@ -67,9 +68,16 @@ public class HomePresRecent extends HomePresBase
      */
     public void hasInternetMessage()
     {
-        if (!mIsInitialized)
+        try
         {
-            updateMangaList();
+            if (!mIsInitialized)
+            {
+                updateMangaList();
+            }
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
         }
     }
 
@@ -79,12 +87,19 @@ public class HomePresRecent extends HomePresBase
      */
     public void onSwipeRefresh()
     {
-        if (mAdapter != null)
+        try
         {
-            mAdapter.updateOriginalData(new ArrayList<>());
-        }
+            if (mAdapter != null)
+            {
+                mAdapter.updateOriginalData(new ArrayList<>());
+            }
 
-        updateMangaList();
+            updateMangaList();
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
     }
 
 

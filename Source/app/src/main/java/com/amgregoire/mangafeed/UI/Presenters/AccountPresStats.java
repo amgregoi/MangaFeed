@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.UI.Adapters.AccountViewPagerAdapter;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentFiltered;
 import com.amgregoire.mangafeed.UI.Mappers.IAccount;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;
@@ -41,33 +40,54 @@ public class AccountPresStats implements IAccount.AccountStatsPres
     @Override
     public void init(Bundle bundle)
     {
-        mMap.initViews();
-        getFollowStats();
+        try
+        {
+            mMap.initViews();
+            getFollowStats();
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
     }
 
 
     @Override
     public void unSubEventBus()
     {
-        mRxBus.dispose();
-        mRxBus = null;
+        try
+        {
+            mRxBus.dispose();
+            mRxBus = null;
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
     }
 
     @Override
     public void subEventBus()
     {
-        mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
+        try
         {
-            if (o instanceof UpdateMangaItemViewEvent)
+            mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
             {
-                getFollowStats();
-            }
-            else if (o instanceof UpdateSourceEvent)
-            {
-                mMap.initViews();
-                getFollowStats();
-            }
-        }, throwable -> MangaLogger.logError(TAG, throwable.getMessage()));
+                if (o instanceof UpdateMangaItemViewEvent)
+                {
+                    getFollowStats();
+                }
+                else if (o instanceof UpdateSourceEvent)
+                {
+                    mMap.initViews();
+                    getFollowStats();
+                }
+            }, throwable -> MangaLogger.logError(TAG, throwable.getMessage()));
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
     }
 
     @Override
@@ -100,12 +120,19 @@ public class AccountPresStats implements IAccount.AccountStatsPres
      */
     private void getFollowStats()
     {
-        mStatValues = new ArrayList<>();
-        MangaDB.getInstance()
-               .getLibraryFilterCount(1, 2, 3, 4)
-               .subscribe(aLong -> mStatValues.add(aLong),
-                       throwable -> MangaLogger.logError(TAG, throwable.getMessage()),
-                       () -> mMap.setFollowStats(mStatValues));
+        try
+        {
+            mStatValues = new ArrayList<>();
+            MangaDB.getInstance()
+                   .getLibraryFilterCount(1, 2, 3, 4)
+                   .subscribe(aLong -> mStatValues.add(aLong),
+                           throwable -> MangaLogger.logError(TAG, throwable.getMessage()),
+                           () -> mMap.setFollowStats(mStatValues));
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
     }
 
 }

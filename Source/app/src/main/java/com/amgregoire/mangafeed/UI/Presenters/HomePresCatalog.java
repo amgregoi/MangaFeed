@@ -24,14 +24,15 @@ public class HomePresCatalog extends HomePresBase
     @Override
     public void updateMangaList()
     {
-        if (mMangaListSubscription != null)
-        {
-            mMangaListSubscription.dispose();
-            mMangaListSubscription = null;
-        }
-
         try
         {
+            if (mMangaListSubscription != null)
+            {
+                mMangaListSubscription.dispose();
+                mMangaListSubscription = null;
+            }
+
+
             mMangaListSubscription = MangaDB.getInstance()
                                             .getCatalogList()
                                             .subscribeOn(Schedulers.io())
@@ -39,12 +40,13 @@ public class HomePresCatalog extends HomePresBase
                                             .subscribe
                                                     (
                                                             mangas -> updateMangaGridView(mangas),
-                                                            throwable -> MangaLogger.logError(TAG, "Failed to retrieve catalog list", throwable.getMessage())
+                                                            throwable -> MangaLogger.logError(TAG, "Failed to retrieve catalog list", throwable
+                                                                    .getMessage())
                                                     );
         }
-        catch (Exception aException)
+        catch (Exception ex)
         {
-            MangaLogger.logError(TAG, aException.getMessage());
+            MangaLogger.logError(TAG, ex.getMessage());
         }
     }
 }

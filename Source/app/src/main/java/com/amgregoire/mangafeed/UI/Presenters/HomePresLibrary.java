@@ -29,14 +29,15 @@ public class HomePresLibrary extends HomePresBase
     @Override
     public void updateMangaList()
     {
-        if (mMangaListSubscription != null)
-        {
-            mMangaListSubscription.dispose();
-            mMangaListSubscription = null;
-        }
-
         try
         {
+            if (mMangaListSubscription != null)
+            {
+                mMangaListSubscription.dispose();
+                mMangaListSubscription = null;
+            }
+
+
             mMangaListSubscription = MangaDB.getInstance()
                                             .getLibraryList().cache()
                                             .subscribeOn(Schedulers.io())
@@ -44,19 +45,20 @@ public class HomePresLibrary extends HomePresBase
                                             .subscribe
                                                     (
                                                             mangas -> updateMangaGridView(mangas),
-                                                            throwable -> MangaLogger.logError(TAG, "Failed to retrieve library list", throwable.getMessage())
+                                                            throwable -> MangaLogger.logError(TAG, "Failed to retrieve library list", throwable
+                                                                    .getMessage())
                                                     );
         }
-        catch (Exception aException)
+        catch (Exception ex)
         {
-            MangaLogger.logError(TAG, aException.getMessage());
+            MangaLogger.logError(TAG, ex.getMessage());
         }
     }
 
     @Override
     public void setupRxBus()
     {
-        if (mRxBus == null || mRxBus.isDisposed())
+        try
         {
             mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
             {
@@ -77,6 +79,10 @@ public class HomePresLibrary extends HomePresBase
                     }
                 }
             }, throwable -> Log.e(TAG, throwable.getMessage()));
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
         }
     }
 }

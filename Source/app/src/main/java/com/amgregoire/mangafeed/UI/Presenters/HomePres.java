@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 
 import com.amgregoire.mangafeed.UI.Adapters.HomeViewPagerAdapter;
 import com.amgregoire.mangafeed.UI.Mappers.IHome;
+import com.amgregoire.mangafeed.Utils.MangaLogger;
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
@@ -13,6 +14,8 @@ import com.amgregoire.mangafeed.UI.Mappers.IHome;
 
 public class HomePres implements IHome.HomePres
 {
+    public final static String TAG = HomePres.class.getSimpleName();
+
     private IHome.HomeMap mMap;
     private HomeViewPagerAdapter mAdapter;
     private FragmentManager mManager;
@@ -26,15 +29,21 @@ public class HomePres implements IHome.HomePres
     @Override
     public void init(Bundle bundle)
     {
-
-        mMap.initViews();
-
-        if (mAdapter == null)
+        try
         {
-            mAdapter = new HomeViewPagerAdapter(mManager, 3);
-        }
+            mMap.initViews();
 
-        mMap.registerAdapter(mAdapter);
+            if (mAdapter == null)
+            {
+                mAdapter = new HomeViewPagerAdapter(mManager, 3);
+            }
+
+            mMap.registerAdapter(mAdapter);
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
     }
 
     @Override

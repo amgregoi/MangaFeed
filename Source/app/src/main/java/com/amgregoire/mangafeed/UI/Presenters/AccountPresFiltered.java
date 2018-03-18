@@ -58,8 +58,15 @@ public class AccountPresFiltered implements IAccount.AccountFilteredPres
     @Override
     public void unSubEventBus()
     {
-        mRxBus.dispose();
-        mRxBus = null;
+        try
+        {
+            mRxBus.dispose();
+            mRxBus = null;
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
     }
 
     @Override
@@ -89,14 +96,15 @@ public class AccountPresFiltered implements IAccount.AccountFilteredPres
      */
     private void getMangaList()
     {
-        if (mDisposable != null)
-        {
-            mDisposable.dispose();
-            mDisposable = null;
-        }
-
         try
         {
+            if (mDisposable != null)
+            {
+                mDisposable.dispose();
+                mDisposable = null;
+            }
+
+
             mDisposable = MangaDB.getInstance()
                                  .getLibraryList(mFilterValue).cache()
                                  .subscribeOn(Schedulers.io())

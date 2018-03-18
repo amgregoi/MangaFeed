@@ -63,8 +63,15 @@ public class AccountPres implements IAccount.AccountPres
     @Override
     public void unSubEventBus()
     {
-        mRxBus.dispose();
-        mRxBus = null;
+        try
+        {
+            mRxBus.dispose();
+            mRxBus = null;
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
     }
 
     @Override

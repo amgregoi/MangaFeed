@@ -72,7 +72,6 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
     @Override
     public void initViews()
     {
-        // do stuff
         setupBottomNav();
     }
 
@@ -103,6 +102,20 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
     {
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void startRefresh()
+    {
+        mSwipeLayout.setEnabled(true);
+        mSwipeLayout.setRefreshing(true);
+    }
+
+    @Override
+    public void stopRefresh()
+    {
+        mSwipeLayout.setRefreshing(false);
+        mSwipeLayout.setEnabled(false);
     }
 
     /***
@@ -223,19 +236,5 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
             }
             return false;
         });
-    }
-
-    @Override
-    public void startRefresh()
-    {
-        mSwipeLayout.setEnabled(true);
-        mSwipeLayout.setRefreshing(true);
-    }
-
-    @Override
-    public void stopRefresh()
-    {
-        mSwipeLayout.setRefreshing(false);
-        mSwipeLayout.setEnabled(false);
     }
 }
