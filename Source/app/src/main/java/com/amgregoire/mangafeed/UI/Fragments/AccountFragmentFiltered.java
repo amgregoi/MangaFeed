@@ -91,6 +91,10 @@ public class AccountFragmentFiltered extends Fragment implements IAccount.Accoun
         mRecyclerView.setAdapter(adapter);
     }
 
+    /***
+     * This function sets up the fragments toolbar.
+     * 
+     */
     private void setupToolbar()
     {
         mToolbar.setTitle(getArguments().getString(TITLE_KEY));

@@ -31,7 +31,7 @@ public class AccountPresFiltered implements IAccount.AccountFilteredPres
     private IAccount.AccountFilteredMap mMap;
     private SearchRecyclerAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private Disposable mDisposableRxBus;
+    private Disposable mRxBus;
 
     private int mFilterValue;
 
@@ -40,14 +40,53 @@ public class AccountPresFiltered implements IAccount.AccountFilteredPres
         mMap = map;
     }
 
+    @Override
     public void init(Bundle bundle)
     {
-        mFilterValue = bundle.getInt(AccountFragmentFiltered.FILTER_KEY);
-
-        mMap.initViews();
-        getMangaList();
+        try
+        {
+            mFilterValue = bundle.getInt(AccountFragmentFiltered.FILTER_KEY);
+            mMap.initViews();
+            getMangaList();
+        }
+        catch (Exception aException)
+        {
+            MangaLogger.logError(TAG, aException.getMessage());
+        }
     }
 
+    @Override
+    public void unSubEventBus()
+    {
+        mRxBus.dispose();
+        mRxBus = null;
+    }
+
+    @Override
+    public void subEventBus()
+    {
+        try
+        {
+            mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(
+                    o ->
+                    {
+                        if (o instanceof UpdateMangaItemViewEvent)
+                        {
+                            UpdateMangaItemViewEvent lEvent = ((UpdateMangaItemViewEvent) o);
+                            mAdapter.updateItem(lEvent.manga);
+                        }
+                    },
+                    throwable -> MangaLogger.logError(TAG, throwable.getMessage()));
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
+    }
+
+    /***
+     * This function retrieves the list of manga with a specified filter.
+     */
     private void getMangaList()
     {
         if (mDisposable != null)
@@ -65,51 +104,42 @@ public class AccountPresFiltered implements IAccount.AccountFilteredPres
                                  .subscribe
                                          (
                                                  mangas -> updateMangaGridView(mangas),
-                                                 throwable -> MangaLogger.logError(TAG, "Failed to retrieve library list", throwable.getMessage())
+                                                 throwable -> MangaLogger.logError(TAG, "Failed to retrieve library list", throwable
+                                                         .getMessage())
                                          );
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
+    }
+
+    /***
+     * This function updates the adapter and views when the list is retrieved.
+     *
+     * @param manga
+     */
+    private void updateMangaGridView(List<Manga> manga)
+    {
+        try
+        {
+            if (manga != null)
+            {
+                if (mAdapter == null)
+                {
+                    mLayoutManager = new GridLayoutManager(mMap.getContext(), 3);
+                    mAdapter = new SearchRecyclerAdapter(manga);
+                    mMap.registerAdapter(mAdapter, mLayoutManager);
+                }
+                else
+                {
+                    mAdapter.updateOriginalData(manga);
+                }
+            }
         }
         catch (Exception aException)
         {
             MangaLogger.logError(TAG, aException.getMessage());
         }
-    }
-
-    private void updateMangaGridView(List<Manga> manga)
-    {
-        if (manga != null)
-        {
-            if (mAdapter == null)
-            {
-                mLayoutManager = new GridLayoutManager(mMap.getContext(), 3);
-                mAdapter = new SearchRecyclerAdapter(manga);
-                mMap.registerAdapter(mAdapter, mLayoutManager);
-            }
-            else
-            {
-                mAdapter.updateOriginalData(manga);
-            }
-        }
-    }
-
-
-    @Override
-    public void unSubEventBus()
-    {
-        mDisposableRxBus.dispose();
-    }
-
-    @Override
-    public void subEventBus()
-    {
-        mDisposableRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(
-                o ->
-                {
-                    if (o instanceof UpdateMangaItemViewEvent)
-                    {
-                        UpdateMangaItemViewEvent lEvent = ((UpdateMangaItemViewEvent) o);
-                        mAdapter.updateItem(lEvent.manga);
-                    }
-                },
-                throwable -> MangaLogger.logError(TAG, throwable.getMessage()));
     }
 }
