@@ -217,10 +217,11 @@ public class MangaDB extends SQLiteOpenHelper
     public void putChapter(Chapter chapter)
     {
         ChapterDao lDao = mSession.getChapterDao();
-
-        if (lDao.hasKey(chapter))
+        Chapter lChapter = getChapter(chapter.url);
+        if (lChapter != null)
         {
-            lDao.update(chapter);
+            lChapter = lChapter.copy(chapter);
+            lDao.update(lChapter);
         }
         else
         {

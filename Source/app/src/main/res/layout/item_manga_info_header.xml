@@ -29,6 +29,7 @@
                 android:layout_height="match_parent" />
 
             <ImageView
+                android:scaleType="center"
                 android:src="@drawable/manga_loading_image"
                 android:id="@+id/imageViewMangaInfoHeader2"
                 android:layout_width="match_parent"

@@ -16,7 +16,6 @@ import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.Utils.BusEvents.MangaSelectedEvent;
-import com.l4digital.fastscroll.FastScroller;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -34,7 +33,7 @@ import butterknife.OnClick;
  * Created by Andy Gregoire on 3/8/2018.
  */
 
-public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements FastScroller.SectionIndexer
+public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
     public final static String TAG = SearchRecyclerAdapter.class.getSimpleName();
 
@@ -186,23 +185,6 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     /***
-     * This function returns the character shown in the fast scroller bubble
-     *
-     * @param position The current position in the recycler view
-     * @return The character to the be displayed in the fast scroll bubble
-     */
-    @Override
-    public String getSectionText(int position)
-    {
-        char lChar = mFilteredData.get(position).getTitle().charAt(0);
-        if (!Character.isLetterOrDigit(lChar))
-        {
-            return "#";
-        }
-        return Character.toString(lChar);
-    }
-
-    /***
      * This class acts as the view holder for items in the adapter.
      *
      */
@@ -281,11 +263,18 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
          */
         public void loadImage(Manga manga)
         {
-            Picasso.get().load(manga.getPicUrl())
-                   .error(mError)
-                   .placeholder(mPlaceHolder)
-                   .into(mImageTarget);
-
+            if (manga.image != null && !manga.image.isEmpty())
+            {
+                Picasso.get().load(manga.getPicUrl())
+                       .error(mError)
+                       .placeholder(mPlaceHolder)
+                       .resize(200, 400) // resize image before placing in target to fix laggy scrolling
+                       .into(mImageTarget);
+            }
+            else
+            {
+                Picasso.get().load(R.drawable.manga_error).into(mImage);
+            }
         }
 
         /***
@@ -294,6 +283,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
          */
         public void recycleImage()
         {
+
 //            Glide.with(itemView.getContext()).clear(mBackgroundImage);
             mImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         }

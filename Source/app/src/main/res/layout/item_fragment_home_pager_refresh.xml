@@ -25,7 +25,8 @@
             app:handleColor="@color/colorAccent"
             app:hideScrollbar="true"
             app:showTrack="false"
-            app:trackColor="@color/colorAccent" />
+            app:trackColor="@color/colorAccent"
+            />
 
     </RelativeLayout>
 </android.support.v4.widget.SwipeRefreshLayout>

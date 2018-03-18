@@ -60,7 +60,7 @@ public abstract class HomePresBase implements IHome.HomeBasePres
 
                     if (lEvent.isMulti)
                     {
-
+                        updateMangaList();
                     }
                     else
                     {

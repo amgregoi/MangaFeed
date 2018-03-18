@@ -4,12 +4,11 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.amgregoire.mangafeed.R;
-import com.amgregoire.mangafeed.UI.Adapters.MangaInfoChaptersAdapter;
 import com.amgregoire.mangafeed.Common.RequestWrapper;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.UI.Adapters.MangaInfoChaptersAdapter;
 import com.amgregoire.mangafeed.UI.Fragments.MangaInfoFragment;
 import com.amgregoire.mangafeed.UI.Mappers.IManga;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;
@@ -48,14 +47,10 @@ public class MangaInfoPres implements IManga.MangaPres
         String lReadText = mManga.recentChapter == null ? "Start" : mManga.recentChapter.isEmpty() ? "Start" : "Continue";
 
         mMap.initViews();
-        if (mManga.isFollowing())
-        {
-            mMap.setInitialFollowIcon(R.drawable.ic_heart_white_24dp, lReadText);
-        }
-        else
-        {
-            mMap.setInitialFollowIcon(R.drawable.ic_heart_outline_white_24dp, lReadText);
-        }
+
+        mMap.setBottomNavStartContinue(lReadText);
+        mMap.setBottomNavFollowTitle(mManga.following);
+
 
         mMap.startRefresh();
 
@@ -92,6 +87,7 @@ public class MangaInfoPres implements IManga.MangaPres
     {
         mManga.setFollowing(status);
         MangaFeed.getInstance().rxBus().send(new UpdateMangaItemViewEvent(mManga));
+        mMap.setBottomNavFollowTitle(status);
     }
 
     @Override

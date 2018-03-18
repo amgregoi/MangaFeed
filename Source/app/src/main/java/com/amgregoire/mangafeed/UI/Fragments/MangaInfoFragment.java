@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Adapters.MangaInfoChaptersAdapter;
@@ -76,12 +77,26 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
     }
 
     @Override
-    public void setInitialFollowIcon(int followIcon, String readText)
+    public void setBottomNavStartContinue(String readText)
     {
-        mBottomNav.getMenu().findItem(R.id.menuMangaInfoBottomNavFollow).setIcon(followIcon);
         mBottomNav.getMenu().findItem(R.id.menuMangaInfoBottomContinueReading).setTitle(readText);
     }
 
+    @Override
+    public void setBottomNavFollowTitle(int followType)
+    {
+        MenuItem item = mBottomNav.getMenu().findItem(R.id.menuMangaInfoBottomNavFollow);
+        if (followType == 0)
+        {
+            item.setIcon(R.drawable.ic_heart_outline_white_24dp);
+        }
+        else
+        {
+            item.setIcon(R.drawable.ic_heart_white_24dp);
+        }
+
+        item.setTitle(MangaEnums.FollowType.values()[followType].toString());
+    }
 
     @Override
     public void registerAdapter(RecyclerView.Adapter adapter, RecyclerView.LayoutManager manager)
@@ -174,28 +189,18 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
                             switch (popupItem.getItemId())
                             {
                                 case R.id.menuFollowStatusReading:
-                                    item.setTitle("Reading");
-                                    item.setIcon(R.drawable.ic_heart_white_24dp);
                                     lStatus = Manga.FOLLOW_READING;
                                     break;
                                 case R.id.menuFollowStatusCompleted:
-                                    item.setTitle("Completed");
-                                    item.setIcon(R.drawable.ic_heart_white_24dp);
                                     lStatus = Manga.FOLLOW_COMPLETE;
                                     break;
                                 case R.id.menuFollowStatusOnHold:
-                                    item.setTitle("On-Hold");
-                                    item.setIcon(R.drawable.ic_heart_white_24dp);
                                     lStatus = Manga.FOLLOW_ON_HOLD;
                                     break;
                                 case R.id.menuFollowStatusPlanToRead:
-                                    item.setTitle("Plan to Read");
-                                    item.setIcon(R.drawable.ic_heart_white_24dp);
                                     lStatus = Manga.FOLLOW_PLAN_TO_READ;
                                     break;
                                 default:
-                                    item.setTitle("Follow");
-                                    item.setIcon(R.drawable.ic_heart_outline_white_24dp);
                                     lStatus = Manga.UNFOLLOW;
                                     break;
                             }
@@ -219,7 +224,6 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
             return false;
         });
     }
-
 
     @Override
     public void startRefresh()

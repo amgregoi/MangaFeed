@@ -37,6 +37,8 @@ public interface IManga
      */
     interface MangaMap extends RecycleAdapterMap, InitViewMap, ContextMap, SwipeRefreshMap
     {
-        void setInitialFollowIcon(int followIcon, String readText);
+        void setBottomNavStartContinue(String readText);
+
+        void setBottomNavFollowTitle(int followType);
     }
 }

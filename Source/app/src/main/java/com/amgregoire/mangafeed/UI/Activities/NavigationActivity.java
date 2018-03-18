@@ -307,6 +307,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     /***
      * this function subscribes to the relevant Rx event bus events.
      *
+     * TODO: move subscribe/unsubscribe to rxbus to onresume/onpause when refactoring to presenters
      */
     private void setupRxBus()
     {

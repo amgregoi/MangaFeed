@@ -207,12 +207,17 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             mStatus.setText(mManga.status);
             mGenres.setText(mManga.genres);
 
-            Picasso.get().load(mManga.image)
-                   .error(mError)
-                   .placeholder(mPlaceHolder)
-                   .into(mImageTarget);
-
-
+            if(mManga.image != null && !mManga.image.isEmpty())
+            {
+                Picasso.get().load(mManga.image)
+                       .error(mError)
+                       .placeholder(mPlaceHolder)
+                       .into(mImageTarget);
+            }
+            else
+            {
+                Picasso.get().load(R.drawable.manga_error).into(mMainImage);
+            }
         }
 
         private final Target mImageTarget = new Target()

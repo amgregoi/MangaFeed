@@ -67,7 +67,7 @@ public class HomePresLibrary extends HomePresBase
 
                     if (lEvent.isMulti)
                     {
-
+                        updateMangaList();
                     }
                     else
                     {

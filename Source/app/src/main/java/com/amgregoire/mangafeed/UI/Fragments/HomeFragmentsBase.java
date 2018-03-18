@@ -2,6 +2,7 @@ package com.amgregoire.mangafeed.UI.Fragments;
 
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import com.amgregoire.mangafeed.Common.RecyclerViewSpaceDecoration;
 import com.amgregoire.mangafeed.R;
@@ -42,6 +43,11 @@ public abstract class HomeFragmentsBase extends Fragment implements IHome.HomeBa
         {
             mRecyclerView.removeItemDecoration(mSpaceDecor);
         }
+
+        mRecyclerView.setItemViewCacheSize(9);
+        mRecyclerView.setDrawingCacheEnabled(true);
+        mRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
 
         mRecyclerView.addItemDecoration(mSpaceDecor);
         mRecyclerView.getItemAnimator().setChangeDuration(0);

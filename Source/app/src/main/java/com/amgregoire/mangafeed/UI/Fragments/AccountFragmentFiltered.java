@@ -16,7 +16,6 @@ import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Mappers.IAccount;
 import com.amgregoire.mangafeed.UI.Presenters.AccountPresFiltered;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
-import com.l4digital.fastscroll.FastScrollRecyclerView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,7 +30,7 @@ public class AccountFragmentFiltered extends Fragment implements IAccount.Accoun
     public final static String FILTER_KEY = TAG + "FILTER_KEY";
     public final static String TITLE_KEY = TAG + "TITLE_KEY";
 
-    @BindView(R.id.recyclerViewFilteredManga) FastScrollRecyclerView mRecyclerView;
+    @BindView(R.id.recyclerViewFilteredManga) RecyclerView mRecyclerView;
     @BindView(R.id.toolbarFilteredManga) Toolbar mToolbar;
 
     private IAccount.AccountFilteredPres mPresenter;

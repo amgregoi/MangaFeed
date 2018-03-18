@@ -191,7 +191,8 @@ public class MangaFeed extends Application
 
         // Check if we updated in the last week, if we have we'll skip.
         Date lLowerLimit = new Date(SharedPrefs.getLastCatalogUpdate().getTime() + lWeekMs);
-        if (lLowerLimit.before(new Date()))
+//        if (lLowerLimit.before(new Date()))
+        if(false)
         {
             Observable.create((ObservableEmitter<SourceBase> subscriber) ->
             {

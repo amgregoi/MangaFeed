@@ -84,7 +84,7 @@ public class DownloadManager
     private void setChapterFilePath()
     {
         mSource = MangaFeed.getInstance().getSourceByUrl(mChapter.getUrl());
-        mChapterDirectory = new File(new StringBuilder(Environment.getExternalStorageDirectory()
+        mChapterDirectory = new File(new StringBuilder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                                                                   .getPath()).append(DOWNLOAD_FOLDER)
                                                                              .append("/")
                                                                              .append(mSource.getSourceName())

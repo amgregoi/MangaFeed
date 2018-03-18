@@ -117,7 +117,7 @@ public class MangaEnums
      */
     public enum FollowType
     {
-        Reading, Completed, On_Hold;
+        Follow, Reading, Completed, On_Hold, Plan_to_Read;
 
         @Override
         public String toString()
