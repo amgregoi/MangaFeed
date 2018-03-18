@@ -7,6 +7,8 @@ import com.amgregoire.mangafeed.UI.Mappers.Maps.LifeCycleMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.PagerAdapterMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.RecycleAdapterMap;
 
+import java.util.List;
+
 /**
  * Created by Andy Gregoire on 3/8/2018.
  */
@@ -27,9 +29,9 @@ public interface IAccount
 
     }
 
-    interface AccountStatsPres extends LifeCycleMap
+    interface AccountStatsPres extends LifeCycleMap, EventBusMap
     {
-
+        void startFilterFragment(int filter, String title);
     }
 
     interface AccountFilteredPres extends LifeCycleMap, EventBusMap
@@ -51,12 +53,12 @@ public interface IAccount
 
     }
 
-    interface AccountStatseMap extends InitViewMap, ContextMap
+    interface AccountStatsMap extends InitViewMap, ContextMap
     {
-
+        void setFollowStats(List<Long> values);
     }
 
-    interface AccountFilteredMap extends  RecycleAdapterMap, InitViewMap, ContextMap
+    interface AccountFilteredMap extends RecycleAdapterMap, InitViewMap, ContextMap
     {
 
     }

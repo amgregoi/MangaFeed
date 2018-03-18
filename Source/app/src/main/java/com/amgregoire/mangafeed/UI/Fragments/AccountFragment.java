@@ -47,6 +47,7 @@ public class AccountFragment extends Fragment implements IAccount.AccountMap
     @BindView(R.id.viewPagerAccount) ViewPager mViewPager;
 
     @BindView(R.id.textViewUserName) TextView mUserName;
+    @BindView(R.id.textViewSignInOut) TextView mSignInOut;
 
     private IAccount.AccountPres mPresenter;
 
@@ -83,7 +84,7 @@ public class AccountFragment extends Fragment implements IAccount.AccountMap
     {
         mViewPager.setAdapter(adapter);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
-        mViewPager.setOffscreenPageLimit(1);
+        mViewPager.setOffscreenPageLimit(2);
     }
 
     @OnClick({R.id.linearLayoutUserContainer, R.id.imageViewAccountProfile})
@@ -96,6 +97,7 @@ public class AccountFragment extends Fragment implements IAccount.AccountMap
     {
         String lUserName = SharedPrefs.getUserName();
         mUserName.setText(lUserName == null ? "Guest" : lUserName);
+        mSignInOut.setText(lUserName == null ? "Sign in" : "Sign out" );
     }
 
     /***

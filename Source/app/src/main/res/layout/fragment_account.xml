@@ -34,13 +34,16 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <RelativeLayout
+                android:orientation="horizontal"
                 android:id="@+id/linearLayoutUserContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true">
 
                 <ImageView
+                    android:layout_centerVertical="true"
+                    android:id="@+id/googleIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -48,8 +51,10 @@
                     android:src="@drawable/ic_google_white_24dp" />
 
                 <TextView
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/googleIcon"
                     android:id="@+id/textViewUserName"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:layout_marginStart="10dp"
@@ -57,7 +62,21 @@
                     android:text="Guest"
                     android:textColor="?attr/text_color"
                     android:textStyle="bold" />
-            </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textViewSignInOut"
+                    android:layout_marginEnd="@dimen/baseline_margin_unit_16dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:textColor="?attr/text_color"
+                    android:layout_gravity="center_vertical"
+                    android:text="Sign out"
+                    android:textSize="12sp"
+                    android:textStyle="italic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/linearLayoutImageBorder"
