@@ -125,6 +125,7 @@ public class AccountPresStats implements IAccount.AccountStatsPres
             mStatValues = new ArrayList<>();
             MangaDB.getInstance()
                    .getLibraryFilterCount(1, 2, 3, 4)
+                   .cache()
                    .subscribe(aLong -> mStatValues.add(aLong),
                            throwable -> MangaLogger.logError(TAG, throwable.getMessage()),
                            () -> mMap.setFollowStats(mStatValues));

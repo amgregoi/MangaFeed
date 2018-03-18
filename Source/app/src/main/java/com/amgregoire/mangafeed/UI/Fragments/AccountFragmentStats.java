@@ -108,10 +108,17 @@ public class AccountFragmentStats extends Fragment implements IAccount.AccountSt
     @Override
     public void setFollowStats(List<Long> values)
     {
-        mReadingCount.setText(Long.toString(values.get(0)));
-        mCompletedCount.setText(Long.toString(values.get(1)));
-        mOnHoldCount.setText(Long.toString(values.get(2)));
-        mPlanToReadCount.setText(Long.toString(values.get(3)));
+//        try
+//        {
+            mReadingCount.setText(Long.toString(values.get(0)));
+            mCompletedCount.setText(Long.toString(values.get(1)));
+            mOnHoldCount.setText(Long.toString(values.get(2)));
+            mPlanToReadCount.setText(Long.toString(values.get(3)));
+//        }
+//        catch (Exception ex)
+//        {
+//            MangaLogger.logError(TAG, ex.getMessage());
+//        }
     }
 
 }

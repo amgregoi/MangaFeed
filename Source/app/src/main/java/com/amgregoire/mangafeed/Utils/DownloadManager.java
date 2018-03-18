@@ -33,6 +33,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class DownloadManager
 {
+    public final static String TAG = DownloadManager.class.getSimpleName();
     public final static String DOWNLOAD_FOLDER = "/MangaFeedDownloads/";
 
     private Chapter mChapter;
@@ -89,7 +90,8 @@ public class DownloadManager
                                                                              .append("/")
                                                                              .append(mSource.getSourceName())
                                                                              .append("/")
-                                                                             .append(mChapter.mangaTitle.replaceAll("\\W", ""))
+                                                                             .append(mChapter.mangaTitle
+                                                                                     .replaceAll("\\W", ""))
                                                                              .append("/")
                                                                              .append(mChapter.getChapterNumber())
                                                                              .append("/")
@@ -177,9 +179,6 @@ public class DownloadManager
                         }
                 );
     }
-
-
-    public final static String TAG = DownloadManager.class.getSimpleName();
 
     /***
      * This function returns a new target, that saves the loaded bitmap in its appropriate directory.
