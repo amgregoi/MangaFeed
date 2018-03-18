@@ -369,6 +369,9 @@ public class Manga implements Parcelable
     }
 
 
+    /***
+     * This function posts a follow update to the server
+     */
     private void updateFollowItem()
     {
         int lUserId = SharedPrefs.getUserId();

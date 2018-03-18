@@ -45,7 +45,8 @@ public class HomePresLibrary extends HomePresBase
                                                     (
                                                             mangas -> updateMangaGridView(mangas),
                                                             throwable -> MangaLogger.logError(TAG, "Failed to retrieve library list", throwable.getMessage())
-                                                    );        }
+                                                    );
+        }
         catch (Exception aException)
         {
             MangaLogger.logError(TAG, aException.getMessage());
@@ -66,7 +67,7 @@ public class HomePresLibrary extends HomePresBase
 
                     if (lEvent.isMulti)
                     {
-                        updateMangaList();
+
                     }
                     else
                     {
