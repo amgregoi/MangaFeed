@@ -41,6 +41,8 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     private ArrayList<Manga> mFilteredData = null;
     private TextFilter mFilter = new TextFilter();
 
+    private boolean mIsOfflineFlag = false;
+
     public SearchRecyclerAdapter(List<Manga> data)
     {
         mOriginalData = new ArrayList<>(data);
@@ -162,6 +164,11 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         notifyDataSetChanged();
     }
 
+    public void setOffline()
+    {
+        mIsOfflineFlag = true;
+    }
+
     /***
      * This function causes the adapter filter to initiate.
      *
@@ -238,7 +245,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         {
             MangaFeed.getInstance()
                      .rxBus()
-                     .send(new MangaSelectedEvent(mFilteredData.get(getLayoutPosition())));
+                     .send(new MangaSelectedEvent(mFilteredData.get(getLayoutPosition()), mIsOfflineFlag));
         }
 
         /***

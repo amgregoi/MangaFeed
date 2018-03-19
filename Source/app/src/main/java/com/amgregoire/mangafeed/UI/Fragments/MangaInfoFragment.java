@@ -34,6 +34,7 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
 {
     public final static String TAG = MangaInfoFragment.class.getSimpleName();
     public final static String MANGA_KEY = TAG + "MANGA";
+    public final static String OFFLINE_KEY = TAG + "OFFLINE";
 
     @BindView(R.id.recyclerViewMangaInfo) FastScrollRecyclerView mRecyclerView;
     @BindView(R.id.bottomNavigationMangaInfo) BottomNavigationView mBottomNav;
@@ -47,10 +48,11 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
 
     private IManga.MangaPres mPresenter;
 
-    public static Fragment newInstance(Manga manga)
+    public static Fragment newInstance(Manga manga, boolean offline)
     {
         Bundle lBundle = new Bundle();
         lBundle.putParcelable(MANGA_KEY, manga);
+        lBundle.putBoolean(OFFLINE_KEY, offline);
 
         Fragment lFragment = new MangaInfoFragment();
         lFragment.setArguments(lBundle);
@@ -155,6 +157,15 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
     public void onDownloadDownload()
     {
         mPresenter.onDownloadDownload();
+    }
+
+    /***
+     * This function tells the presenter the remove menu button has been selected.
+     *
+     */
+    public void onDownloadRemove()
+    {
+        mPresenter.onDownloadRemove();
     }
 
     /***

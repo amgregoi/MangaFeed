@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menuMangaInfoRefresh"
+        android:icon="@drawable/ic_refresh_white_24dp"
+        app:showAsAction="ifRoom|collapseActionView"
+        android:title="Settings" />
+
+    <item
+        android:id="@+id/menuDownloadsMangaInfoDownload"
+        android:icon="@drawable/ic_download_grey600_24dp"
+        app:showAsAction="collapseActionView"
+        android:title="Remove Chapters" />
+</menu>

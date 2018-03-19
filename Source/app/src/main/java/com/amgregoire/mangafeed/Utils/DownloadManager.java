@@ -42,7 +42,8 @@ public class DownloadManager
     private DownloadUpdater mUpdater;
     private List<String> mChapterUrls;
     private List<Target> mTargets;
-
+    private int mTotalPages = 0;
+    private int mSavedPages = 0;
     private File mChapterDirectory;
 
     public DownloadManager(Chapter chapter, DownloadUpdater updater)
@@ -57,14 +58,28 @@ public class DownloadManager
     }
 
     /***
-     * This function starts the chapter download.
+     * This function is used to attach a new listener to the manager so views can get live updates.
      *
+     * @param updater
      */
-    public void startDownload()
+    public void setDownloadUpdater(DownloadUpdater updater)
     {
-        mChapter.downloadStatus = 2;
-        MangaDB.getInstance().putChapter(mChapter);
-        getChapterPages();
+        mUpdater = updater;
+    }
+
+    /***
+     * This function retrieves the number of pages being downloaded for this chapter.
+     *
+     * @return
+     */
+    public int getTotalPageCount()
+    {
+        return mTotalPages;
+    }
+
+    public int getCurrentPageCount()
+    {
+        return mSavedPages;
     }
 
     /***
@@ -77,6 +92,16 @@ public class DownloadManager
         return mChapterDirectory.listFiles();
     }
 
+    /***
+     * This function starts the chapter download.
+     *
+     */
+    public void startDownload()
+    {
+        mChapter.downloadStatus = 2;
+        MangaDB.getInstance().putChapter(mChapter);
+        getChapterPages();
+    }
 
     /***
      * This function sets the chapter file directory for the respective chapter and its source.
@@ -128,7 +153,7 @@ public class DownloadManager
                        () ->
                        {
                            // OnComplete
-                           mUpdater.onPageCountReceived(mChapterUrls.size());
+                           mTotalPages = mChapterUrls.size();
                            saveChapterPages();
                        });
     }
@@ -162,7 +187,7 @@ public class DownloadManager
                                            try
                                            {
                                                stream.write(s.getBytes());
-                                               mUpdater.incrementFinishedPages();
+                                               incrementPageSaved();
                                            }
                                            finally
                                            {
@@ -205,7 +230,7 @@ public class DownloadManager
                     lSavedImage.createNewFile();
                     FileOutputStream ostream = new FileOutputStream(lSavedImage);
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
-                    mUpdater.incrementFinishedPages();
+                    incrementPageSaved();
                 }
                 catch (IOException e)
                 {
@@ -227,6 +252,25 @@ public class DownloadManager
         };
     }
 
+    /***
+     * This function increments the total number of downloaded pages, until all pages are downloaded.
+     * And calls the scheduler to remove itself, and queue up the next chapter.
+     *
+     */
+    private void incrementPageSaved()
+    {
+        mUpdater.incrementFinishedPages();
+        mSavedPages++;
+        if (mSavedPages == mTotalPages)
+        {
+            MangaLogger.logError(TAG, mChapter.getMangaUrl());
+            DownloadScheduler.removeChapterDownloading(this);
+            mUpdater.onDownloadFinished();
+            mChapter.downloadStatus = Chapter.DOWNLOAD_STATUS_FINISHED;
+            MangaDB.getInstance().putChapter(mChapter);
+        }
+    }
+
     public interface DownloadUpdater
     {
         /***
@@ -236,10 +280,10 @@ public class DownloadManager
         void incrementFinishedPages();
 
         /***
-         * This function lets the listening view know the total amount of pages being downloaded for the chapter.
+         * This function lets the listening view know when the download manager has finished downloading the chapter.
          *
          */
-        void onPageCountReceived(int count);
+        void onDownloadFinished();
     }
 
     /***
@@ -254,8 +298,7 @@ public class DownloadManager
         if (Build.VERSION.SDK_INT >= 23)
         {
             if (MangaFeed.getInstance()
-                         .checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED)
+                         .checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
             {
                 Log.v(TAG, "Storage permission is granted");
                 return true;

@@ -16,8 +16,7 @@ import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.Utils.BusEvents.ToggleDownloadViewEvent;
-import com.amgregoire.mangafeed.Utils.BusEvents.StartDownloadEvent;
-import com.amgregoire.mangafeed.Utils.DownloadManager;
+import com.amgregoire.mangafeed.Utils.DownloadScheduler;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
 import com.squareup.picasso.Picasso;
@@ -282,7 +281,6 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
     {
         @BindView(R.id.textViewMangaInfoChapterDate) TextView mDate;
         @BindView(R.id.textViewMangaInfoChapterTitle) TextView mTitle;
-        @BindView(R.id.imageViewMangaInfoChapterDownload) ImageView mDownloadImage;
         @BindView(R.id.imageViewMangaInfoChapterDownloadCheckBox) ImageView mDownloadBox;
 
         @BindDrawable(R.drawable.ic_download_grey600_24dp) Drawable mDownload;
@@ -314,21 +312,13 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             if (mDownloadViewFlag)
             {
                 mDownloadBox.setVisibility(View.VISIBLE);
-                mDownloadImage.setVisibility(View.GONE);
                 boolean lIsChecked = mDownloadList.contains(lChapter);
                 mDownloadBox.setImageDrawable(iconFactory(lIsChecked));
             }
             else
             {
                 mDownloadBox.setVisibility(View.GONE);
-                mDownloadImage.setVisibility(View.VISIBLE);
             }
-
-            // TODO
-            // Check if Downloaded -> if downloaded set image to checked
-            // else
-            mDownloadImage.setImageDrawable(mDownload);
-
         }
 
         @OnClick(R.id.linearLayoutMangaInfoChapterRoot)
@@ -370,35 +360,6 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             }
 
             return false;
-        }
-
-        DownloadManager manager;
-        @OnClick(R.id.frameLayoutMangaInfoChapterDownload)
-        public void onChapterDownloadButtonClick()
-        {
-            // TODO
-            // download chapter
-
-            manager = new DownloadManager(mChapterData.get(getAdapterPosition() - getHeaderCount()), new DownloadManager.DownloadUpdater() {
-                int test = 0;
-                int count = 0;
-
-                @Override
-                public void incrementFinishedPages()
-                {
-                    MangaLogger.logError(TAG, test + "", count + "");
-                    test++;
-                }
-
-                @Override
-                public void onPageCountReceived(int count)
-                {
-                    MangaLogger.logError(TAG, "Received number of pages: " + count);
-                    this.count = count;
-                }
-            });
-
-            manager.startDownload();
         }
 
         /***
@@ -469,12 +430,17 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
     {
         if (mDownloadList.size() > 0)
         {
-            MangaFeed.getInstance().rxBus().send(new StartDownloadEvent(mDownloadList));
+            DownloadScheduler.addChaptersToQueue(mDownloadList);
         }
         else
         {
             MangaFeed.getInstance().makeToastShort("No items have been selected");
         }
+    }
+
+    public void onDownloadRemove()
+    {
+        MangaFeed.getInstance().makeToastShort("NOT IMPLEMENTED");
     }
 
     /***

@@ -26,6 +26,8 @@ public interface IManga
 
         void onDownloadDownload();
 
+        void onDownloadRemove();
+
         void onDownloadViewEnabled();
 
         void onUpdateFollowStatus(int status);

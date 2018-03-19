@@ -3,6 +3,7 @@ package com.amgregoire.mangafeed.UI.Activities;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -18,7 +20,6 @@ import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import com.amgregoire.mangafeed.Common.WifiBroadcastReceiver;
-import com.amgregoire.mangafeed.Utils.LoginManager;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragment;
@@ -29,9 +30,12 @@ import com.amgregoire.mangafeed.UI.Fragments.OfflineFragment;
 import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLoginAttemptEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLogoutEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.MangaSelectedEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.SearchQueryChangeEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.ToggleDownloadViewEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateSourceEvent;
 import com.amgregoire.mangafeed.Utils.DownloadManager;
+import com.amgregoire.mangafeed.Utils.LoginManager;
+import com.amgregoire.mangafeed.Utils.MangaLogger;
 
 import butterknife.BindDrawable;
 import butterknife.BindView;
@@ -111,6 +115,25 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
             MenuInflater lInflater = getMenuInflater();
             lInflater.inflate(R.menu.menu_toolbar_home, menu);
             setTitle(MangaFeed.getInstance().getCurrentSource().getSourceName());
+            SearchView search = (SearchView) menu.findItem(R.id.menuHomeSearch).getActionView();
+            SearchView.SearchAutoComplete theTextArea = search.findViewById(R.id.search_src_text);
+            theTextArea.setTextColor(Color.WHITE);//or any color that you want
+            search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+            {
+                @Override
+                public boolean onQueryTextSubmit(String s)
+                {
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s)
+                {
+                    MangaFeed.getInstance().rxBus().send(new SearchQueryChangeEvent(s));
+                    return true;
+                }
+            });
+
             return true;
         }
         else if (mMenuFlag == Menus.MENU_DOWNLOADS)
@@ -120,6 +143,13 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
             setTitle(R.string.nav_bottom_title_download);
             return true;
         }
+        else if (mMenuFlag == Menus.MENU_DOWNLOADS_MANGA_INFO)
+        {
+            MenuInflater lInflater = getMenuInflater();
+            lInflater.inflate(R.menu.menu_toolbar_downloads_manga_info, menu);
+            setTitle(R.string.nav_bottom_title_account);
+            return true;
+        }
         else if (mMenuFlag == Menus.MENU_ACCOUNT)
         {
             MenuInflater lInflater = getMenuInflater();
@@ -127,17 +157,25 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
             setTitle(R.string.nav_bottom_title_account);
             return true;
         }
-        else if (mMenuFlag == Menus.MENU_MANGA_INFO)
+        else if (mMenuFlag == Menus.MENU_HOME_MANGA_INFO)
         {
             MenuInflater lInflater = getMenuInflater();
             lInflater.inflate(R.menu.menu_toolbar_manga_info, menu);
             mToolbar.setNavigationIcon(mDrawBack);
             return true;
         }
-        else if (mMenuFlag == Menus.MENU_MANGA_DOWNLOAD)
+        else if (mMenuFlag == Menus.MENU_HOME_MANGA_INFO_DOWNLOAD)
         {
             MenuInflater lInflater = getMenuInflater();
             lInflater.inflate(R.menu.menu_toolbar_manga_info_download, menu);
+            mToolbar.setNavigationIcon(mDrawWhiteOutline);
+            setTitle("Select Items");
+            return true;
+        }
+        else if (mMenuFlag == Menus.MENU_DOWNLOADS_MANGA_INFO_REMOVE)
+        {
+            MenuInflater lInflater = getMenuInflater();
+            lInflater.inflate(R.menu.menu_toolbar_downloads_manga_info_remove, menu);
             mToolbar.setNavigationIcon(mDrawWhiteOutline);
             setTitle("Select Items");
             return true;
@@ -163,8 +201,12 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                 lMangaFragment.onRefreshInfo();
                 break;
             case R.id.menuMangaInfoDownload:
-
-                mMenuFlag = Menus.MENU_MANGA_DOWNLOAD;
+                mMenuFlag = Menus.MENU_HOME_MANGA_INFO_DOWNLOAD;
+                invalidateOptionsMenu();
+                lMangaFragment.onDownloadViewEnabled();
+                break;
+            case R.id.menuDownloadsMangaInfoDownload:
+                mMenuFlag = Menus.MENU_DOWNLOADS_MANGA_INFO_REMOVE;
                 invalidateOptionsMenu();
                 lMangaFragment.onDownloadViewEnabled();
                 break;
@@ -179,8 +221,13 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                     MangaFeed.getInstance().makeToastShort("Starting downloads now");
                 }
                 break;
+            case R.id.menuDownloadsMangaInfoRemove:
+                lMangaFragment.onDownloadRemove();
+                lMangaFragment.onDownloadCancel();
+                MangaLogger.logError(TAG, "test");
+                break;
             case android.R.id.home:
-                if (mMenuFlag == Menus.MENU_MANGA_INFO)
+                if (mMenuFlag == Menus.MENU_HOME_MANGA_INFO)
                 {
                     mMenuFlag = Menus.MENU_HOME;
                     invalidateOptionsMenu();
@@ -246,7 +293,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     @Override
     public void onBackPressed()
     {
-        if (mMenuFlag == Menus.MENU_MANGA_DOWNLOAD)
+        if (mMenuFlag == Menus.MENU_HOME_MANGA_INFO_DOWNLOAD || mMenuFlag == Menus.MENU_DOWNLOADS_MANGA_INFO_REMOVE)
         {
             MangaInfoFragment lMangaFragment = (MangaInfoFragment) getSupportFragmentManager().findFragmentByTag(MangaInfoFragment.TAG);
             lMangaFragment.onDownloadCancel();
@@ -259,50 +306,21 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         }
         else
         {
-            // implement double back to exit
-            super.onBackPressed();
+            if (!mCurrentTag.equals(HomeFragment.TAG) || !mExitAppFlag)
+            {
+                mBottomNav.setSelectedItemId(R.id.menuBottomNavCatalog);
+                MangaFeed.getInstance().makeToastShort("Press back again to exit");
+                mExitAppFlag = true;
+            }
+            else
+            {
+                // implement double back to exit
+                super.onBackPressed();
+            }
         }
     }
 
-    /***
-     * This function sets up the bottom navigation.
-     *
-     */
-    private void setupNavigation()
-    {
-        mBottomNav.setOnNavigationItemSelectedListener(item ->
-        {
-            mMenuFlag = Menus.MENU_HOME;
-
-            switch (item.getItemId())
-            {
-                case R.id.menuBottomNavCatalog:
-                    mMenuFlag = Menus.MENU_HOME;
-                    if (mInternetFlag)
-                    {
-                        setFragment(HomeFragment.TAG);
-                    }
-                    else
-                    {
-                        setFragment(OfflineFragment.TAG);
-                    }
-                    break;
-                case R.id.menuBottomNavDownloads:
-                    mMenuFlag = Menus.MENU_DOWNLOADS;
-                    setFragment(DownloadsFragment.TAG);
-                    break;
-                case R.id.menuBottomNavAccount:
-                    mMenuFlag = Menus.MENU_ACCOUNT;
-                    setFragment(AccountFragment.TAG);
-                    break;
-                default:
-                    return false;
-            }
-
-            invalidateOptionsMenu();
-            return true;
-        });
-    }
+    private boolean mExitAppFlag = false;
 
     /***
      * this function subscribes to the relevant Rx event bus events.
@@ -334,7 +352,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
             else if (o instanceof MangaSelectedEvent)
             {
                 MangaSelectedEvent lEvent = (MangaSelectedEvent) o;
-                Fragment lMangaFragment = MangaInfoFragment.newInstance(lEvent.manga);
+                Fragment lMangaFragment = MangaInfoFragment.newInstance(lEvent.manga, lEvent.isOffline);
 
                 getSupportFragmentManager().beginTransaction()
                                            .add(R.id.frameLayoutMasterContainer, lMangaFragment, MangaInfoFragment.TAG)
@@ -342,23 +360,42 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                                            .commit();
 
                 setTitle(lEvent.manga.title);
-                mMenuFlag = Menus.MENU_MANGA_INFO;
+                if (lEvent.isOffline)
+                {
+                    mMenuFlag = Menus.MENU_DOWNLOADS_MANGA_INFO;
+                }
+                else
+                {
+                    mMenuFlag = Menus.MENU_HOME_MANGA_INFO;
+                }
                 invalidateOptionsMenu();
             }
             else if (o instanceof ToggleDownloadViewEvent)
             {
                 MangaInfoFragment lMangaFragment = (MangaInfoFragment) getSupportFragmentManager().findFragmentByTag(MangaInfoFragment.TAG);
 
-                if (mMenuFlag == Menus.MENU_MANGA_INFO)
+                if (mMenuFlag == Menus.MENU_HOME_MANGA_INFO)
                 {
-                    mMenuFlag = Menus.MENU_MANGA_DOWNLOAD;
+                    mMenuFlag = Menus.MENU_HOME_MANGA_INFO_DOWNLOAD;
+                    invalidateOptionsMenu();
+                    lMangaFragment.onDownloadViewEnabled();
+                }
+                else if (mMenuFlag == Menus.MENU_HOME_MANGA_INFO_DOWNLOAD)
+                {
+                    setTitle(((ToggleDownloadViewEvent) o).manga.title);
+                    mMenuFlag = Menus.MENU_HOME_MANGA_INFO;
+                    invalidateOptionsMenu();
+                }
+                else if (mMenuFlag == Menus.MENU_DOWNLOADS_MANGA_INFO)
+                {
+                    mMenuFlag = Menus.MENU_DOWNLOADS_MANGA_INFO_REMOVE;
                     invalidateOptionsMenu();
                     lMangaFragment.onDownloadViewEnabled();
                 }
                 else
                 {
                     setTitle(((ToggleDownloadViewEvent) o).manga.title);
-                    mMenuFlag = Menus.MENU_MANGA_INFO;
+                    mMenuFlag = Menus.MENU_DOWNLOADS_MANGA_INFO;
                     invalidateOptionsMenu();
                 }
             }
@@ -366,7 +403,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
             {
                 LoginManager.login(this);
             }
-            else if( o instanceof GoogleLogoutEvent)
+            else if (o instanceof GoogleLogoutEvent)
             {
                 LoginManager.logout();
             }
@@ -421,6 +458,46 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     }
 
     /***
+     * This function sets up the bottom navigation.
+     *
+     */
+    private void setupNavigation()
+    {
+        mBottomNav.setOnNavigationItemSelectedListener(item ->
+        {
+            mMenuFlag = Menus.MENU_HOME;
+
+            switch (item.getItemId())
+            {
+                case R.id.menuBottomNavCatalog:
+                    mMenuFlag = Menus.MENU_HOME;
+                    if (mInternetFlag)
+                    {
+                        setFragment(HomeFragment.TAG);
+                    }
+                    else
+                    {
+                        setFragment(OfflineFragment.TAG);
+                    }
+                    break;
+                case R.id.menuBottomNavDownloads:
+                    mMenuFlag = Menus.MENU_DOWNLOADS;
+                    setFragment(DownloadsFragment.TAG);
+                    break;
+                case R.id.menuBottomNavAccount:
+                    mMenuFlag = Menus.MENU_ACCOUNT;
+                    setFragment(AccountFragment.TAG);
+                    break;
+                default:
+                    return false;
+            }
+
+            invalidateOptionsMenu();
+            return true;
+        });
+    }
+
+    /***
      * This function sets up the activities toolbar.
      *
      */
@@ -451,7 +528,9 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         public final static int MENU_HOME = 0;
         public final static int MENU_ACCOUNT = 1;
         public final static int MENU_DOWNLOADS = 2;
-        public final static int MENU_MANGA_INFO = 3;
-        public final static int MENU_MANGA_DOWNLOAD = 4;
+        public final static int MENU_DOWNLOADS_MANGA_INFO = 3;
+        public final static int MENU_DOWNLOADS_MANGA_INFO_REMOVE = 4;
+        public final static int MENU_HOME_MANGA_INFO = 5;
+        public final static int MENU_HOME_MANGA_INFO_DOWNLOAD = 6;
     }
 }

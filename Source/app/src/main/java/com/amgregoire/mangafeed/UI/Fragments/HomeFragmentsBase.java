@@ -44,11 +44,8 @@ public abstract class HomeFragmentsBase extends Fragment implements IHome.HomeBa
             mRecyclerView.removeItemDecoration(mSpaceDecor);
         }
 
-        mRecyclerView.setItemViewCacheSize(9);
         mRecyclerView.setDrawingCacheEnabled(true);
         mRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-
-
         mRecyclerView.addItemDecoration(mSpaceDecor);
         mRecyclerView.getItemAnimator().setChangeDuration(0);
         mRecyclerView.setLayoutManager(manager);

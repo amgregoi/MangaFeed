@@ -19,9 +19,11 @@ import com.amgregoire.mangafeed.Models.Manga;
 public class MangaSelectedEvent
 {
     public Manga manga;
+    public boolean isOffline;
 
-    public MangaSelectedEvent(Manga m)
+    public MangaSelectedEvent(Manga m, boolean offline)
     {
         manga = m;
+        isOffline = offline;
     }
 }

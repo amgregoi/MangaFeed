@@ -281,6 +281,28 @@ public class MangaDB extends SQLiteOpenHelper
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    public Observable<List<Chapter>> getDownloadedChapters(Manga manga)
+    {
+        return Observable.create((ObservableEmitter<List<Chapter>> subscriber) ->
+        {
+            try
+            {
+                List<Chapter> lResult = mSession.getChapterDao()
+                                                .queryBuilder()
+                                                .where(ChapterDao.Properties.DownloadStatus.eq(2))
+                                                .where(ChapterDao.Properties.MangaUrl.eq(manga.link))
+                                                .list();
+
+                subscriber.onNext(lResult);
+                subscriber.onComplete();
+            }
+            catch (Exception ex)
+            {
+                subscriber.onError(ex);
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
     /***
      * This function returns the list of cached chapters, representing what the user has viewed.
      *

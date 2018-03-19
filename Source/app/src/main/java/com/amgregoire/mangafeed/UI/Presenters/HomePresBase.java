@@ -9,6 +9,7 @@ import com.amgregoire.mangafeed.UI.Adapters.SearchRecyclerAdapter;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Mappers.IHome;
+import com.amgregoire.mangafeed.Utils.BusEvents.SearchQueryChangeEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
@@ -75,6 +76,11 @@ public abstract class HomePresBase implements IHome.HomeBasePres
                         mAdapter.updateItem(manga);
                         MangaLogger.logInfo(TAG, "updated view", manga.title);
                     }
+                }
+                else if (o instanceof SearchQueryChangeEvent)
+                {
+                    SearchQueryChangeEvent lEvent = (SearchQueryChangeEvent) o;
+                    mAdapter.performTextFilter(lEvent.query);
                 }
             }, throwable -> Log.e(TAG, throwable.getMessage()));
         }
