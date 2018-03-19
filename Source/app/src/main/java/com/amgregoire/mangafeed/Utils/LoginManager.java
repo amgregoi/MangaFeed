@@ -52,6 +52,8 @@ public class LoginManager
     {
         if (SharedPrefs.getUserEmail() == null)
         {
+            MangaFeed.getInstance().makeToastShort("Attempting to login");
+
 //            MangaFeed.getInstance().rxBus().send(new GoogleLoginAttemptEvent());
 
             // TODO

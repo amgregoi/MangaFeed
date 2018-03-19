@@ -152,14 +152,15 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         {
             MenuInflater lInflater = getMenuInflater();
             lInflater.inflate(R.menu.menu_toolbar_downloads_manga_info, menu);
-            setTitle(R.string.nav_bottom_title_account);
+            mToolbar.setNavigationIcon(mDrawBack);
+//            setTitle(R.string.nav_bottom_title_account);
             return true;
         }
         else if (mMenuFlag == Menus.MENU_ACCOUNT)
         {
             MenuInflater lInflater = getMenuInflater();
             lInflater.inflate(R.menu.menu_toolbar_account, menu);
-            setTitle(R.string.nav_bottom_title_account);
+            setTitle(R.string.empty);
             return true;
         }
         else if (mMenuFlag == Menus.MENU_HOME_MANGA_INFO)
@@ -232,10 +233,8 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                 MangaLogger.logError(TAG, "test");
                 break;
             case android.R.id.home:
-                if (mMenuFlag == Menus.MENU_HOME_MANGA_INFO)
+                if (mMenuFlag == Menus.MENU_HOME_MANGA_INFO || mMenuFlag == Menus.MENU_DOWNLOADS_MANGA_INFO)
                 {
-                    mMenuFlag = Menus.MENU_HOME;
-                    invalidateOptionsMenu();
                     onBackPressed();
                 }
                 else
@@ -249,6 +248,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                     }
                     else
                     {
+
                         mToolbar.setNavigationIcon(mDrawWhiteOutline);
                         lMangaFragment.onSelectAllOrNone(false);
                     }
@@ -307,9 +307,13 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         {
             getSupportFragmentManager().popBackStack();
 
-            if (mMenuFlag == Menus.MENU_DOWNLOADS_MANGA_INFO)
+            if (mMenuFlag == Menus.MENU_HOME_MANGA_INFO)
             {
                 mMenuFlag = Menus.MENU_HOME;
+            }
+            else if (mMenuFlag == Menus.MENU_DOWNLOADS_MANGA_INFO)
+            {
+                mMenuFlag = Menus.MENU_DOWNLOADS;
             }
             else
             {

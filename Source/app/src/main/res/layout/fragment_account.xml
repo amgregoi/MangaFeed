@@ -35,47 +35,30 @@
             </LinearLayout>
 
             <RelativeLayout
-                android:orientation="horizontal"
                 android:id="@+id/linearLayoutUserContainer"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true">
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal"
+                android:paddingTop="30dp">
 
                 <ImageView
-                    android:layout_centerVertical="true"
                     android:id="@+id/googleIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
                     android:layout_marginStart="18dp"
                     android:src="@drawable/ic_google_white_24dp" />
 
                 <TextView
-                    android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/googleIcon"
-                    android:id="@+id/textViewUserName"
+                    android:id="@+id/textViewSignInOut"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:fontFamily="sans-serif-black"
-                    android:textSize="20sp"
-                    android:text="Guest"
-                    android:textColor="?attr/text_color"/>
-
-                <TextView
-                    android:id="@+id/textViewSignInOut"
-                    android:layout_marginEnd="@dimen/baseline_margin_unit_16dp"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentEnd="true"
+                    android:layout_toEndOf="@id/googleIcon"
+                    android:text="Sign in"
                     android:textColor="?attr/text_color"
-                    android:layout_gravity="center_vertical"
-                    android:text="Sign out"
-                    android:textSize="12sp"
-                    android:textStyle="italic"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:textSize="15sp"
+                    android:textStyle="italic" />
 
             </RelativeLayout>
 
@@ -91,12 +74,23 @@
                     android:id="@+id/imageViewAccountProfile"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:layout_centerVertical="true"
                     android:layout_margin="2dp"
                     android:background="@color/colorAccent"
                     android:scaleType="fitXY"
                     android:src="@drawable/default_profile_image" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/textViewUserName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:layout_marginStart="40dp"
+                android:layout_toEndOf="@id/linearLayoutImageBorder"
+                android:fontFamily="sans-serif-black"
+                android:text="Guest"
+                android:textColor="?attr/text_color"
+                android:textSize="30sp" />
         </RelativeLayout>
 
         <android.support.design.widget.TabLayout
