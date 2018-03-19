@@ -2,17 +2,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="50dp"
-    android:background="?attr/background_color"
-    >
+    android:background="?attr/background_color">
 
     <TextView
         android:id="@+id/textViewDownloadScheduleHeaderTitle"
-        android:fontFamily="sans-serif-black"
-        android:textSize="20sp"
-        android:layout_centerInParent="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="HEADER PLS"
-        android:textColor="?attr/text_color" />
+        android:layout_centerInParent="true"
+        android:fontFamily="sans-serif-medium"
+        android:paddingStart="10dp"
+        android:text="Header pls"
+        android:textColor="?attr/colorAccent"
+        android:textSize="20sp" />
 
 </RelativeLayout>

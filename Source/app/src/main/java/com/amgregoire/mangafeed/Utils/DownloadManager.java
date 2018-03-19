@@ -92,6 +92,7 @@ public class DownloadManager
     {
         mChapter.downloadStatus = 2;
         MangaDB.getInstance().putChapter(mChapter);
+        Chapter test = MangaDB.getInstance().getChapter(mChapter.url);
         getChapterPages();
     }
 
@@ -256,11 +257,12 @@ public class DownloadManager
         MangaLogger.logError(TAG, "page updated: " + mSavedPages);
         if (mSavedPages == mTotalPages)
         {
+            mChapter.downloadStatus = Chapter.DOWNLOAD_STATUS_FINISHED;
+            MangaDB.getInstance().putChapter(mChapter);
+
             DownloadScheduler.removeChapterDownloading(this);
             MangaFeed.getInstance().rxBus().send(new DownloadEventUpdateComplete(mChapter.url));
             MangaLogger.logError(TAG, "Finished downloading: " + mChapter.chapterTitle);
-            mChapter.downloadStatus = Chapter.DOWNLOAD_STATUS_FINISHED;
-            MangaDB.getInstance().putChapter(mChapter);
         }
     }
 

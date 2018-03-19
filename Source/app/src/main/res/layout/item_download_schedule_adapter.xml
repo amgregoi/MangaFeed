@@ -1,69 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="60dp"
     android:background="?attr/background_color"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="20dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/textViewDownloadScheduleMangaUrl"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="http://www.naruto.com"
-            android:textColor="?attr/text_color" />
-
-        <TextView
-            android:id="@+id/textViewDownloadScheduleChapterTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Chapter 1"
-            android:textColor="?attr/text_color" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorAccent" />
+        android:orientation="horizontal">
 
         <LinearLayout
+            android:gravity="center_vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:layout_marginStart="20dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <TextView
+                android:id="@+id/textViewDownloadScheduleMangaUrl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="middle"
+                android:text="http://www.naruto.com"
+                android:textColor="?attr/text_color"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewDownloadScheduleChapterTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pages downloaded: "
-                android:textColor="?attr/text_color" />
+                android:text="Chapter 1"
+                android:textColor="?attr/text_color"
+                android:textSize="14sp"
+                android:textStyle="italic" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_weight="1.5"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/textViewDownloadScheduleCurrentPage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="0"
+                android:textSize="20sp"
+                android:text="200"
                 android:textColor="?attr/text_color" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_marginStart="10dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="15dp"
                 android:text="|"
+                android:textSize="20sp"
                 android:textColor="?attr/text_color" />
 
             <TextView
                 android:id="@+id/textViewDownloadScheduleTotalPages"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="?"
+                android:text="200"
+                android:textSize="20sp"
                 android:textColor="?attr/text_color" />
 
         </LinearLayout>
     </LinearLayout>
-</FrameLayout>
+
+    <View
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#dddddd" />
+</RelativeLayout>

@@ -98,7 +98,7 @@ public class Chapter implements Parcelable
         date = chapter.date;
         mangaTitle = chapter.mangaTitle;
         chapterTitle = chapter.chapterTitle;
-        mangaUrl = chapter.url;
+        mangaUrl = chapter.mangaUrl;
         currentPage = chapter.currentPage;
         chapterNumber = chapter.chapterNumber;
         totalPages = chapter.totalPages;

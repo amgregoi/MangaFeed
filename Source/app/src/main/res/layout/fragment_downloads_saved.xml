@@ -5,13 +5,6 @@
     android:background="?attr/background_color"
     android:layout_height="match_parent">
 
-    <TextView
-        android:textColor="@color/colorAccent"
-        android:text="Saved"
-        android:layout_centerInParent="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
     <com.l4digital.fastscroll.FastScrollRecyclerView
         android:id="@+id/recyclerViewDownloadSaved"
         android:layout_width="match_parent"

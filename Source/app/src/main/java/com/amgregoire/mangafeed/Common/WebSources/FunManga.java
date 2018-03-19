@@ -315,7 +315,6 @@ public class FunManga extends SourceManga
      * Parent - parseResponseToChapters();
      *
      * @param parsedDocument
-     * @param title
      * @return
      */
     private List<Chapter> resolveChaptersFromParsedDocument(final Document parsedDocument, final RequestWrapper request)

@@ -98,17 +98,17 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
 
         if (viewType == VIEW_HEADER)
         {
-            lView = lInflater.inflate(R.layout.item_manga_info_header, parent, false);
+            lView = lInflater.inflate(R.layout.item_manga_info_adapter_header, parent, false);
             lHolder = new ViewHolderHeader(lView);
         }
         else if (viewType == VIEW_CHAPTER)
         {
-            lView = lInflater.inflate(R.layout.item_manga_info_chapter, parent, false);
+            lView = lInflater.inflate(R.layout.item_manga_info_adapter_chapter, parent, false);
             lHolder = new ViewHolderChapter(lView);
         }
         else
         {
-            lView = lInflater.inflate(R.layout.item_manga_info_chapter_header, parent, false);
+            lView = lInflater.inflate(R.layout.item_manga_info_adapter_chapter_header, parent, false);
             lHolder = new ViewHolderChapterHeader(lView);
         }
 

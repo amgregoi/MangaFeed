@@ -6,7 +6,7 @@
         android:title="Download" />
 
     <item
-        android:id="@+id/menuMangaInfoDownloadCancel"
+        android:id="@+id/menuDownloadMangaInfoCancel"
         app:showAsAction="ifRoom|collapseActionView"
         android:title="Cancel" />
 </menu>
