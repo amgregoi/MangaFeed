@@ -54,7 +54,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     @BindDrawable(R.drawable.navigation_back) Drawable mDrawBack;
 
     private WifiBroadcastReceiver mReceiver;
-    private int mMenuFlag = 0;
+    private int mMenuFlag = Menus.MENU_HOME;
     private boolean mInternetFlag;
     private String mCurrentTag;
 
@@ -105,6 +105,28 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
 
     }
 
+    private void setupSearchView(Menu menu)
+    {
+        SearchView search = (SearchView) menu.findItem(R.id.menuHomeSearch).getActionView();
+        SearchView.SearchAutoComplete theTextArea = search.findViewById(R.id.search_src_text);
+        theTextArea.setTextColor(Color.WHITE);//or any color that you want
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+        {
+            @Override
+            public boolean onQueryTextSubmit(String s)
+            {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s)
+            {
+                MangaFeed.getInstance().rxBus().send(new SearchQueryChangeEvent(s));
+                return true;
+            }
+        });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -115,25 +137,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
             MenuInflater lInflater = getMenuInflater();
             lInflater.inflate(R.menu.menu_toolbar_home, menu);
             setTitle(MangaFeed.getInstance().getCurrentSource().getSourceName());
-            SearchView search = (SearchView) menu.findItem(R.id.menuHomeSearch).getActionView();
-            SearchView.SearchAutoComplete theTextArea = search.findViewById(R.id.search_src_text);
-            theTextArea.setTextColor(Color.WHITE);//or any color that you want
-            search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
-            {
-                @Override
-                public boolean onQueryTextSubmit(String s)
-                {
-                    return false;
-                }
-
-                @Override
-                public boolean onQueryTextChange(String s)
-                {
-                    MangaFeed.getInstance().rxBus().send(new SearchQueryChangeEvent(s));
-                    return true;
-                }
-            });
-
+            setupSearchView(menu);
             return true;
         }
         else if (mMenuFlag == Menus.MENU_DOWNLOADS)
@@ -141,6 +145,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
             MenuInflater lInflater = getMenuInflater();
             lInflater.inflate(R.menu.menu_toolbar_home, menu);
             setTitle(R.string.nav_bottom_title_download);
+            setupSearchView(menu);
             return true;
         }
         else if (mMenuFlag == Menus.MENU_DOWNLOADS_MANGA_INFO)
@@ -301,7 +306,16 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         else if (getSupportFragmentManager().getBackStackEntryCount() > 0)
         {
             getSupportFragmentManager().popBackStack();
-            mMenuFlag = Menus.MENU_HOME;
+
+            if (mMenuFlag == Menus.MENU_DOWNLOADS_MANGA_INFO)
+            {
+                mMenuFlag = Menus.MENU_HOME;
+            }
+            else
+            {
+                mMenuFlag = Menus.MENU_ACCOUNT;
+            }
+
             invalidateOptionsMenu();
         }
         else

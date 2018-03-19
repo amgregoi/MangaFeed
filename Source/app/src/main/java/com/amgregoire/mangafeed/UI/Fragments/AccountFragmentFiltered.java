@@ -111,5 +111,4 @@ public class AccountFragmentFiltered extends Fragment implements IAccount.Accoun
             }
         });
     }
-
 }

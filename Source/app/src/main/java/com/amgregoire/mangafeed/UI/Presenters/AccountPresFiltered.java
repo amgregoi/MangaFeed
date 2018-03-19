@@ -9,6 +9,7 @@ import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Adapters.SearchRecyclerAdapter;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentFiltered;
 import com.amgregoire.mangafeed.UI.Mappers.IAccount;
+import com.amgregoire.mangafeed.Utils.BusEvents.SearchQueryChangeEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
@@ -81,6 +82,11 @@ public class AccountPresFiltered implements IAccount.AccountFilteredPres
                         {
                             UpdateMangaItemViewEvent lEvent = ((UpdateMangaItemViewEvent) o);
                             mAdapter.updateItem(lEvent.manga);
+                        }
+                        else if (o instanceof SearchQueryChangeEvent)
+                        {
+                            SearchQueryChangeEvent lEvent = (SearchQueryChangeEvent) o;
+                            mAdapter.performTextFilter(lEvent.query);
                         }
                     },
                     throwable -> MangaLogger.logError(TAG, throwable.getMessage()));

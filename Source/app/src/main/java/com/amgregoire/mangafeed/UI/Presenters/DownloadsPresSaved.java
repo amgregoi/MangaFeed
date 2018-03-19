@@ -8,6 +8,7 @@ import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Adapters.SearchRecyclerAdapter;
 import com.amgregoire.mangafeed.UI.Mappers.IDownloads;
+import com.amgregoire.mangafeed.Utils.BusEvents.SearchQueryChangeEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.StartDownloadEvent;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
@@ -72,6 +73,11 @@ public class DownloadsPresSaved implements IDownloads.DownloadsSavedPres
                 if (o instanceof StartDownloadEvent)
                 {
                     getMangaWithSavedChapters();
+                }
+                else if (o instanceof SearchQueryChangeEvent)
+                {
+                    SearchQueryChangeEvent lEvent = (SearchQueryChangeEvent) o;
+                    mAdapter.performTextFilter(lEvent.query);
                 }
             }, throwable ->
             {
