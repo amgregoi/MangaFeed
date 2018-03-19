@@ -4,22 +4,28 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.amgregoire.mangafeed.Common.RecyclerViewSpaceDecoration;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Mappers.IDownloads;
 import com.amgregoire.mangafeed.UI.Presenters.DownloadsPresDownloading;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class DownloadsFragmentDownloading extends Fragment implements IDownloads.DownloadsDownloadingMap
 {
     public final static String TAG = DownloadsFragmentDownloading.class.getSimpleName();
 
+    @BindView(R.id.recyclerViewDownloadDownloading) RecyclerView mRecyclerView;
+
     private IDownloads.DownloadsDownloadingPres mPresenter;
+    private RecyclerViewSpaceDecoration mSpaceDecor;
 
     /***
      * This function creates and returns a new instance of the RecentFragment.
@@ -50,6 +56,12 @@ public class DownloadsFragmentDownloading extends Fragment implements IDownloads
     }
 
     @Override
+    public void onResume()
+    {
+        super.onResume();
+    }
+
+    @Override
     public void initViews()
     {
 
@@ -58,6 +70,37 @@ public class DownloadsFragmentDownloading extends Fragment implements IDownloads
     @Override
     public void registerAdapter(RecyclerView.Adapter adapter, RecyclerView.LayoutManager manager)
     {
+        if (mSpaceDecor == null)
+        {
+            mSpaceDecor = new RecyclerViewSpaceDecoration(20);
+        }
+        else
+        {
+            mRecyclerView.removeItemDecoration(mSpaceDecor);
+        }
 
+        mRecyclerView.addItemDecoration(mSpaceDecor);
+        mRecyclerView.getItemAnimator().setChangeDuration(0);
+        mRecyclerView.setLayoutManager(new CustomGridLayoutManager(getContext()));
+        mRecyclerView.setAdapter(adapter);
+    }
+
+    public class CustomGridLayoutManager extends LinearLayoutManager
+    {
+        private boolean isScrollEnabled = false;
+
+        public CustomGridLayoutManager(Context context) {
+            super(context);
+        }
+
+        public void setScrollEnabled(boolean flag) {
+            this.isScrollEnabled = flag;
+        }
+
+        @Override
+        public boolean canScrollVertically() {
+            //Similarly you can customize "canScrollHorizontally()" for managing horizontal scroll
+            return isScrollEnabled && super.canScrollVertically();
+        }
     }
 }

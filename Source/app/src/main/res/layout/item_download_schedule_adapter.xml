@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/background_color"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="20dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textViewDownloadScheduleMangaUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="http://www.naruto.com"
+            android:textColor="?attr/text_color" />
+
+        <TextView
+            android:id="@+id/textViewDownloadScheduleChapterTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chapter 1"
+            android:textColor="?attr/text_color" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorAccent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pages downloaded: "
+                android:textColor="?attr/text_color" />
+
+            <TextView
+                android:id="@+id/textViewDownloadScheduleCurrentPage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="0"
+                android:textColor="?attr/text_color" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:text="|"
+                android:textColor="?attr/text_color" />
+
+            <TextView
+                android:id="@+id/textViewDownloadScheduleTotalPages"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="?"
+                android:textColor="?attr/text_color" />
+
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

@@ -1,7 +1,10 @@
 package com.amgregoire.mangafeed.UI.Presenters;
 
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 
+import com.amgregoire.mangafeed.UI.Adapters.DownloadScheduleAdapter;
 import com.amgregoire.mangafeed.UI.Mappers.IDownloads;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
@@ -26,6 +29,11 @@ public class DownloadsPresDownloading implements IDownloads.DownloadsDownloading
         try
         {
             mMap.initViews();
+
+            RecyclerView.LayoutManager lManager = new LinearLayoutManager(mMap.getContext());
+            DownloadScheduleAdapter lAdapter = new DownloadScheduleAdapter();
+
+            mMap.registerAdapter(lAdapter, lManager);
         }
         catch (Exception ex)
         {

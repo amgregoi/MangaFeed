@@ -439,7 +439,15 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         Fragment lOld = getSupportFragmentManager().findFragmentByTag(mCurrentTag);
         Fragment lNew = getSupportFragmentManager().findFragmentByTag(tag);
         mCurrentTag = tag;
-        getSupportFragmentManager().beginTransaction().hide(lOld).show(lNew).commit();
+
+        if (mCurrentTag.equals(DownloadsFragment.TAG))
+        {
+            getSupportFragmentManager().beginTransaction().hide(lOld).show(lNew).detach(lNew).attach(lNew).commit();
+        }
+        else
+        {
+            getSupportFragmentManager().beginTransaction().hide(lOld).show(lNew).commit();
+        }
     }
 
     /***

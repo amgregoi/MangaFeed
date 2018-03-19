@@ -12,8 +12,8 @@ import java.util.List;
 public class DownloadScheduler
 {
     public final static String TAG = DownloadScheduler.class.getSimpleName();
-    public static List<Chapter> mQueue = null;
-    public static List<DownloadManager> mDownloading = null;
+    public static List<Chapter> mQueue = new ArrayList<>();
+    public static List<DownloadManager> mDownloading = new ArrayList<>();
 
     public static void initManager()
     {
@@ -36,22 +36,9 @@ public class DownloadScheduler
         mQueue.addAll(chapters);
 
         // keep downloading list size to 2
-        while (mDownloading.size() < 2)
+        while (mDownloading.size() < 1)
         {
-            DownloadManager lManager = new DownloadManager(mQueue.remove(0), new DownloadManager.DownloadUpdater()
-            {
-                @Override
-                public void incrementFinishedPages()
-                {
-                    // Default manager, no ui to update
-                }
-
-                @Override
-                public void onDownloadFinished()
-                {
-                    MangaLogger.logError(TAG, "Finished downloading");
-                }
-            });
+            DownloadManager lManager = new DownloadManager(mQueue.remove(0));
             mDownloading.add(lManager);
             lManager.startDownload();
         }
@@ -68,20 +55,7 @@ public class DownloadScheduler
 
         if (mQueue.size() > 0)
         {
-            DownloadManager lManager = new DownloadManager(mQueue.remove(0), new DownloadManager.DownloadUpdater()
-            {
-                @Override
-                public void incrementFinishedPages()
-                {
-                    // Default manager, no ui to update
-                }
-
-                @Override
-                public void onDownloadFinished()
-                {
-                    MangaLogger.logError(TAG, "Finished downloading");
-                }
-            });
+            DownloadManager lManager = new DownloadManager(mQueue.remove(0));
             mDownloading.add(lManager);
             lManager.startDownload();
         }

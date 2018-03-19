@@ -15,6 +15,8 @@ import com.amgregoire.mangafeed.Common.RequestWrapper;
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceBase;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Chapter;
+import com.amgregoire.mangafeed.Utils.BusEvents.DownloadEventUpdatePageCount;
+import com.amgregoire.mangafeed.Utils.BusEvents.DownloadEventUpdateComplete;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -39,32 +41,20 @@ public class DownloadManager
     private Chapter mChapter;
     private SourceBase mSource;
 
-    private DownloadUpdater mUpdater;
     private List<String> mChapterUrls;
     private List<Target> mTargets;
     private int mTotalPages = 0;
     private int mSavedPages = 0;
     private File mChapterDirectory;
 
-    public DownloadManager(Chapter chapter, DownloadUpdater updater)
+    public DownloadManager(Chapter chapter)
     {
-        mUpdater = updater;
         mChapter = chapter;
 
         setChapterFilePath();
 
         mChapterUrls = new ArrayList<>();
         mTargets = new ArrayList<>();
-    }
-
-    /***
-     * This function is used to attach a new listener to the manager so views can get live updates.
-     *
-     * @param updater
-     */
-    public void setDownloadUpdater(DownloadUpdater updater)
-    {
-        mUpdater = updater;
     }
 
     /***
@@ -81,6 +71,8 @@ public class DownloadManager
     {
         return mSavedPages;
     }
+
+    public Chapter getChapter() { return mChapter; }
 
     /***
      * This function returns the saved files for the chapter.
@@ -259,31 +251,17 @@ public class DownloadManager
      */
     private void incrementPageSaved()
     {
-        mUpdater.incrementFinishedPages();
         mSavedPages++;
+        MangaFeed.getInstance().rxBus().send(new DownloadEventUpdatePageCount(mChapter.url));
+        MangaLogger.logError(TAG, "page updated: " + mSavedPages);
         if (mSavedPages == mTotalPages)
         {
-            MangaLogger.logError(TAG, mChapter.getMangaUrl());
             DownloadScheduler.removeChapterDownloading(this);
-            mUpdater.onDownloadFinished();
+            MangaFeed.getInstance().rxBus().send(new DownloadEventUpdateComplete(mChapter.url));
+            MangaLogger.logError(TAG, "Finished downloading: " + mChapter.chapterTitle);
             mChapter.downloadStatus = Chapter.DOWNLOAD_STATUS_FINISHED;
             MangaDB.getInstance().putChapter(mChapter);
         }
-    }
-
-    public interface DownloadUpdater
-    {
-        /***
-         * This function lets the listening view know when a page is done so it can increment the downloaded page counter.
-         *
-         */
-        void incrementFinishedPages();
-
-        /***
-         * This function lets the listening view know when the download manager has finished downloading the chapter.
-         *
-         */
-        void onDownloadFinished();
     }
 
     /***
