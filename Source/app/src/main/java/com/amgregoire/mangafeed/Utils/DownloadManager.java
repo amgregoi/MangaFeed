@@ -23,6 +23,7 @@ import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -175,15 +176,16 @@ public class DownloadManager
                                        .subscribe(s ->
                                        {
                                            File lSavedFile = new File(mChapterDirectory, position + ".txt");
-                                           FileOutputStream stream = new FileOutputStream(lSavedFile);
+                                           FileWriter fw = new FileWriter(lSavedFile);
+
                                            try
                                            {
-                                               stream.write(s.getBytes());
+                                               fw.write(s);
                                                incrementPageSaved();
                                            }
                                            finally
                                            {
-                                               stream.close();
+                                               fw.close();
                                            }
 
                                        }, throwable -> MangaLogger.logError(TAG, throwable.getMessage()));
