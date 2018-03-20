@@ -66,15 +66,7 @@ public class DownloadScheduleAdapter extends RecyclerView.Adapter<RecyclerView.V
         }
         else
         {
-            try
-            {
-                return mQueue.get(position - mDownloadSizeOffset).chapterNumber;
-            }
-            catch (IndexOutOfBoundsException ex)
-            {
-                MangaLogger.logError(TAG, "this is stupid: " + ex.getMessage());
-                return -100; // Data set changes rapidly and can produce NPE if scrolling to the bottom quickly.
-            }
+            return mQueue.get(position - mDownloadSizeOffset).chapterNumber;
         }
     }
 

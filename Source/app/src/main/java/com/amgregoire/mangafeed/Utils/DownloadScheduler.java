@@ -36,7 +36,12 @@ public class DownloadScheduler
             initManager();
         }
 
-        mQueue.addAll(chapters);
+//        mQueue.addAll(chapters);
+        for (Chapter chapter : chapters)
+        {
+            chapter.downloadStatus = Chapter.DOWNLOAD_STATUS_DOWNLOADING;
+            mQueue.add(MangaDB.getInstance().getChapter(chapter));
+        }
 
         // keep downloading list size to 2
         while (mDownloading.size() < 1)

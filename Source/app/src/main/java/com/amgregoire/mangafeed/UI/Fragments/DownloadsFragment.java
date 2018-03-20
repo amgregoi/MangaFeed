@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Mappers.IDownloads;
 import com.amgregoire.mangafeed.UI.Presenters.DownloadsPres;
-import com.amgregoire.mangafeed.Utils.MangaDB;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,7 +45,6 @@ public class DownloadsFragment extends Fragment implements IDownloads.DownloadsM
         mPresenter = new DownloadsPres(this, getChildFragmentManager());
         mPresenter.init(getArguments());
 
-        MangaDB.getInstance().getMangaWithDownloadedChapters();
         return lView;
     }
 

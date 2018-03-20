@@ -2,7 +2,6 @@ package com.amgregoire.mangafeed.Utils;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -27,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -194,6 +194,11 @@ public class MangaDB extends SQLiteOpenHelper
                        .unique();
     }
 
+    public Manga getManga(long id)
+    {
+        return mSession.getMangaDao().load(id);
+    }
+
     /***
      * This function verifies if a manga is already in the database specified its url.
      *
@@ -243,6 +248,30 @@ public class MangaDB extends SQLiteOpenHelper
                        .unique();
     }
 
+    public Chapter getChapter(long id)
+    {
+        return mSession.getChapterDao().load(id);
+    }
+
+    /***
+     * This function retrieves a locally created chapter with the stored version in the local database.
+     * If there is no entry for the chapter, one is made and returned.
+     *
+     * @param chapter
+     * @return
+     */
+    public Chapter getChapter(Chapter chapter)
+    {
+        if (!mSession.getChapterDao().hasKey(chapter))
+        {
+            putChapter(chapter);
+        }
+
+        chapter = getChapter(chapter.url);
+
+        return chapter;
+    }
+
 
     /***
      * This function retrieves a list of manga that have downloaded chapters for offline viewing.
@@ -252,26 +281,14 @@ public class MangaDB extends SQLiteOpenHelper
     public Observable<List<Manga>> getMangaWithDownloadedChapters()
     {
 
-
         return Observable.create((ObservableEmitter<List<Manga>> subscriber) ->
         {
             try
             {
-                List<String> lUrls = new ArrayList<>();
-                try (Cursor cursor = getReadableDatabase().rawQuery("SELECT DISTINCT mangaUrl FROM Chapter WHERE downloadStatus = 2", new String[]{}))
-                {
-                    int index = cursor.getColumnIndex("mangaUrl");
-                    while (cursor.moveToNext())
-                    {
-                        lUrls.add(cursor.getString(index));
-                    }
-                }
+                List<Manga> lManga = DownloadManager.getMangaWithSavedChapters();
+                Collections.sort(lManga, (emp1, emp2) -> emp1.getTitle().compareToIgnoreCase(emp2.getTitle()));
 
-                // Return list of manga specified by the distinct list of mangaUrls contained in the downloaded chapters
-                subscriber.onNext(mSession.getMangaDao()
-                                          .queryBuilder()
-                                          .where(MangaDao.Properties.Link.in(lUrls))
-                                          .list());
+                subscriber.onNext(lManga);
                 subscriber.onComplete();
             }
             catch (Exception aException)
@@ -287,11 +304,13 @@ public class MangaDB extends SQLiteOpenHelper
         {
             try
             {
-                List<Chapter> lResult = mSession.getChapterDao()
-                                                .queryBuilder()
-                                                .where(ChapterDao.Properties.DownloadStatus.eq(2))
-                                                .where(ChapterDao.Properties.MangaUrl.eq(manga.link))
-                                                .list();
+                List<Chapter> lResult = DownloadManager.getSavedChapters(manga);
+                Collections.sort(lResult, (emp1, emp2) ->
+                {
+                    if(emp1.chapterNumber > emp2.chapterNumber)
+                        return -1;
+                    return 1;
+                });
 
                 subscriber.onNext(lResult);
                 subscriber.onComplete();
