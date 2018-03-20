@@ -6,4 +6,11 @@
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView"
         android:title="Search" />
+
+    <item
+        android:id="@+id/menuDownloadsCancelAll"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="collapseActionView"
+        android:title="Cancel all downloads" />
+
 </menu>

@@ -34,6 +34,7 @@ import com.amgregoire.mangafeed.Utils.BusEvents.SearchQueryChangeEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.ToggleDownloadViewEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateSourceEvent;
 import com.amgregoire.mangafeed.Utils.DownloadManager;
+import com.amgregoire.mangafeed.Utils.DownloadScheduler;
 import com.amgregoire.mangafeed.Utils.LoginManager;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
@@ -188,6 +189,9 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                 invalidateOptionsMenu();
                 lMangaFragment.onDownloadViewEnabled();
                 break;
+            case R.id.menuDownloadsCancelAll:
+                DownloadScheduler.clearDownloads();
+                break;
             case R.id.menuDownloadsMangaInfoDownload:
                 Menus.setMenu(Menus.MENU_DOWNLOADS_MANGA_INFO_REMOVE);
                 invalidateOptionsMenu();
@@ -281,22 +285,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         else if (getSupportFragmentManager().getBackStackEntryCount() > 0)
         {
             getSupportFragmentManager().popBackStack();
-
             Menus.setToPrevMenu();
-
-//            if (mMenuFlag == Menus.MENU_HOME_MANGA_INFO)
-//            {
-//                mMenuFlag = Menus.MENU_HOME;
-//            }
-//            else if (mMenuFlag == Menus.MENU_DOWNLOADS_MANGA_INFO)
-//            {
-//                mMenuFlag = Menus.MENU_DOWNLOADS;
-//            }
-//            else
-//            {
-//                mMenuFlag = Menus.MENU_ACCOUNT;
-//            }
-
             invalidateOptionsMenu();
         }
         else

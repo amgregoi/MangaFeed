@@ -11,11 +11,14 @@ import android.widget.TextView;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.R;
-import com.amgregoire.mangafeed.Utils.BusEvents.DownloadEventUpdatePageCount;
 import com.amgregoire.mangafeed.Utils.BusEvents.DownloadEventUpdateComplete;
+import com.amgregoire.mangafeed.Utils.BusEvents.DownloadEventUpdatePageCount;
 import com.amgregoire.mangafeed.Utils.DownloadManager;
 import com.amgregoire.mangafeed.Utils.DownloadScheduler;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,10 +36,48 @@ public class DownloadScheduleAdapter extends RecyclerView.Adapter<RecyclerView.V
     public final static int VIEW_TYPE_DOWNLOADING = 1;
     public final static int VIEW_TYPE_QUEUE = 2;
 
+    // Change then when decide on active download count, currently only do 1 at at ime.
+    private int mDownloadSizeOffset = 3; // 3 == 1 downloading, 4 == 2 downloading etc..
+
+    private List<Chapter> mDownloading;
+    private List<Chapter> mQueue;
+
+
     public DownloadScheduleAdapter()
     {
+        setHasStableIds(true);
 
+        mDownloading = new ArrayList<>(DownloadScheduler.mDownloading2);
+        mQueue = new ArrayList<>(DownloadScheduler.mQueue);
     }
+
+    @Override
+    public long getItemId(int position)
+    {
+        int lViewType = getItemViewType(position);
+
+        if (lViewType == VIEW_TYPE_HEADER)
+        {
+            return position - 4;
+        }
+        else if (lViewType == VIEW_TYPE_DOWNLOADING)
+        {
+            return mDownloading.get(position - 1).chapterNumber;
+        }
+        else
+        {
+            try
+            {
+                return mQueue.get(position - mDownloadSizeOffset).chapterNumber;
+            }
+            catch (IndexOutOfBoundsException ex)
+            {
+                MangaLogger.logError(TAG, "this is stupid: " + ex.getMessage());
+                return -100; // Data set changes rapidly and can produce NPE if scrolling to the bottom quickly.
+            }
+        }
+    }
+
 
     @Override
     public int getItemViewType(int position)
@@ -102,15 +143,15 @@ public class DownloadScheduleAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public int getItemCount()
     {
-        int lQueueSize = DownloadScheduler.mQueue.size();
-        int lDownloadingSize = DownloadScheduler.mDownloading.size();
+        int lQueueSize = mQueue.size();
+        int lDownloadingSize = mDownloading.size();
 
         if (lQueueSize + lDownloadingSize == 0)
         {
             return 1;
         }
 
-        return DownloadScheduler.mQueue.size() + DownloadScheduler.mDownloading.size() + 2;
+        return mQueue.size() + mDownloading.size() + 2;
     }
 
     @Override
@@ -164,6 +205,8 @@ public class DownloadScheduleAdapter extends RecyclerView.Adapter<RecyclerView.V
                                       }
                                       else if (o instanceof DownloadEventUpdateComplete)
                                       {
+                                          mDownloading = new ArrayList<>(DownloadScheduler.mDownloading2);
+                                          mQueue = new ArrayList<>(DownloadScheduler.mQueue);
                                           notifyDataSetChanged();
                                       }
                                   }, throwable -> MangaLogger.logError(TAG, throwable.getMessage()));
@@ -186,16 +229,17 @@ public class DownloadScheduleAdapter extends RecyclerView.Adapter<RecyclerView.V
 
         public void initViews(int position)
         {
-            position = position - 3; // Account for first two headers, and first two items being downloaded
+            position = position - mDownloadSizeOffset; // Account for first two headers, and first two items being downloaded
             try
             {
-                Chapter lChapter = DownloadScheduler.mQueue.get(position);
+                Chapter lChapter = mQueue.get(position);
 
                 mTotalPages.setText("?");
                 mCurrentPage.setText("0");
                 mChapterTitle.setText(lChapter.chapterTitle);
                 mMangaUrl.setText(lChapter.mangaTitle);
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
 
             }
@@ -226,7 +270,7 @@ public class DownloadScheduleAdapter extends RecyclerView.Adapter<RecyclerView.V
             }
             else
             {
-                mHeader.setText("Items in queue (" + DownloadScheduler.mQueue.size() + ")");
+                mHeader.setText("Items in queue (" + mQueue.size() + ")");
             }
         }
     }

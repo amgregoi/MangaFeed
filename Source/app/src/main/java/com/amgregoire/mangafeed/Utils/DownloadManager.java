@@ -254,7 +254,6 @@ public class DownloadManager
     {
         mSavedPages++;
         MangaFeed.getInstance().rxBus().send(new DownloadEventUpdatePageCount(mChapter.url));
-        MangaLogger.logError(TAG, "page updated: " + mSavedPages);
         if (mSavedPages == mTotalPages)
         {
             mChapter.downloadStatus = Chapter.DOWNLOAD_STATUS_FINISHED;
@@ -262,7 +261,7 @@ public class DownloadManager
 
             DownloadScheduler.removeChapterDownloading(this);
             MangaFeed.getInstance().rxBus().send(new DownloadEventUpdateComplete(mChapter.url));
-            MangaLogger.logError(TAG, "Finished downloading: " + mChapter.chapterTitle);
+            MangaLogger.logInfo(TAG, "Finished downloading: " + mChapter.chapterTitle);
         }
     }
 

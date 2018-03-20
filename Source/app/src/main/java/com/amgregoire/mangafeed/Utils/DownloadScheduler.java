@@ -1,6 +1,8 @@
 package com.amgregoire.mangafeed.Utils;
 
+import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Chapter;
+import com.amgregoire.mangafeed.Utils.BusEvents.DownloadEventUpdateComplete;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,7 @@ public class DownloadScheduler
     public final static String TAG = DownloadScheduler.class.getSimpleName();
     public static List<Chapter> mQueue = new ArrayList<>();
     public static List<DownloadManager> mDownloading = new ArrayList<>();
+    public static List<Chapter> mDownloading2 = new ArrayList<>();
 
     public static void initManager()
     {
@@ -39,6 +42,7 @@ public class DownloadScheduler
         while (mDownloading.size() < 1)
         {
             DownloadManager lManager = new DownloadManager(mQueue.remove(0));
+            mDownloading2.add(lManager.getChapter());
             mDownloading.add(lManager);
             lManager.startDownload();
         }
@@ -52,12 +56,30 @@ public class DownloadScheduler
     public synchronized static void removeChapterDownloading(DownloadManager chapter)
     {
         mDownloading.remove(chapter);
+        mDownloading2.remove(chapter.getChapter());
 
         if (mQueue.size() > 0)
         {
             DownloadManager lManager = new DownloadManager(mQueue.remove(0));
+            mDownloading2.add(lManager.getChapter());
             mDownloading.add(lManager);
             lManager.startDownload();
         }
     }
+
+    public synchronized static void clearDownloads()
+    {
+        mDownloading2 = new ArrayList<>();
+        mQueue = new ArrayList<>();
+
+        // send update complete to update adapter ui
+        if (mDownloading.size() > 0)
+        {
+            MangaFeed.getInstance()
+                     .rxBus()
+                     .send(new DownloadEventUpdateComplete(mDownloading.get(0).getChapter().url));
+        }
+        mDownloading = new ArrayList<>();
+    }
+
 }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,26 +80,7 @@ public class DownloadsFragmentDownloading extends Fragment implements IDownloads
 
         mRecyclerView.addItemDecoration(mSpaceDecor);
         mRecyclerView.getItemAnimator().setChangeDuration(0);
-        mRecyclerView.setLayoutManager(new CustomGridLayoutManager(getContext()));
+        mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(adapter);
-    }
-
-    public class CustomGridLayoutManager extends LinearLayoutManager
-    {
-        private boolean isScrollEnabled = false;
-
-        public CustomGridLayoutManager(Context context) {
-            super(context);
-        }
-
-        public void setScrollEnabled(boolean flag) {
-            this.isScrollEnabled = flag;
-        }
-
-        @Override
-        public boolean canScrollVertically() {
-            //Similarly you can customize "canScrollHorizontally()" for managing horizontal scroll
-            return isScrollEnabled && super.canScrollVertically();
-        }
     }
 }

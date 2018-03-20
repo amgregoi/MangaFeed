@@ -83,7 +83,6 @@ public class MangaInfoPres implements IManga.MangaPres
     {
         try
         {
-
             mAdapter.onSelectAllOrNone(isAll);
         }
         catch (Exception ex)
@@ -120,13 +119,29 @@ public class MangaInfoPres implements IManga.MangaPres
 
     public void onDownloadRemove()
     {
-        mAdapter.onDownloadRemove();
+        try
+        {
+            mAdapter.onDownloadRemove();
+        }
+        catch (Exception ex)
+        {
+            // Tried to enable download view before adapter was initialized
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
     }
 
     @Override
     public void onDownloadViewEnabled()
     {
-        mAdapter.onDownloadViewEnabled();
+        try
+        {
+            mAdapter.onDownloadViewEnabled();
+        }
+        catch (Exception ex)
+        {
+            // Tried to enable download view before adapter was initialized
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
     }
 
     @Override
