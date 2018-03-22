@@ -15,6 +15,7 @@ import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
+import com.amgregoire.mangafeed.Utils.BusEvents.ChapterSelectedEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.ToggleDownloadViewEvent;
 import com.amgregoire.mangafeed.Utils.DownloadScheduler;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
@@ -206,7 +207,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             mStatus.setText(mManga.status);
             mGenres.setText(mManga.genres);
 
-            if(mManga.image != null && !mManga.image.isEmpty())
+            if (mManga.image != null && !mManga.image.isEmpty())
             {
                 Picasso.get().load(mManga.image)
                        .error(mError)
@@ -341,8 +342,10 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             }
             else
             {
-                // Launch reader activity
-                MangaLogger.logError(TAG, "NOT IMPLEMENTED", "Launch reader activity");
+                MangaFeed.getInstance().setCurrentChapters(mChapterData);
+                MangaFeed.getInstance()
+                         .rxBus()
+                         .send(new ChapterSelectedEvent(mManga, lChapter.getChapterNumber() - 1));
             }
         }
 

@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.UI.Adapters.AccountViewPagerAdapter;
+import com.amgregoire.mangafeed.UI.Adapters.AccountPagerAdapter;
 import com.amgregoire.mangafeed.UI.Mappers.IAccount;
 import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLoginSuccessEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLogoutEvent;
@@ -30,7 +30,7 @@ public class AccountPres implements IAccount.AccountPres
     public final static String TAG = AccountPres.class.getSimpleName();
 
     private IAccount.AccountMap mMap;
-    private AccountViewPagerAdapter mAdapter;
+    private AccountPagerAdapter mAdapter;
     private FragmentManager mManager;
     private Disposable mRxBus;
 
@@ -49,7 +49,7 @@ public class AccountPres implements IAccount.AccountPres
 
             if (mAdapter == null)
             {
-                mAdapter = new AccountViewPagerAdapter(mManager, 2);
+                mAdapter = new AccountPagerAdapter(mManager, 2);
             }
 
             mMap.registerAdapter(mAdapter);

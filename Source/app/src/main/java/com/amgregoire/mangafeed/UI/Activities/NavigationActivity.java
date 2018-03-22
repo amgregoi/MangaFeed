@@ -27,6 +27,8 @@ import com.amgregoire.mangafeed.UI.Fragments.DownloadsFragment;
 import com.amgregoire.mangafeed.UI.Fragments.HomeFragment;
 import com.amgregoire.mangafeed.UI.Fragments.MangaInfoFragment;
 import com.amgregoire.mangafeed.UI.Fragments.OfflineFragment;
+import com.amgregoire.mangafeed.UI.Fragments.ReaderFragment;
+import com.amgregoire.mangafeed.Utils.BusEvents.ChapterSelectedEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLoginAttemptEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLogoutEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.MangaSelectedEvent;
@@ -163,6 +165,8 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                 break;
             case Menus.MENU_ACCOUNT:
                 setTitle(R.string.empty);
+            case Menus.MENU_READER:
+                mToolbar.setNavigationIcon(mDrawBack);
                 break;
             default:
                 return super.onCreateOptionsMenu(menu);
@@ -218,6 +222,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                 {
                     case Menus.MENU_HOME_MANGA_INFO:
                     case Menus.MENU_DOWNLOADS_MANGA_INFO:
+                    case Menus.MENU_READER:
                         onBackPressed();
                         break;
                     default:
@@ -389,6 +394,17 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
             {
                 LoginManager.logout();
             }
+            else if (o instanceof ChapterSelectedEvent)
+            {
+                ChapterSelectedEvent lEvent = (ChapterSelectedEvent) o;
+                Fragment lReaderFragment = ReaderFragment.newInstance(lEvent.manga, lEvent.position);
+                Menus.setMenu(Menus.MENU_READER);
+                invalidateOptionsMenu();
+                getSupportFragmentManager().beginTransaction()
+                                           .add(R.id.frameLayoutMasterContainer, lReaderFragment, ReaderFragment.TAG)
+                                           .addToBackStack(MangaInfoFragment.TAG)
+                                           .commit();
+            }
         }, throwable -> Log.e(TAG, throwable.getMessage()));
     }
 
@@ -525,6 +541,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         public final static int MENU_DOWNLOADS_MANGA_INFO_REMOVE = R.menu.menu_toolbar_downloads_manga_info_remove;
         public final static int MENU_HOME_MANGA_INFO = R.menu.menu_toolbar_home_manga_info;
         public final static int MENU_HOME_MANGA_INFO_DOWNLOAD = R.menu.menu_toolbar_home_manga_info_download;
+        public final static int MENU_READER = R.menu.menu_toolbar_reader;
 
         private static int sCURRENT_MENU = MENU_HOME;
         private static Stack<Integer> sPREV_MENUS = new Stack<>();

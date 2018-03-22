@@ -11,12 +11,16 @@ import com.amgregoire.mangafeed.Common.WebSources.FunManga;
 import com.amgregoire.mangafeed.Common.WebSources.MangaEden;
 import com.amgregoire.mangafeed.Common.WebSources.MangaHere;
 import com.amgregoire.mangafeed.Common.WebSources.ReadLight;
+import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.Utils.RxBus;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -32,6 +36,8 @@ public class MangaFeed extends Application
 
     private static MangaFeed mInstance;
     private RxBus mBus;
+
+    private ArrayList<Chapter> mCurrentChapters;
 
     public MangaFeed()
     {
@@ -178,6 +184,16 @@ public class MangaFeed extends Application
         }
     }
 
+    public void setCurrentChapters(List<Chapter> chapters)
+    {
+        mCurrentChapters = new ArrayList<>(chapters);
+        Collections.reverse(mCurrentChapters);
+    }
+
+    public List<Chapter> getCurrentChapters()
+    {
+        return mCurrentChapters;
+    }
 
     /***
      * This function updates source catalogs items on the local database, adding any missing items.
@@ -192,7 +208,7 @@ public class MangaFeed extends Application
         // Check if we updated in the last week, if we have we'll skip.
         Date lLowerLimit = new Date(SharedPrefs.getLastCatalogUpdate().getTime() + lWeekMs);
 //        if (lLowerLimit.before(new Date()))
-        if(false)
+        if (false)
         {
             Observable.create((ObservableEmitter<SourceBase> subscriber) ->
             {
