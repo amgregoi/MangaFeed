@@ -83,4 +83,11 @@ public class DownloadsFragmentDownloading extends Fragment implements IDownloads
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(adapter);
     }
+
+    @Override
+    public void scrollToUpdateViews()
+    {
+        // recyclerview wasn't updating correctly, and needed an 'invisible' scroll to update views.
+        mRecyclerView.scrollBy(0,0);
+    }
 }

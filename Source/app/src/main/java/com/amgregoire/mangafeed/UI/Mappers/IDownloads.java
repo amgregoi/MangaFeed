@@ -51,6 +51,6 @@ public interface IDownloads
 
     interface DownloadsDownloadingMap extends RecycleAdapterMap, InitViewMap, ContextMap
     {
-
+        void scrollToUpdateViews();
     }
 }

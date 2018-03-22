@@ -105,7 +105,8 @@ public class DownloadManager
         mChapterDirectory = new File(new StringBuilder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                                                                   .getPath()).append(DOWNLOAD_FOLDER)
                                                                              .append("/")
-                                                                             .append(mManga.getTitle().replaceAll("\\W", ""))
+                                                                             .append(mManga.getTitle()
+                                                                                           .replaceAll("\\W", ""))
                                                                              .append("-")
                                                                              .append(mManga._id)
                                                                              .append("/Ch")
@@ -254,7 +255,6 @@ public class DownloadManager
     private void incrementPageSaved()
     {
         mSavedPages++;
-        MangaFeed.getInstance().rxBus().send(new DownloadEventUpdatePageCount(mChapter.url));
         if (mSavedPages == mTotalPages)
         {
             mChapter.downloadStatus = Chapter.DOWNLOAD_STATUS_FINISHED;
@@ -263,6 +263,10 @@ public class DownloadManager
             DownloadScheduler.removeChapterDownloading(this);
             MangaFeed.getInstance().rxBus().send(new DownloadEventUpdateComplete(mChapter.url));
             MangaLogger.logInfo(TAG, "Finished downloading: " + mChapter.chapterTitle);
+        }
+        else
+        {
+            MangaFeed.getInstance().rxBus().send(new DownloadEventUpdatePageCount(mChapter.url));
         }
     }
 
@@ -336,7 +340,8 @@ public class DownloadManager
         File lDirectory = new File(new StringBuilder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                                                                 .getPath()).append(DOWNLOAD_FOLDER)
                                                                            .append("/")
-                                                                           .append(manga.getTitle().replaceAll("\\W", ""))
+                                                                           .append(manga.getTitle()
+                                                                                        .replaceAll("\\W", ""))
                                                                            .append("-")
                                                                            .append(manga._id)
                                                                            .toString());
@@ -366,12 +371,12 @@ public class DownloadManager
      */
     public static File[] getSavedPages(Chapter chapter, Manga manga)
     {
-        if(chapter._id == null)
+        if (chapter._id == null)
         {
             chapter = MangaDB.getInstance().getChapter(chapter.url);
         }
 
-        if(manga._id == null)
+        if (manga._id == null)
         {
             manga = MangaDB.getInstance().getManga(manga.link);
         }
@@ -379,7 +384,8 @@ public class DownloadManager
         return new File(new StringBuilder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                                                      .getPath()).append(DOWNLOAD_FOLDER)
                                                                 .append("/")
-                                                                .append(manga.getTitle().replaceAll("\\W", ""))
+                                                                .append(manga.getTitle()
+                                                                             .replaceAll("\\W", ""))
                                                                 .append("-")
                                                                 .append(manga._id)
                                                                 .append("/Ch")

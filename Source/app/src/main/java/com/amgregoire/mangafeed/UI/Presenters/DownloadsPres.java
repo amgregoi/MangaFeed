@@ -35,7 +35,7 @@ public class DownloadsPres implements IDownloads.DownloadsPres
 
             if (mAdapter == null)
             {
-                mAdapter = new DownloadsViewPagerAdapter(mManager, 3);
+                mAdapter = new DownloadsViewPagerAdapter(mManager, 2);
             }
 
             mMap.registerAdapter(mAdapter);
