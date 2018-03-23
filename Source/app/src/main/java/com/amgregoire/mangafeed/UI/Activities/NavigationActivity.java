@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -514,6 +515,12 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     {
         setSupportActionBar(mToolbar);
         setTitle(MangaFeed.getInstance().getCurrentSource().getSourceName());
+    }
+
+    public void reset()
+    {
+        FragmentManager.BackStackEntry entry = getSupportFragmentManager().getBackStackEntryAt(0);
+        getSupportFragmentManager().popBackStack(entry.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
     @Override
