@@ -9,6 +9,7 @@
     tools:context=".UI.Activities.NavigationActivity">
 
     <FrameLayout
+        android:background="@color/colorPrimaryDark"
         android:id="@+id/frameLayoutMasterContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

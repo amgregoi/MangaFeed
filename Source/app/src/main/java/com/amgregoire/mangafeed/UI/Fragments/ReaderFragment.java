@@ -1,5 +1,6 @@
 package com.amgregoire.mangafeed.UI.Fragments;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -64,6 +65,11 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
 
         mPresenter = new ReaderPres(this);
         mPresenter.init(getArguments());
+
+        getActivity().getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        getActivity().getWindow().setStatusBarColor(Color.TRANSPARENT );
 
         return lView;
     }

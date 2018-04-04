@@ -8,6 +8,7 @@
         <item name="android:textColorSecondary">@android:color/white</item>
         <item name="actionMenuTextColor">?attr/text_color</item>
         <item name="actionOverflowMenuStyle">@style/MangaFeed.Widget.PopupMenu.OverflowMenu</item>
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
     <style name="AppTheme.Dark" parent="AppTheme">

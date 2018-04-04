@@ -54,6 +54,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.navigation) BottomNavigationView mBottomNav;
     @BindView(R.id.frameLayoutNavContainer) FrameLayout mFragmentContainer;
+    @BindView(R.id.frameLayoutMasterContainer) FrameLayout mMasterContainer;
 
     @BindDrawable(R.drawable.ic_checkbox_blank_circle_outline_white_24dp) Drawable mDrawWhiteOutline;
     @BindDrawable(R.drawable.ic_check_circle_outline_white_24dp) Drawable mDrawWhiteChecked;
@@ -410,6 +411,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     {
         setSupportActionBar(mToolbar);
         setTitle(MangaFeed.getInstance().getCurrentSource().getSourceName());
+        mMasterContainer.setPadding(0, getStatusBarHeight(), 0, 0);
     }
 
     @Override
@@ -427,5 +429,14 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     public void setSelectedFragment(BackHandledFragment backHandledFragment)
     {
         selectedFragment = backHandledFragment;
+    }
+
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 }
