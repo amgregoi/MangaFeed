@@ -1,5 +1,6 @@
 package com.amgregoire.mangafeed.UI.Fragments;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,21 +9,29 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.amgregoire.mangafeed.Common.MangaEnums;
+import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
+import com.amgregoire.mangafeed.UI.Activities.NavigationActivity;
 import com.amgregoire.mangafeed.UI.Adapters.MangaInfoChaptersAdapter;
+import com.amgregoire.mangafeed.UI.BackHandledFragment;
 import com.amgregoire.mangafeed.UI.Mappers.IManga;
 import com.amgregoire.mangafeed.UI.Presenters.MangaInfoPres;
+import com.amgregoire.mangafeed.Utils.DownloadManager;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.l4digital.fastscroll.FastScrollRecyclerView;
 
 import butterknife.BindColor;
+import butterknife.BindDrawable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -30,7 +39,7 @@ import butterknife.ButterKnife;
  * Created by Andy Gregoire on 3/12/2018.
  */
 
-public class MangaInfoFragment extends Fragment implements IManga.MangaMap
+public class MangaInfoFragment extends BackHandledFragment implements IManga.MangaMap
 {
     public final static String TAG = MangaInfoFragment.class.getSimpleName();
     public final static String MANGA_KEY = TAG + "MANGA";
@@ -39,12 +48,16 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
     @BindView(R.id.recyclerViewMangaInfo) FastScrollRecyclerView mRecyclerView;
     @BindView(R.id.bottomNavigationMangaInfo) BottomNavigationView mBottomNav;
     @BindView(R.id.swipeRefreshLayoutMangaInfo) SwipeRefreshLayout mSwipeLayout;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
 
     @BindColor(R.color.manga_blue) int mColorBlue;
     @BindColor(R.color.manga_red) int mColorRed;
     @BindColor(R.color.manga_green) int mColorGreen;
     @BindColor(R.color.manga_gray) int mColorGray;
     @BindColor(R.color.manga_white) int mColorWhite;
+
+    @BindDrawable(R.drawable.ic_check_circle_outline_white_24dp) Drawable mSelectFilled;
+    @BindDrawable(R.drawable.ic_checkbox_blank_circle_outline_white_24dp) Drawable mSelectOutline;
 
     private IManga.MangaPres mPresenter;
 
@@ -62,6 +75,8 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
+        setHasOptionsMenu(true);
+
         View lView = inflater.inflate(R.layout.fragment_manga_info, null);
         ButterKnife.bind(this, lView);
 
@@ -72,9 +87,120 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
     }
 
     @Override
+    public void onResume()
+    {
+        super.onResume();
+        mPresenter.subEventBus();
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        mPresenter.unSubEventBus();
+    }
+
+    @Override
     public void initViews()
     {
         setupBottomNav();
+        ((NavigationActivity) getActivity()).setSupportActionBar(mToolbar);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        if (!mPresenter.isDownload())
+        {
+            if (!mPresenter.isOffline())
+            {
+                inflater.inflate(R.menu.menu_toolbar_home_manga_info, menu);
+            }
+            else
+            {
+                inflater.inflate(R.menu.menu_toolbar_downloads_manga_info, menu);
+            }
+
+            mToolbar.setNavigationIcon(R.drawable.navigation_back);
+            mToolbar.setTitle(mPresenter.getTitle());
+        }
+        else
+        {
+            if (!mPresenter.isOffline())
+            {
+                inflater.inflate(R.menu.menu_toolbar_home_manga_info_download, menu);
+            }
+            else
+            {
+                inflater.inflate(R.menu.menu_toolbar_downloads_manga_info_remove, menu);
+            }
+
+            mToolbar.setNavigationIcon(R.drawable.ic_checkbox_blank_circle_outline_white_24dp);
+            mToolbar.setTitle("Select Items");
+            onDownloadViewEnabled();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.menuMangaInfoRefresh:
+                onRefreshInfo();
+                break;
+            case R.id.menuMangaInfoDownload:
+                toggleDownloadingFlag();
+                onDownloadViewEnabled();
+                break;
+            case R.id.menuDownloadsMangaInfoDownload:
+                toggleDownloadingFlag();
+                getActivity().invalidateOptionsMenu();
+                onDownloadViewEnabled();
+                break;
+            case R.id.menuDownloadMangaInfoCancel:
+                onDownloadCancel();
+                break;
+            case R.id.menuMangaInfoDownloadDownload:
+                if (DownloadManager.isStoragePermissionGranted(getActivity()))
+                {
+                    onDownloadDownload(); // start download
+                    onDownloadCancel(); // exit download view
+                    MangaFeed.getInstance().makeToastShort("Starting downloads now");
+                }
+                else
+                {
+                    MangaFeed.getInstance()
+                             .makeToastShort("Need storage permissions to download chapters.");
+                }
+                break;
+            case R.id.menuDownloadsMangaInfoRemove:
+                onDownloadRemove();
+                break;
+            case android.R.id.home:
+                if (mPresenter.isDownload())
+                {
+                    if (mToolbar.getNavigationIcon() == mSelectFilled)
+                    {
+                        mToolbar.setNavigationIcon(mSelectOutline);
+                        onSelectAllOrNone(false);
+                    }
+                    else
+                    {
+                        mToolbar.setNavigationIcon(mSelectFilled);
+                        onSelectAllOrNone(true);
+                    }
+                }
+                else
+                {
+                    getActivity().onBackPressed();
+                }
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+        return true;
     }
 
     @Override
@@ -100,6 +226,13 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
     }
 
     @Override
+    public void toggleDownloadingFlag()
+    {
+        mPresenter.toggleDownload();
+        getActivity().invalidateOptionsMenu();
+    }
+
+    @Override
     public void registerAdapter(RecyclerView.Adapter adapter, RecyclerView.LayoutManager manager)
     {
         mRecyclerView.setLayoutManager(manager);
@@ -118,6 +251,24 @@ public class MangaInfoFragment extends Fragment implements IManga.MangaMap
     {
         mSwipeLayout.setRefreshing(false);
         mSwipeLayout.setEnabled(false);
+    }
+
+    @Override
+    public String getTagText()
+    {
+        return TAG;
+    }
+
+    @Override
+    public boolean onBackPressed()
+    {
+        if (mPresenter.isDownload())
+        {
+            onDownloadCancel();
+            return false;
+        }
+
+        return true;
     }
 
     /***

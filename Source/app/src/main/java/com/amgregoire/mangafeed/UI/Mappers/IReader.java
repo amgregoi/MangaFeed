@@ -1,5 +1,7 @@
 package com.amgregoire.mangafeed.UI.Mappers;
 
+import android.os.Bundle;
+
 import com.amgregoire.mangafeed.UI.Mappers.Maps.ContextMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.InitViewMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.LifeCycleMap;
@@ -24,7 +26,12 @@ public interface IReader
 
     interface ReaderPres extends LifeCycleMap
     {
+        String getMangaTitle();
+        String getChapterTitle();
 
+
+        void onSaveState(Bundle save);
+        void onRestoreState(Bundle restore);
     }
 
     interface ReaderPresChapter extends LifeCycleMap

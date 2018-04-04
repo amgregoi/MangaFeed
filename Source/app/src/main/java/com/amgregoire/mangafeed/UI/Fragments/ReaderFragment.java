@@ -4,14 +4,23 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
+import com.amgregoire.mangafeed.UI.Activities.NavigationActivity;
+import com.amgregoire.mangafeed.UI.BackHandledFragment;
 import com.amgregoire.mangafeed.UI.Mappers.IReader;
 import com.amgregoire.mangafeed.UI.Presenters.ReaderPres;
 import com.amgregoire.mangafeed.UI.Widgets.NoScrollViewPager;
@@ -24,13 +33,15 @@ import butterknife.ButterKnife;
  * Created by Andy Gregoire on 3/21/2018.
  */
 
-public class ReaderFragment extends Fragment implements IReader.ReaderMap
+public class ReaderFragment extends BackHandledFragment implements IReader.ReaderMap
 {
     public final static String TAG = ReaderFragment.class.getSimpleName();
     public final static String MANGA_KEY = TAG + "MANGA";
     public final static String POSITION_KEY = TAG + "POSITION";
 
     @BindView(R.id.noScrollViewPagerReader) NoScrollViewPager mViewPager;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.textViewReaderChapterTitle) TextView mChapterTitle;
 
     private IReader.ReaderPres mPresenter;
 
@@ -54,20 +65,15 @@ public class ReaderFragment extends Fragment implements IReader.ReaderMap
         mPresenter = new ReaderPres(this);
         mPresenter.init(getArguments());
 
-
         return lView;
-    }
-
-    @Override
-    public void registerAdapter(PagerAdapter adapter)
-    {
-        mViewPager.setAdapter(adapter);
-        mViewPager.setOffscreenPageLimit(0);
     }
 
     @Override
     public void initViews()
     {
+        setRetainInstance(true);
+        setupToolbar();
+
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
         {
             @Override
@@ -90,23 +96,68 @@ public class ReaderFragment extends Fragment implements IReader.ReaderMap
         });
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        inflater.inflate(R.menu.menu_toolbar_reader, menu);
+    }
+
+    private void setupToolbar()
+    {
+        if (getActivity() != null)
+        {
+            mToolbar.setTitle(mPresenter.getMangaTitle());
+            mToolbar.setNavigationIcon(R.drawable.navigation_back);
+            mToolbar.setNavigationOnClickListener(view -> getActivity().onBackPressed());
+        }
+    }
+
+    @Override
+    public void registerAdapter(PagerAdapter adapter)
+    {
+        mViewPager.setAdapter(adapter);
+        mViewPager.setOffscreenPageLimit(1);
+    }
+
     public void incrementChapter()
     {
-        MangaLogger.logError(TAG, "pos: " + mViewPager.getCurrentItem());
         mViewPager.incrementCurrentItem();
-        MangaLogger.logError(TAG, "pos: " + mViewPager.getCurrentItem());
     }
 
     public void decrementChapter()
     {
-        MangaLogger.logError(TAG, "pos: " + mViewPager.getCurrentItem());
         mViewPager.decrememntCurrentItem();
-        MangaLogger.logError(TAG, "pos: " + mViewPager.getCurrentItem());
     }
 
     @Override
     public void setPagerPosition(int position)
     {
         mViewPager.setCurrentItem(position);
+    }
+
+    @Override
+    public String getTagText()
+    {
+        return TAG;
+    }
+
+    @Override
+    public boolean onBackPressed()
+    {
+        return true;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        mPresenter.onSaveState(outState);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState)
+    {
+        super.onViewStateRestored(savedInstanceState);
+        mPresenter.onRestoreState(savedInstanceState);
     }
 }

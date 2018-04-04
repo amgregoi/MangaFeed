@@ -1,6 +1,7 @@
 package com.amgregoire.mangafeed.UI.Mappers;
 
 import com.amgregoire.mangafeed.UI.Mappers.Maps.ContextMap;
+import com.amgregoire.mangafeed.UI.Mappers.Maps.EventBusMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.InitViewMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.LifeCycleMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.RecycleAdapterMap;
@@ -16,7 +17,7 @@ public interface IManga
      * Presenter interfaces for the Home Fragments to communicate with their presenters.
      *
      */
-    interface MangaPres extends LifeCycleMap
+    interface MangaPres extends LifeCycleMap, EventBusMap
     {
         void onSelectAllOrNone(boolean isAll);
 
@@ -31,6 +32,14 @@ public interface IManga
         void onDownloadViewEnabled();
 
         void onUpdateFollowStatus(int status);
+
+        String getTitle();
+
+        boolean isOffline();
+
+        boolean isDownload();
+
+        void toggleDownload();
     }
 
     /***
@@ -42,5 +51,7 @@ public interface IManga
         void setBottomNavStartContinue(String readText);
 
         void setBottomNavFollowTitle(int followType);
+
+        void toggleDownloadingFlag();
     }
 }

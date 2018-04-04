@@ -1,43 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayoutMangaInfo"
+    <include layout="@layout/widget_toolbar" />
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?attr/background_color"
-        android:layout_above="@id/bottomNavigationMangaInfo">
+        android:layout_height="match_parent">
 
-        <RelativeLayout
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayoutMangaInfo"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_above="@id/bottomNavigationMangaInfo"
+            android:background="?attr/background_color">
 
-            <com.l4digital.fastscroll.FastScrollRecyclerView
-                android:id="@+id/recyclerViewMangaInfo"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:bubbleColor="@color/colorAccent"
-                app:bubbleTextColor="@color/manga_white"
-                app:handleColor="@color/colorAccent"
-                app:hideScrollbar="true"
-                app:showTrack="false"
-                app:trackColor="@color/colorAccent" />
+                android:layout_height="match_parent">
 
-        </RelativeLayout>
+                <com.l4digital.fastscroll.FastScrollRecyclerView
+                    android:id="@+id/recyclerViewMangaInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:bubbleColor="@color/colorAccent"
+                    app:bubbleTextColor="@color/manga_white"
+                    app:handleColor="@color/colorAccent"
+                    app:hideScrollbar="true"
+                    app:showTrack="false"
+                    app:trackColor="@color/colorAccent" />
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+            </RelativeLayout>
 
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/bottomNavigationMangaInfo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="?attr/background_color2"
-        app:itemIconTint="@color/manga_white"
-        app:itemTextColor="@color/manga_white"
-        app:menu="@menu/menu_manga_info_bottom" />
+        </android.support.v4.widget.SwipeRefreshLayout>
 
-</RelativeLayout>
+        <android.support.design.widget.BottomNavigationView
+            android:id="@+id/bottomNavigationMangaInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="?attr/background_color2"
+            app:itemIconTint="@color/manga_white"
+            app:itemTextColor="@color/manga_white"
+            app:menu="@menu/menu_manga_info_bottom" />
+
+    </RelativeLayout>
+</LinearLayout>

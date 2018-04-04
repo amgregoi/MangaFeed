@@ -24,6 +24,7 @@ import butterknife.ButterKnife;
 public class DownloadsFragment extends Fragment implements IDownloads.DownloadsMap
 {
     public final static String TAG = DownloadsFragment.class.getSimpleName();
+    public final static int MENU_RESOURCE = R.menu.menu_toolbar_downloads;
 
     @BindView(R.id.tabLayoutHome) TabLayout mTabLayout;
     @BindView(R.id.viewPagerHome) ViewPager mViewPager;

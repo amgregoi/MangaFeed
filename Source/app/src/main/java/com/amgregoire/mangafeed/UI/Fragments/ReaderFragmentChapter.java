@@ -33,7 +33,8 @@ public class ReaderFragmentChapter extends Fragment implements IReader.ReaderMap
 
 
     @BindView(R.id.viewPagerReaderChapter) GestureViewPager mViewPager;
-    IReader.ReaderPresChapter mPresenter;
+
+    private IReader.ReaderPresChapter mPresenter;
 
     public static Fragment newInstance(boolean isFollowing, int position, Manga manga)
     {
@@ -67,6 +68,7 @@ public class ReaderFragmentChapter extends Fragment implements IReader.ReaderMap
     {
         MangaLogger.logError(TAG, "registering adapter");
         mViewPager.setAdapter(adapter);
+        mViewPager.setPageMargin(128);
     }
 
     @Override
@@ -111,10 +113,4 @@ public class ReaderFragmentChapter extends Fragment implements IReader.ReaderMap
             ((ReaderFragment) lParent).incrementChapter();
         }
     }
-
-    public void reset()
-    {
-        ((NavigationActivity)getActivity()).reset();
-    }
-
 }

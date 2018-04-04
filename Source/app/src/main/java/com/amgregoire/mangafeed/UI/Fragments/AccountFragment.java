@@ -31,6 +31,7 @@ import butterknife.OnClick;
 public class AccountFragment extends Fragment implements IAccount.AccountMap
 {
     public final static String TAG = AccountFragment.class.getSimpleName();
+    public final static int MENU_RESOURCE = R.menu.menu_toolbar_account;
 
     @BindView(R.id.scrollViewAccountRoot) NestedScrollView mScroll;
     @BindView(R.id.tabLayoutAccount) TabLayout mTabLayout;

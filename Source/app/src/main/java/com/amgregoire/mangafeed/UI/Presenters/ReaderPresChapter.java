@@ -46,7 +46,7 @@ public class ReaderPresChapter implements IReader.ReaderPresChapter
 
         if(mChapterList == null)
         {
-            ((ReaderFragmentChapter)mMap).reset();
+            getChapters();
         }
         else
         {
@@ -83,18 +83,15 @@ public class ReaderPresChapter implements IReader.ReaderPresChapter
                          chapters ->
                          {
                              mChapterList = new ArrayList<>(chapters);
-                             init();
                          },
                          throwable ->
                          {
                              String lMessage = "Failed to retrieve chapters (" + mManga.getTitle() + ")";
                              MangaLogger.logError(TAG, lMessage, throwable.getMessage());
-
                          },
                          () ->
                          {
-                             String lMessage = "Finished retrieving chapters (" + mManga.getTitle() + ")";
-                             MangaLogger.logInfo(TAG, lMessage);
+                             init();
                          }
                  );
     }

@@ -11,12 +11,15 @@ import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Adapters.MangaInfoChaptersAdapter;
 import com.amgregoire.mangafeed.UI.Fragments.MangaInfoFragment;
 import com.amgregoire.mangafeed.UI.Mappers.IManga;
+import com.amgregoire.mangafeed.Utils.BusEvents.ToggleDownloadViewEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by Andy Gregoire on 3/12/2018.
@@ -33,10 +36,13 @@ public class MangaInfoPres implements IManga.MangaPres
     private MangaInfoChaptersAdapter mAdapter;
     private List<Chapter> mChapterList;
 
+    private Disposable mRxBus;
+
     private int mInfoUpdateFlag = ViewState.START;
     private int mChaptersFlag = ViewState.START;
 
-    private boolean mIsOfflineFlag;
+    public boolean mOfflineFlag;
+    public boolean mDownloadFlag;
 
     public MangaInfoPres(IManga.MangaMap map)
     {
@@ -49,7 +55,8 @@ public class MangaInfoPres implements IManga.MangaPres
         try
         {
             mManga = bundle.getParcelable(MangaInfoFragment.MANGA_KEY);
-            mIsOfflineFlag = bundle.getBoolean(MangaInfoFragment.OFFLINE_KEY);
+            mOfflineFlag = bundle.getBoolean(MangaInfoFragment.OFFLINE_KEY);
+            mDownloadFlag = false;
 
             String lReadText = mManga.recentChapter == null ? "Start" : mManga.recentChapter.isEmpty() ? "Start" : "Continue";
 
@@ -61,7 +68,7 @@ public class MangaInfoPres implements IManga.MangaPres
 
             mMap.startRefresh();
 
-            if (mIsOfflineFlag)
+            if (mOfflineFlag)
             {
                 mInfoUpdateFlag = ViewState.FINISH;
                 fetchCHapterListOffline();
@@ -76,6 +83,30 @@ public class MangaInfoPres implements IManga.MangaPres
         {
             MangaLogger.logError(TAG, ex.getMessage());
         }
+    }
+
+
+    @Override
+    public void unSubEventBus()
+    {
+        mRxBus.dispose();
+        mRxBus = null;
+    }
+
+    @Override
+    public void subEventBus()
+    {
+        mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
+        {
+            if (o instanceof ToggleDownloadViewEvent)
+            {
+                mMap.toggleDownloadingFlag();
+            }
+
+        }, throwable ->
+        {
+            MangaLogger.logError(TAG, throwable.getMessage());
+        });
     }
 
     @Override
@@ -160,6 +191,30 @@ public class MangaInfoPres implements IManga.MangaPres
     }
 
     @Override
+    public String getTitle()
+    {
+        return mManga.title;
+    }
+
+    @Override
+    public boolean isOffline()
+    {
+        return mOfflineFlag;
+    }
+
+    @Override
+    public boolean isDownload()
+    {
+        return mDownloadFlag;
+    }
+
+    @Override
+    public void toggleDownload()
+    {
+        mDownloadFlag = !mDownloadFlag;
+    }
+
+    @Override
     public void onRefreshInfo()
     {
         try
@@ -173,7 +228,7 @@ public class MangaInfoPres implements IManga.MangaPres
 
             mMap.startRefresh();
 
-            if (mIsOfflineFlag)
+            if (mOfflineFlag)
             {
                 mInfoUpdateFlag = ViewState.FINISH;
                 fetchCHapterListOffline();

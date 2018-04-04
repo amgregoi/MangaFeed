@@ -3,124 +3,171 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent"
+    android:background="@color/manga_white"
     android:clickable="true"
-    >
+    android:orientation="vertical">
 
     <com.amgregoire.mangafeed.UI.Widgets.NoScrollViewPager
         android:id="@+id/noScrollViewPagerReader"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <RelativeLayout
-        android:id="@+id/relativeLayoutChapterHeader"
-        android:layout_alignParentTop="true"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:alpha=".9"
-        android:background="#cc000000"
-        android:elevation="2dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/imageViewReaderRefresh"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:background="?attr/selectableItemBackground"
-            android:paddingEnd="10dp"
-            android:src="@drawable/ic_refresh_white_24dp" />
+        <include layout="@layout/widget_toolbar" />
 
-        <ImageButton
-            android:id="@+id/imageViewReaderScreenOrientationToggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toStartOf="@id/imageViewReaderRefresh"
-            android:background="?attr/selectableItemBackground"
-            android:paddingEnd="10dp"
-            android:src="@drawable/ic_refresh_white_24dp" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <!--TODO.. get a new icon -->
-        <ImageButton
-            android:id="@+id/imageViewReaderVerticalScrollToggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toStartOf="@id/imageViewReaderScreenOrientationToggle"
-            android:background="?attr/selectableItemBackground"
-            android:paddingEnd="10dp"
-            android:src="@drawable/ic_refresh_white_24dp" />
+            <RelativeLayout
+                android:id="@+id/relativeLayoutChapterHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:background="#c0000000"
+                android:elevation="2dp"
+                android:padding="5dp">
 
-        <TextView
-            android:id="@+id/textViewReaderChapterTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerInParent="true"
-            android:layout_gravity="center_horizontal"
-            android:layout_toStartOf="@id/imageViewReaderVerticalScrollToggle"
-            android:ellipsize="middle"
-            android:singleLine="true"
-            android:text="Loading Chapter.."
-            android:textColor="@color/manga_white"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-    </RelativeLayout>
+                <ImageButton
+                    android:id="@+id/imageViewReaderRefresh"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:background="?attr/selectableItemBackground"
+                    android:paddingEnd="10dp"
+                    android:src="@drawable/ic_refresh_white_24dp" />
 
-    <RelativeLayout
-        android:id="@+id/relativeLayoutChapterFooter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+                <ImageButton
+                    android:id="@+id/imageViewReaderScreenOrientationToggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@id/imageViewReaderRefresh"
+                    android:background="?attr/selectableItemBackground"
+                    android:paddingEnd="10dp"
+                    android:src="@drawable/ic_refresh_white_24dp" />
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fabReaderPreviousChapter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:src="@drawable/ic_refresh_white_24dp"
-            app:fab_size="normal"
-            app:fab_colorRipple="@color/colorAccent"
-            app:fab_colorNormal="@color/colorAccent"
-            app:fab_colorPressed="@color/colorAccent" />
+                <!--TODO.. get a new icon -->
+                <ImageButton
+                    android:id="@+id/imageViewReaderVerticalScrollToggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@id/imageViewReaderScreenOrientationToggle"
+                    android:background="?attr/selectableItemBackground"
+                    android:paddingEnd="10dp"
+                    android:src="@drawable/ic_refresh_white_24dp" />
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fabReaderPreviousPage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="10dp"
-            android:layout_toEndOf="@id/fabReaderPreviousChapter"
-            android:src="@drawable/ic_refresh_white_24dp"
-            app:fab_size="mini"
-            app:fab_colorRipple="@color/colorAccent"
-            app:fab_colorNormal="@color/colorAccent"
-            app:fab_colorPressed="@color/colorAccent" />
+                <TextView
+                    android:id="@+id/textViewReaderChapterTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_toStartOf="@id/imageViewReaderVerticalScrollToggle"
+                    android:ellipsize="middle"
+                    android:singleLine="true"
+                    android:text="Loading Chapter.."
+                    android:textColor="@color/manga_white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fabReaderNextChapter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:src="@drawable/ic_refresh_white_24dp"
-            app:fab_size="normal"
-            app:fab_colorRipple="@color/colorAccent"
-            app:fab_colorNormal="@color/colorAccent"
-            app:fab_colorPressed="@color/colorAccent" />
+            <RelativeLayout
+                android:id="@+id/relativeLayoutChapterFooter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:background="#c0000000">
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fabReaderNextPage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="10dp"
-            android:layout_toStartOf="@id/fabReaderNextChapter"
-            android:src="@drawable/ic_refresh_white_24dp"
-            app:fab_size="mini"
-            app:fab_colorRipple="@color/colorAccent"
-            app:fab_colorNormal="@color/colorAccent"
-            app:fab_colorPressed="@color/colorAccent"
-            />
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/fabReaderPreviousChapter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:src="@drawable/ic_refresh_white_24dp"
+                    app:fab_colorNormal="@color/colorAccent"
+                    app:fab_colorPressed="@color/colorAccent"
+                    app:fab_colorRipple="@color/colorAccent"
+                    app:fab_size="normal" />
 
-    </RelativeLayout>
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/fabReaderPreviousPage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@id/fabReaderPreviousChapter"
+                    android:src="@drawable/ic_refresh_white_24dp"
+                    app:fab_colorNormal="@color/colorAccent"
+                    app:fab_colorPressed="@color/colorAccent"
+                    app:fab_colorRipple="@color/colorAccent"
+                    app:fab_size="mini" />
 
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/fabReaderNextChapter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/ic_refresh_white_24dp"
+                    app:fab_colorNormal="@color/colorAccent"
+                    app:fab_colorPressed="@color/colorAccent"
+                    app:fab_colorRipple="@color/colorAccent"
+                    app:fab_size="normal" />
+
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/fabReaderNextPage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="10dp"
+                    android:layout_toStartOf="@id/fabReaderNextChapter"
+                    android:src="@drawable/ic_refresh_white_24dp"
+                    app:fab_colorNormal="@color/colorAccent"
+                    app:fab_colorPressed="@color/colorAccent"
+                    app:fab_colorRipple="@color/colorAccent"
+                    app:fab_size="mini" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayoutReaderPageCountContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true">
+
+                    <TextView
+                        android:id="@+id/textViewReaderCurrentPage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="128"
+                        android:textColor="?attr/text_color"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:fontFamily="sans-serif-black"
+                        android:text="|"
+                        android:textColor="?attr/text_color"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/textViewReaderTotalPages"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="128"
+                        android:textColor="?attr/text_color"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+        </RelativeLayout>
+    </LinearLayout>
 </RelativeLayout>
