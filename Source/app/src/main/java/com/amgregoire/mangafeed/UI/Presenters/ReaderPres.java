@@ -9,13 +9,19 @@ import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Adapters.ChapterPagerAdapter;
 import com.amgregoire.mangafeed.UI.Fragments.ReaderFragment;
+import com.amgregoire.mangafeed.UI.Fragments.ReaderFragmentChapter;
 import com.amgregoire.mangafeed.UI.Mappers.IReader;
+import com.amgregoire.mangafeed.Utils.BusEvents.ReaderChapterChangeEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.ReaderSingleTapEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.ReaderToolbarUpdateEvent;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by Andy Gregoire on 3/21/2018.
@@ -32,6 +38,7 @@ public class ReaderPres implements IReader.ReaderPres
     private int mCurrentPosition;
     private ChapterPagerAdapter mAdapter;
     private FragmentManager mManager;
+    private Disposable mRxBus;
 
     public ReaderPres(IReader.ReaderMap map)
     {
@@ -78,13 +85,6 @@ public class ReaderPres implements IReader.ReaderPres
         }
     }
 
-    private void finishInit()
-    {
-        mAdapter = new ChapterPagerAdapter(mManager, mChapterList, mManga.isFollowing(), mManga);
-        mMap.registerAdapter(mAdapter);
-        mMap.setPagerPosition(mCurrentPosition);
-    }
-
     @Override
     public String getMangaTitle()
     {
@@ -112,5 +112,60 @@ public class ReaderPres implements IReader.ReaderPres
             mManga = restore.getParcelable(ReaderFragment.MANGA_KEY);
             mCurrentPosition = restore.getInt(ReaderFragment.POSITION_KEY);
         }
+    }
+
+    @Override
+    public void updateCurrentPosition(int position)
+    {
+        mCurrentPosition = position;
+        ((ReaderFragmentChapter)mAdapter.getItem(position)).update();
+    }
+
+    @Override
+    public void unSubEventBus()
+    {
+        mRxBus.dispose();
+        mRxBus = null;
+    }
+
+
+    @Override
+    public void subEventBus()
+    {
+        mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
+        {
+            if (o instanceof ReaderSingleTapEvent)
+            {
+                mMap.onSingleTap();
+            }
+            else if (o instanceof ReaderChapterChangeEvent)
+            {
+                ReaderChapterChangeEvent lEvent = (ReaderChapterChangeEvent) o;
+                if (lEvent.isNext)
+                {
+                    mMap.onNextChapter();
+                }
+                else
+                {
+                    mMap.onPrevChapter();
+                }
+            }
+            else if( o instanceof ReaderToolbarUpdateEvent)
+            {
+                ReaderToolbarUpdateEvent lEvent = (ReaderToolbarUpdateEvent) o;
+                mMap.updateToolbars(lEvent.message, lEvent.currentPage, lEvent.totalPages, lEvent.chapterPosition);
+            }
+        }, throwable -> MangaLogger.logError(TAG, throwable.getMessage()));
+    }
+
+    /***
+     * This function completes the common initializations for both creating, and restoring the fragment.
+     *
+     */
+    private void finishInit()
+    {
+        mAdapter = new ChapterPagerAdapter(mManager, mChapterList, mManga.isFollowing(), mManga);
+        mMap.registerAdapter(mAdapter);
+        mMap.setPagerPosition(mCurrentPosition);
     }
 }

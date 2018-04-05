@@ -5,16 +5,20 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Activities.NavigationActivity;
 import com.amgregoire.mangafeed.UI.Mappers.IReader;
 import com.amgregoire.mangafeed.UI.Presenters.ReaderPresChapter;
 import com.amgregoire.mangafeed.UI.Widgets.GestureViewPager;
+import com.amgregoire.mangafeed.Utils.BusEvents.ReaderChapterChangeEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.ReaderSingleTapEvent;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
 import butterknife.BindView;
@@ -62,55 +66,89 @@ public class ReaderFragmentChapter extends Fragment implements IReader.ReaderMap
         return lView;
     }
 
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        mPresenter.subEventBus();
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        mPresenter.unSubEventBus();
+    }
 
     @Override
     public void registerAdapter(PagerAdapter adapter)
     {
-        MangaLogger.logError(TAG, "registering adapter");
         mViewPager.setAdapter(adapter);
         mViewPager.setPageMargin(128);
+        mViewPager.setOffscreenPageLimit(6);
     }
 
     @Override
     public void initViews()
     {
         mViewPager.setUserGesureListener(this);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
+        {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
+            {
+                // do nothing
+            }
+
+            @Override
+            public void onPageSelected(int position)
+            {
+                mPresenter.updateCurrentPosition(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state)
+            {
+                // do nothing
+            }
+        });
     }
 
     @Override
     public void onSingleTap()
     {
-        // toggle toolbars
-        if (getParentFragment() instanceof ReaderFragment)
-        {
-            MangaLogger.logError(TAG, "AWESOME");
-        }
-        else
-        {
-            MangaLogger.logError(TAG, "well shit..");
-        }
+        MangaFeed.getInstance().rxBus().send(new ReaderSingleTapEvent());
     }
 
     @Override
     public void onLeft()
     {
-        Fragment lParent = getParentFragment();
-        if (lParent != null)
-        {
-            //decrement chapter
-            ((ReaderFragment) lParent).decrementChapter();
-        }
+        MangaFeed.getInstance().rxBus().send(new ReaderChapterChangeEvent(false));
     }
 
     @Override
     public void onRight()
     {
-        //increment chapter
-        Fragment lParent = getParentFragment();
-        if (lParent != null)
+        MangaFeed.getInstance().rxBus().send(new ReaderChapterChangeEvent(true));
+    }
+
+    @Override
+    public void onNextPage()
+    {
+        mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);
+    }
+
+    @Override
+    public void onPrevPage()
+    {
+        mViewPager.setCurrentItem(mViewPager.getCurrentItem() - 1);
+    }
+
+    public void update()
+    {
+        if (mPresenter != null)
         {
-            //decrement chapter
-            ((ReaderFragment) lParent).incrementChapter();
+            mPresenter.setNewChapterToolbar();
         }
     }
 }

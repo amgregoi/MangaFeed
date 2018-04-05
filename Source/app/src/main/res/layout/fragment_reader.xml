@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/manga_white"
+    android:background="?attr/background_color"
     android:clickable="true"
-    android:fitsSystemWindows="true"
+    android:fitsSystemWindows="false"
     android:orientation="vertical">
 
     <com.amgregoire.mangafeed.UI.Widgets.NoScrollViewPager
@@ -143,7 +143,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-black"
-                        android:text="128"
+                        android:text="0"
                         android:textColor="?attr/text_color"
                         android:textSize="18sp" />
 
@@ -162,7 +162,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-black"
-                        android:text="128"
+                        android:text="0"
                         android:textColor="?attr/text_color"
                         android:textSize="18sp" />
 

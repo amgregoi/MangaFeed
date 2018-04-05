@@ -16,6 +16,7 @@ import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.Utils.RxBus;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
+import com.bumptech.glide.request.target.ViewTarget;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,7 +49,7 @@ public class MangaFeed extends Application
     public void onCreate()
     {
         super.onCreate();
-
+        ViewTarget.setTagId(R.id.glide_tag);
         mBus = new RxBus();
 
         MangaDB.getInstance().createDB(); // Copy pre-loaded database if not already done.
@@ -207,8 +208,7 @@ public class MangaFeed extends Application
 
         // Check if we updated in the last week, if we have we'll skip.
         Date lLowerLimit = new Date(SharedPrefs.getLastCatalogUpdate().getTime() + lWeekMs);
-//        if (lLowerLimit.before(new Date()))
-        if (false)
+        if (lLowerLimit.before(new Date()))
         {
             Observable.create((ObservableEmitter<SourceBase> subscriber) ->
             {
