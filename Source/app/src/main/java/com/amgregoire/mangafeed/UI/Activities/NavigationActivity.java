@@ -25,6 +25,7 @@ import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.BackHandledFragment;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragment;
+import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentFiltered;
 import com.amgregoire.mangafeed.UI.Fragments.DownloadsFragment;
 import com.amgregoire.mangafeed.UI.Fragments.HomeFragment;
 import com.amgregoire.mangafeed.UI.Fragments.MangaInfoFragment;
@@ -35,6 +36,7 @@ import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLoginAttemptEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLogoutEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.MangaSelectedEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.SearchQueryChangeEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.StatusFilterEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateSourceEvent;
 import com.amgregoire.mangafeed.Utils.DownloadManager;
 import com.amgregoire.mangafeed.Utils.DownloadScheduler;
@@ -267,9 +269,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                                            .attach(lAccount)
                                            .commit();
 
-                MangaFeed.getInstance()
-                         .makeSnackBarShort
-                                 (findViewById(R.id.coordinatorLayoutSnack), "Source changed to " + MangaFeed
+                MangaFeed.getInstance().makeSnackBarShort(findViewById(R.id.coordinatorLayoutSnack), "Source changed to " + MangaFeed
                                          .getInstance()
                                          .getCurrentSource()
                                          .getSourceName());
@@ -284,13 +284,14 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                                            .addToBackStack(MangaInfoFragment.TAG)
                                            .commit();
             }
-            else if (o instanceof GoogleLoginAttemptEvent)
+            else if (o instanceof StatusFilterEvent)
             {
-                LoginManager.login(this);
-            }
-            else if (o instanceof GoogleLogoutEvent)
-            {
-                LoginManager.logout();
+                StatusFilterEvent lEvent = (StatusFilterEvent) o;
+                Fragment lFragment = AccountFragmentFiltered.newInstance(lEvent.filter, lEvent.title);
+                getSupportFragmentManager().beginTransaction()
+                                           .add(R.id.frameLayoutMasterContainer, lFragment)
+                                           .addToBackStack(null)
+                                           .commit();
             }
             else if (o instanceof ChapterSelectedEvent)
             {
@@ -300,6 +301,14 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                                            .add(R.id.frameLayoutMasterContainer, lReaderFragment, ReaderFragment.TAG)
                                            .addToBackStack(MangaInfoFragment.TAG)
                                            .commit();
+            }
+            else if (o instanceof GoogleLoginAttemptEvent)
+            {
+                LoginManager.login(this);
+            }
+            else if (o instanceof GoogleLogoutEvent)
+            {
+                LoginManager.logout();
             }
         }, throwable -> Log.e(TAG, throwable.getMessage()));
     }
