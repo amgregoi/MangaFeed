@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentFiltered;
 import com.amgregoire.mangafeed.UI.Mappers.IAccount;
+import com.amgregoire.mangafeed.Utils.BusEvents.StatusFilterEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateSourceEvent;
 import com.amgregoire.mangafeed.Utils.MangaDB;
@@ -97,11 +98,7 @@ public class AccountPresStats implements IAccount.AccountStatsPres
         {
             if (mStatValues.get(filter - 1) > 0) // Filters are 1 indexed, stat list is 0 indexed
             {
-                Fragment lFragment = AccountFragmentFiltered.newInstance(filter, title);
-                mManager.beginTransaction()
-                        .add(android.R.id.content, lFragment)
-                        .addToBackStack(null)
-                        .commit();
+                MangaFeed.getInstance().rxBus().send(new StatusFilterEvent(filter, title));
             }
             else
             {
