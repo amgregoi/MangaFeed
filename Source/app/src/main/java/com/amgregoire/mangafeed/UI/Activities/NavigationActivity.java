@@ -237,6 +237,10 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
             if (lManager.getBackStackEntryCount() > 0)
             {
                 lManager.popBackStack();
+                if (lManager.getBackStackEntryCount() == 1)
+                {
+                    setSupportActionBar(mToolbar);
+                }
             }
             else
             {
@@ -397,7 +401,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                     return false;
             }
 
-            invalidateOptionsMenu();
+            supportInvalidateOptionsMenu();
             return true;
         });
     }
