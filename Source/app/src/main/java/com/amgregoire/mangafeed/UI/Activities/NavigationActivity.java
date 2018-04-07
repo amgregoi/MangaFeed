@@ -116,10 +116,10 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
 
     private void setupSearchView(Menu menu)
     {
-        SearchView search = (SearchView) menu.findItem(R.id.menuHomeSearch).getActionView();
-        SearchView.SearchAutoComplete theTextArea = search.findViewById(R.id.search_src_text);
-        theTextArea.setTextColor(Color.WHITE);//or any color that you want
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+        SearchView lSearch = (SearchView) menu.findItem(R.id.menuHomeSearch).getActionView();
+        SearchView.SearchAutoComplete lTextArea = lSearch.findViewById(R.id.search_src_text);
+        lTextArea.setTextColor(Color.WHITE);//or any color that you want
+        lSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
             @Override
             public boolean onQueryTextSubmit(String s)
