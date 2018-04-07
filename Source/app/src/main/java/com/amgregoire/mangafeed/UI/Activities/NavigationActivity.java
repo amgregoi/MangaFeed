@@ -402,7 +402,6 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
             }
 
             supportInvalidateOptionsMenu();
-//            invalidateOptionsMenu();
             return true;
         });
     }
