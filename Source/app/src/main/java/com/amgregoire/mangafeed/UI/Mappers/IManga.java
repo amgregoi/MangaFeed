@@ -40,6 +40,8 @@ public interface IManga
         boolean isDownload();
 
         void toggleDownload();
+
+        void onContinueReading();
     }
 
     /***

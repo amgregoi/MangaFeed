@@ -85,6 +85,7 @@ public class Manga implements Parcelable
         source = aSource;
         initialized = 0;
         _id = null;
+        recentChapter = "";
     }
 
     public Manga(Manga aIn)
