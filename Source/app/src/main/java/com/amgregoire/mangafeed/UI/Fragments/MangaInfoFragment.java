@@ -394,6 +394,7 @@ public class MangaInfoFragment extends BackHandledFragment implements IManga.Man
                     return true;
                 case R.id.menuMangaInfoBottomContinueReading:
                     // Start Reading from latest chapter
+                    mPresenter.onContinueReading();
                     return true;
             }
             return false;

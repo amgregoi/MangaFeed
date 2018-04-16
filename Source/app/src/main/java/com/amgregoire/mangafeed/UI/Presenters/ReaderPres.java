@@ -14,6 +14,7 @@ import com.amgregoire.mangafeed.UI.Mappers.IReader;
 import com.amgregoire.mangafeed.Utils.BusEvents.ReaderChapterChangeEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.ReaderSingleTapEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.ReaderToolbarUpdateEvent;
+import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
 import java.util.ArrayList;
@@ -118,8 +119,10 @@ public class ReaderPres implements IReader.ReaderPres
     public void updateCurrentPosition(int position)
     {
         mCurrentPosition = position;
-        ((ReaderFragmentChapter)mAdapter.getItem(position)).update();
+        updateRecentChapter();
+        ((ReaderFragmentChapter) mAdapter.getItem(position)).update();
     }
+
 
     @Override
     public void unSubEventBus()
@@ -150,7 +153,7 @@ public class ReaderPres implements IReader.ReaderPres
                     mMap.onPrevChapter();
                 }
             }
-            else if( o instanceof ReaderToolbarUpdateEvent)
+            else if (o instanceof ReaderToolbarUpdateEvent)
             {
                 ReaderToolbarUpdateEvent lEvent = (ReaderToolbarUpdateEvent) o;
                 mMap.updateToolbars(lEvent.message, lEvent.currentPage, lEvent.totalPages, lEvent.chapterPosition);
@@ -167,5 +170,18 @@ public class ReaderPres implements IReader.ReaderPres
         mAdapter = new ChapterPagerAdapter(mManager, mChapterList, mManga.isFollowing(), mManga);
         mMap.registerAdapter(mAdapter);
         mMap.setPagerPosition(mCurrentPosition);
+    }
+
+    /***
+     * Sets the mangas recent chapter to the current displayed chapter, and updates the local db.
+     *
+     */
+    private void updateRecentChapter()
+    {
+        if (mManga.isFollowing())
+        {
+            mManga.setRecentChapter(mChapterList.get(mCurrentPosition).getChapterUrl());
+            MangaDB.getInstance().putManga(mManga);
+        }
     }
 }

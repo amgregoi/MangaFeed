@@ -2,6 +2,7 @@ package com.amgregoire.mangafeed.Models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
@@ -140,7 +141,8 @@ public class Chapter implements Parcelable
 
     @Generated(hash = 88779533)
     public Chapter(Long _id, String url, String date, String mangaTitle, String mangaUrl, String chapterTitle,
-            int chapterNumber, int currentPage, int totalPages, int downloadStatus) {
+                   int chapterNumber, int currentPage, int totalPages, int downloadStatus)
+    {
         this._id = _id;
         this.url = url;
         this.date = date;
@@ -263,35 +265,43 @@ public class Chapter implements Parcelable
         this.date = date;
     }
 
-    public boolean getMDownloadChecked() {
+    public boolean getMDownloadChecked()
+    {
         return this.mDownloadChecked;
     }
 
-    public void setMDownloadChecked(boolean mDownloadChecked) {
+    public void setMDownloadChecked(boolean mDownloadChecked)
+    {
         this.mDownloadChecked = mDownloadChecked;
     }
 
-    public String getMangaUrl() {
+    public String getMangaUrl()
+    {
         return this.mangaUrl;
     }
 
-    public void setMangaUrl(String mangaUrl) {
+    public void setMangaUrl(String mangaUrl)
+    {
         this.mangaUrl = mangaUrl;
     }
 
-    public int getDownloadStatus() {
+    public int getDownloadStatus()
+    {
         return this.downloadStatus;
     }
 
-    public void setDownloadStatus(int downloadStatus) {
+    public void setDownloadStatus(int downloadStatus)
+    {
         this.downloadStatus = downloadStatus;
     }
 
-    public Long get_id() {
+    public Long get_id()
+    {
         return this._id;
     }
 
-    public void set_id(Long _id) {
+    public void set_id(Long _id)
+    {
         this._id = _id;
     }
 }

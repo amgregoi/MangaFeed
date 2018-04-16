@@ -37,6 +37,7 @@ import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLogoutEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.MangaSelectedEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.SearchQueryChangeEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.StatusFilterEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaInfoEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateSourceEvent;
 import com.amgregoire.mangafeed.Utils.DownloadManager;
 import com.amgregoire.mangafeed.Utils.DownloadScheduler;
@@ -242,6 +243,10 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                 if (lManager.getBackStackEntryCount() == 1)
                 {
                     setSupportActionBar(mToolbar);
+                }
+                else
+                {
+                    MangaFeed.getInstance().rxBus().send(new UpdateMangaInfoEvent());
                 }
             }
             else
