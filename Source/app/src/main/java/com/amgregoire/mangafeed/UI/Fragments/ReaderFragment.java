@@ -4,20 +4,17 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -29,8 +26,6 @@ import android.widget.TextView;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
-import com.amgregoire.mangafeed.UI.Adapters.ChapterPagerAdapter;
-import com.amgregoire.mangafeed.UI.Adapters.ImagePagerAdapter;
 import com.amgregoire.mangafeed.UI.BackHandledFragment;
 import com.amgregoire.mangafeed.UI.Mappers.IReader;
 import com.amgregoire.mangafeed.UI.Presenters.ReaderPres;
@@ -94,7 +89,7 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
     public void onResume()
     {
         super.onResume();
-        mPresenter.subEventBus();
+        mPresenter.onResume();
 
         Window w = getActivity().getWindow();
         w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
@@ -105,7 +100,7 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
     public void onPause()
     {
         super.onPause();
-        mPresenter.unSubEventBus();
+        mPresenter.onPause();
 
         Window w = getActivity().getWindow();
         showToolbar();

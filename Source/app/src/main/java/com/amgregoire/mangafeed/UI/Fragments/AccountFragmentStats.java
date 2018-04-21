@@ -64,14 +64,14 @@ public class AccountFragmentStats extends Fragment implements IAccount.AccountSt
     public void onPause()
     {
         super.onPause();
-        mPresenter.unSubEventBus();
+        mPresenter.onPause();
     }
 
     @Override
     public void onResume()
     {
         super.onResume();
-        mPresenter.subEventBus();
+        mPresenter.onResume();
     }
 
     @OnClick(R.id.linearLayoutStatsReadingContainer)

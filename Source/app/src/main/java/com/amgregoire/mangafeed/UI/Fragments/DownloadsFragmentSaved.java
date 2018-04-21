@@ -53,14 +53,14 @@ public class DownloadsFragmentSaved extends Fragment implements IDownloads.Downl
     public void onResume()
     {
         super.onResume();
-        mPresenter.subEventBus();
+        mPresenter.onResume();
     }
 
     @Override
     public void onPause()
     {
         super.onPause();
-        mPresenter.unSubEventBus();
+        mPresenter.onPause();
     }
 
     @Override

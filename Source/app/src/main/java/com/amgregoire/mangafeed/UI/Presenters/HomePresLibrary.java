@@ -32,18 +32,18 @@ public class HomePresLibrary extends HomePresBase
     {
         try
         {
-            if (mMangaListSubscription != null)
+            if (mDisposableMangaList != null)
             {
-                mMangaListSubscription.dispose();
-                mMangaListSubscription = null;
+                mDisposableMangaList.dispose();
+                mDisposableMangaList = null;
             }
 
 
-            mMangaListSubscription = MangaDB.getInstance()
-                                            .getLibraryList().cache()
-                                            .subscribeOn(Schedulers.io())
-                                            .observeOn(AndroidSchedulers.mainThread())
-                                            .subscribe
+            mDisposableMangaList = MangaDB.getInstance()
+                                          .getLibraryList().cache()
+                                          .subscribeOn(Schedulers.io())
+                                          .observeOn(AndroidSchedulers.mainThread())
+                                          .subscribe
                                                     (
                                                             mangas -> updateMangaGridView(mangas),
                                                             throwable -> MangaLogger.logError(TAG, "Failed to retrieve library list", throwable

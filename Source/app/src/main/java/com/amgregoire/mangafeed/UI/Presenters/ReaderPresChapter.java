@@ -36,6 +36,8 @@ public class ReaderPresChapter implements IReader.ReaderPresChapter
     private Chapter mChapter;
     private int mChapterPosition, mPagePosition;
     private boolean mFinishedImageUrls;
+    private Disposable mRxBus;
+    private Disposable mChapterContent;
 
     public ReaderPresChapter(IReader.ReaderMapChapter map)
     {
@@ -68,29 +70,29 @@ public class ReaderPresChapter implements IReader.ReaderPresChapter
 
         updateToolbar("Loading pages..", 0, 0);
 
-        MangaFeed.getInstance()
-                 .getCurrentSource()
-                 .getChapterImageListObservable(new RequestWrapper(mChapter))
-                 .observeOn(AndroidSchedulers.mainThread())
-                 .subscribe(
-                         url ->
-                         {
-                             mImageUrls.add(url);
-                             updateToolbar("Pages loaded: " + mImageUrls.size(), 0, 0);
-                         },
-                         throwable ->
-                         {
-                             MangaLogger.logError(TAG, throwable.getMessage());
-                             updateToolbar("Problem retrieving pages, try refreshing", 0, 0);
-                         },
-                         () ->
-                         {
-                             updateToolbar(mChapter.chapterTitle, 1, mImageUrls.size());
-                             mChapter.setTotalPages(mImageUrls.size());
-                             mAdapter = new ImagePagerAdapter(mMap.getContext(), mImageUrls);
-                             mMap.registerAdapter(mAdapter);
-                             mFinishedImageUrls = true;
-                         });
+        mChapterContent = MangaFeed.getInstance()
+                                   .getCurrentSource()
+                                   .getChapterImageListObservable(new RequestWrapper(mChapter))
+                                   .observeOn(AndroidSchedulers.mainThread())
+                                   .subscribe(
+                                           url ->
+                                           {
+                                               mImageUrls.add(url);
+                                               updateToolbar("Pages loaded: " + mImageUrls.size(), 0, 0);
+                                           },
+                                           throwable ->
+                                           {
+                                               MangaLogger.logError(TAG, throwable.getMessage());
+                                               updateToolbar("Problem retrieving pages, try refreshing", 0, 0);
+                                           },
+                                           () ->
+                                           {
+                                               updateToolbar(mChapter.chapterTitle, 1, mImageUrls.size());
+                                               mChapter.setTotalPages(mImageUrls.size());
+                                               mAdapter = new ImagePagerAdapter(mMap.getContext(), mImageUrls);
+                                               mMap.registerAdapter(mAdapter);
+                                               mFinishedImageUrls = true;
+                                           });
     }
 
     private void getChapters()
@@ -131,17 +133,25 @@ public class ReaderPresChapter implements IReader.ReaderPresChapter
                  .send(new ReaderToolbarUpdateEvent(message, page, total, mChapterPosition));
     }
 
-    private Disposable mRxBus;
 
     @Override
-    public void unSubEventBus()
+    public void onPause()
     {
-        mRxBus.dispose();
-        mRxBus = null;
+        if (mRxBus != null)
+        {
+            mRxBus.dispose();
+            mRxBus = null;
+        }
+
+        if (mChapterContent != null)
+        {
+            mChapterContent.dispose();
+            mChapterContent = null;
+        }
     }
 
     @Override
-    public void subEventBus()
+    public void onResume()
     {
         mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
         {

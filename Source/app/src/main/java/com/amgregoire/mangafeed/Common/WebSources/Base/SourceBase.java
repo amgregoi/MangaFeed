@@ -14,7 +14,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.FutureTarget;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
-import com.squareup.okhttp.Headers;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +22,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.Headers;
 
 public abstract class SourceBase
 {
@@ -107,7 +107,6 @@ public abstract class SourceBase
                              .getResponse(getRecentUpdatesUrl())
                              .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
                              .flatMap(aHtml -> Observable.just(parseResponseToRecentList(aHtml)))
-                             .subscribeOn(Schedulers.io())
                              .observeOn(AndroidSchedulers.mainThread())
                              .retry(3);
     }

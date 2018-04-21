@@ -29,7 +29,7 @@ public interface IDownloads
 
     }
 
-    interface DownloadsDownloadingPres extends LifeCycleMap
+    interface DownloadsDownloadingPres extends LifeCycleMap, EventBusMap
     {
 
     }

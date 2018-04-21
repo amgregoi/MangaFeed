@@ -26,18 +26,18 @@ public class HomePresCatalog extends HomePresBase
     {
         try
         {
-            if (mMangaListSubscription != null)
+            if (mDisposableMangaList != null)
             {
-                mMangaListSubscription.dispose();
-                mMangaListSubscription = null;
+                mDisposableMangaList.dispose();
+                mDisposableMangaList = null;
             }
 
 
-            mMangaListSubscription = MangaDB.getInstance()
-                                            .getCatalogList()
-                                            .subscribeOn(Schedulers.io())
-                                            .observeOn(AndroidSchedulers.mainThread())
-                                            .subscribe
+            mDisposableMangaList = MangaDB.getInstance()
+                                          .getCatalogList()
+                                          .subscribeOn(Schedulers.io())
+                                          .observeOn(AndroidSchedulers.mainThread())
+                                          .subscribe
                                                     (
                                                             mangas -> updateMangaGridView(mangas),
                                                             throwable -> MangaLogger.logError(TAG, "Failed to retrieve catalog list", throwable

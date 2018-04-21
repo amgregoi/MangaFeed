@@ -29,7 +29,7 @@ public abstract class HomePresBase implements IHome.HomeBasePres
     public final static String TAG = HomePresBase.class.getSimpleName();
 
     protected IHome.HomeBaseMap mMap;
-    protected Disposable mMangaListSubscription;
+    protected Disposable mDisposableMangaList;
     protected SearchRecyclerAdapter mAdapter;
     protected Disposable mRxBus;
 
@@ -91,12 +91,21 @@ public abstract class HomePresBase implements IHome.HomeBasePres
     }
 
     @Override
-    public void unSubEventBus()
+    public void onPause()
     {
         try
         {
-            mRxBus.dispose();
-            mRxBus = null;
+            if(mRxBus != null)
+            {
+                mRxBus.dispose();
+                mRxBus = null;
+            }
+
+            if(mDisposableMangaList != null)
+            {
+                mDisposableMangaList.dispose();
+                mDisposableMangaList = null;
+            }
         }
         catch (Exception ex)
         {
@@ -105,7 +114,7 @@ public abstract class HomePresBase implements IHome.HomeBasePres
     }
 
     @Override
-    public void subEventBus()
+    public void onResume()
     {
         setupRxBus();
     }
@@ -150,8 +159,8 @@ public abstract class HomePresBase implements IHome.HomeBasePres
 
                 mMap.stopRefresh();
 
-                mMangaListSubscription.dispose();
-                mMangaListSubscription = null;
+                mDisposableMangaList.dispose();
+                mDisposableMangaList = null;
             }
         }
         catch (Exception lException)

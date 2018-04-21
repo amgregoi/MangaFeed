@@ -58,6 +58,14 @@ public class DownloadsFragmentDownloading extends Fragment implements IDownloads
     public void onResume()
     {
         super.onResume();
+        mPresenter.onResume();
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        mPresenter.onPause();
     }
 
     @Override
@@ -88,6 +96,6 @@ public class DownloadsFragmentDownloading extends Fragment implements IDownloads
     public void scrollToUpdateViews()
     {
         // recyclerview wasn't updating correctly, and needed an 'invisible' scroll to update views.
-        mRecyclerView.scrollBy(0,0);
+        mRecyclerView.scrollBy(0, 0);
     }
 }

@@ -6,7 +6,7 @@ package com.amgregoire.mangafeed.UI.Mappers.Maps;
 
 public interface EventBusMap
 {
-    void unSubEventBus(); // move to lifecycle later
+    void onPause(); // move to lifecycle later
 
-    void subEventBus();
+    void onResume();
 }

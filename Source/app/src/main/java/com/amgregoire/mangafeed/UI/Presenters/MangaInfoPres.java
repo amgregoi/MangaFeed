@@ -1,6 +1,5 @@
 package com.amgregoire.mangafeed.UI.Presenters;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,6 +39,8 @@ public class MangaInfoPres implements IManga.MangaPres
     private List<Chapter> mChapterList;
 
     private Disposable mRxBus;
+    private Disposable mDisposableMangaInfo;
+    private Disposable mDisposableChapterList;
 
     private int mInfoUpdateFlag = ViewState.START;
     private int mChaptersFlag = ViewState.START;
@@ -73,7 +74,7 @@ public class MangaInfoPres implements IManga.MangaPres
             if (mOfflineFlag)
             {
                 mInfoUpdateFlag = ViewState.FINISH;
-                fetchCHapterListOffline();
+                fetchChapterListOffline();
             }
             else
             {
@@ -88,33 +89,62 @@ public class MangaInfoPres implements IManga.MangaPres
     }
 
     @Override
-    public void unSubEventBus()
+    public void onPause()
     {
-        mRxBus.dispose();
-        mRxBus = null;
+        try
+        {
+            if (mRxBus != null)
+            {
+                mRxBus.dispose();
+                mRxBus = null;
+            }
+
+            if (mDisposableChapterList != null)
+            {
+                mDisposableChapterList.dispose();
+                mDisposableChapterList = null;
+            }
+
+            if (mDisposableMangaInfo != null)
+            {
+                mDisposableMangaInfo.dispose();
+                mDisposableMangaInfo = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
     }
 
     @Override
-    public void subEventBus()
+    public void onResume()
     {
-        if (mManga != null)
+        try
         {
-            mManga = MangaDB.getInstance().getManga(mManga.link);
-        }
-
-        mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
-        {
-            if (o instanceof ToggleDownloadViewEvent)
-            {
-                mMap.toggleDownloadingFlag();
-            }
-            else if (o instanceof UpdateMangaInfoEvent)
+            if (mManga != null)
             {
                 mManga = MangaDB.getInstance().getManga(mManga.link);
-                setStartContinueReading();
-                // TODO : re init chapter list item views with new indicators
             }
-        }, throwable -> MangaLogger.logError(TAG, throwable.getMessage()));
+
+            mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
+            {
+                if (o instanceof ToggleDownloadViewEvent)
+                {
+                    mMap.toggleDownloadingFlag();
+                }
+                else if (o instanceof UpdateMangaInfoEvent)
+                {
+                    mManga = MangaDB.getInstance().getManga(mManga.link);
+                    setStartContinueReading();
+                    // TODO : re init chapter list item views with new indicators
+                }
+            }, throwable -> MangaLogger.logError(TAG, throwable.getMessage()));
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
     }
 
     @Override
@@ -177,7 +207,7 @@ public class MangaInfoPres implements IManga.MangaPres
             Chapter lChapter = null;
             ArrayList<Chapter> lNewChapterList = new ArrayList<>(MangaFeed.getInstance()
                                                                           .getCurrentChapters());
-            
+
             for (Chapter iChapter : lNewChapterList)
             {
                 if (iChapter.getChapterUrl().equals(mManga.getRecentChapter()))
@@ -278,7 +308,7 @@ public class MangaInfoPres implements IManga.MangaPres
             if (mOfflineFlag)
             {
                 mInfoUpdateFlag = ViewState.FINISH;
-                fetchCHapterListOffline();
+                fetchChapterListOffline();
             }
             else
             {
@@ -300,29 +330,29 @@ public class MangaInfoPres implements IManga.MangaPres
     {
         try
         {
-            MangaFeed.getInstance()
-                     .getCurrentSource()
-                     .updateMangaObservable(new RequestWrapper(mManga))
-                     .subscribe
-                             (
-                                     manga ->
-                                     {
-                                         mInfoUpdateFlag = ViewState.FINISH;
-                                         mManga = manga;
-                                         initView();
-                                     },
-                                     throwable ->
-                                     {
-                                         mInfoUpdateFlag = ViewState.FAIL; // re-use old info
-                                         String lMessage = "Failed to update (" + mManga.getTitle() + ")";
-                                         MangaLogger.logError(TAG, lMessage, throwable.getMessage());
-                                     },
-                                     () ->
-                                     {
-                                         String lMessage = "Finished updating (" + mManga.getTitle() + ")";
-                                         MangaLogger.logInfo(TAG, lMessage);
-                                     }
-                             );
+            mDisposableMangaInfo = MangaFeed.getInstance()
+                                            .getCurrentSource()
+                                            .updateMangaObservable(new RequestWrapper(mManga))
+                                            .subscribe
+                                                    (
+                                                            manga ->
+                                                            {
+                                                                mInfoUpdateFlag = ViewState.FINISH;
+                                                                mManga = manga;
+                                                                initView();
+                                                            },
+                                                            throwable ->
+                                                            {
+                                                                mInfoUpdateFlag = ViewState.FAIL; // re-use old info
+                                                                String lMessage = "Failed to update (" + mManga.getTitle() + ")";
+                                                                MangaLogger.logError(TAG, lMessage, throwable.getMessage());
+                                                            },
+                                                            () ->
+                                                            {
+                                                                String lMessage = "Finished updating (" + mManga.getTitle() + ")";
+                                                                MangaLogger.logInfo(TAG, lMessage);
+                                                            }
+                                                    );
         }
         catch (Exception ex)
         {
@@ -338,30 +368,30 @@ public class MangaInfoPres implements IManga.MangaPres
     {
         try
         {
-            MangaFeed.getInstance()
-                     .getCurrentSource()
-                     .getChapterListObservable(new RequestWrapper(mManga))
-                     .subscribe(
-                             chapters ->
-                             {
-                                 mChaptersFlag = ViewState.FINISH;
-                                 MangaFeed.getInstance().setCurrentChapters(chapters);
-                                 mChapterList = new ArrayList<>(chapters);
-                                 initView();
-                             },
-                             throwable ->
-                             {
-                                 mChaptersFlag = ViewState.FAIL; // show info without chapters
-                                 String lMessage = "Failed to retrieve chapters (" + mManga.getTitle() + ")";
-                                 MangaLogger.logError(TAG, lMessage, throwable.getMessage());
+            mDisposableChapterList = MangaFeed.getInstance()
+                                              .getCurrentSource()
+                                              .getChapterListObservable(new RequestWrapper(mManga))
+                                              .subscribe(
+                                                      chapters ->
+                                                      {
+                                                          mChaptersFlag = ViewState.FINISH;
+                                                          MangaFeed.getInstance().setCurrentChapters(chapters);
+                                                          mChapterList = new ArrayList<>(chapters);
+                                                          initView();
+                                                      },
+                                                      throwable ->
+                                                      {
+                                                          mChaptersFlag = ViewState.FAIL; // show info without chapters
+                                                          String lMessage = "Failed to retrieve chapters (" + mManga.getTitle() + ")";
+                                                          MangaLogger.logError(TAG, lMessage, throwable.getMessage());
 
-                             },
-                             () ->
-                             {
-                                 String lMessage = "Finished retrieving chapters (" + mManga.getTitle() + ")";
-                                 MangaLogger.logInfo(TAG, lMessage);
-                             }
-                     );
+                                                      },
+                                                      () ->
+                                                      {
+                                                          String lMessage = "Finished retrieving chapters (" + mManga.getTitle() + ")";
+                                                          MangaLogger.logInfo(TAG, lMessage);
+                                                      }
+                                              );
         }
         catch (Exception ex)
         {
@@ -369,28 +399,28 @@ public class MangaInfoPres implements IManga.MangaPres
         }
     }
 
-    private void fetchCHapterListOffline()
+    private void fetchChapterListOffline()
     {
         try
         {
-            MangaDB.getInstance()
-                   .getDownloadedChapters(mManga)
-                   .subscribe(
-                           chapters ->
-                           {
-                               mChaptersFlag = ViewState.FINISH;
-                               mChapterList = chapters;
-                               initView();
-                           }, throwable ->
-                           {
-                               mChaptersFlag = ViewState.FAIL; // show info without chapters
-                               String lMessage = "Failed to retrieve chapters (" + mManga.getTitle() + ")";
-                               MangaLogger.logError(TAG, lMessage, throwable.getMessage());
-                           }, () ->
-                           {
-                               String lMessage = "Finished retrieving chapters (" + mManga.getTitle() + ")";
-                               MangaLogger.logInfo(TAG, lMessage);
-                           });
+            mDisposableChapterList = MangaDB.getInstance()
+                                            .getDownloadedChapters(mManga)
+                                            .subscribe(
+                                                    chapters ->
+                                                    {
+                                                        mChaptersFlag = ViewState.FINISH;
+                                                        mChapterList = chapters;
+                                                        initView();
+                                                    }, throwable ->
+                                                    {
+                                                        mChaptersFlag = ViewState.FAIL; // show info without chapters
+                                                        String lMessage = "Failed to retrieve chapters (" + mManga.getTitle() + ")";
+                                                        MangaLogger.logError(TAG, lMessage, throwable.getMessage());
+                                                    }, () ->
+                                                    {
+                                                        String lMessage = "Finished retrieving chapters (" + mManga.getTitle() + ")";
+                                                        MangaLogger.logInfo(TAG, lMessage);
+                                                    });
         }
         catch (Exception ex)
         {

@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Mappers.IAccount;
 import com.amgregoire.mangafeed.UI.Presenters.AccountPres;
@@ -64,14 +63,14 @@ public class AccountFragment extends Fragment implements IAccount.AccountMap
     public void onPause()
     {
         super.onPause();
-        mPresenter.unSubEventBus();
+        mPresenter.onPause();
     }
 
     @Override
     public void onResume()
     {
         super.onResume();
-        mPresenter.subEventBus();
+        mPresenter.onResume();
     }
 
     @Override

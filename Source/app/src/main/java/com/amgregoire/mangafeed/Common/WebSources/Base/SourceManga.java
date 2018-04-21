@@ -31,7 +31,6 @@ public abstract class SourceManga extends SourceBase
                                   for (String iPageUrl : batchedPageUrls)
                                   {
                                       Observable<String> lTemporaryObservable = lCurrentService.getResponse(iPageUrl)
-                                                                                               .subscribeOn(Schedulers.io())
                                                                                                .flatMap(NetworkService::mapResponseToString)
                                                                                                .flatMap(unparsedHtml -> Observable
                                                                                                        .just(parseResponseToImageUrls(unparsedHtml, iPageUrl)));

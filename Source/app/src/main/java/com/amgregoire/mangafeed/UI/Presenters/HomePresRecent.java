@@ -27,19 +27,19 @@ public class HomePresRecent extends HomePresBase
     {
         try
         {
-            if (mMangaListSubscription != null)
+            if (mDisposableMangaList != null)
             {
-                mMangaListSubscription.dispose();
-                mMangaListSubscription = null;
+                mDisposableMangaList.dispose();
+                mDisposableMangaList = null;
             }
 
 
             mMap.startRefresh();
-            mMangaListSubscription = MangaFeed.getInstance()
-                                              .getCurrentSource()
-                                              .getRecentMangaObservable()
-                                              .cache()
-                                              .subscribe(mangas ->
+            mDisposableMangaList = MangaFeed.getInstance()
+                                            .getCurrentSource()
+                                            .getRecentMangaObservable()
+                                            .cache()
+                                            .subscribe(mangas ->
                                               {
                                                   // OnNext
                                                   updateMangaGridView(mangas);
@@ -52,7 +52,7 @@ public class HomePresRecent extends HomePresBase
                                               }, () ->
                                               {
                                                   // OnComplete
-                                                  mMangaListSubscription.dispose();
+                                                  mDisposableMangaList.dispose();
                                               });
         }
         catch (Exception ex)

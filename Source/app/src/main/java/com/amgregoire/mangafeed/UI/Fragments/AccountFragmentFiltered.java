@@ -62,14 +62,14 @@ public class AccountFragmentFiltered extends Fragment implements IAccount.Accoun
     public void onResume()
     {
         super.onResume();
-        mPresenter.subEventBus();
+        mPresenter.onResume();
     }
 
     @Override
     public void onPause()
     {
         super.onPause();
-        mPresenter.unSubEventBus();
+        mPresenter.onPause();
     }
 
     @Override
