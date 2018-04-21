@@ -125,7 +125,7 @@ public class ReaderPres implements IReader.ReaderPres
 
 
     @Override
-    public void unSubEventBus()
+    public void onPause()
     {
         mRxBus.dispose();
         mRxBus = null;
@@ -133,7 +133,7 @@ public class ReaderPres implements IReader.ReaderPres
 
 
     @Override
-    public void subEventBus()
+    public void onResume()
     {
         mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
         {

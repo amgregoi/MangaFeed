@@ -49,7 +49,7 @@ public class DownloadsPresSaved implements IDownloads.DownloadsSavedPres
     }
 
     @Override
-    public void unSubEventBus()
+    public void onPause()
     {
         try
         {
@@ -63,7 +63,7 @@ public class DownloadsPresSaved implements IDownloads.DownloadsSavedPres
     }
 
     @Override
-    public void subEventBus()
+    public void onResume()
     {
         try
         {

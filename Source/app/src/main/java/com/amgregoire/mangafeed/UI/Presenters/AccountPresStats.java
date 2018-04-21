@@ -54,7 +54,7 @@ public class AccountPresStats implements IAccount.AccountStatsPres
 
 
     @Override
-    public void unSubEventBus()
+    public void onPause()
     {
         try
         {
@@ -68,7 +68,7 @@ public class AccountPresStats implements IAccount.AccountStatsPres
     }
 
     @Override
-    public void subEventBus()
+    public void onResume()
     {
         try
         {

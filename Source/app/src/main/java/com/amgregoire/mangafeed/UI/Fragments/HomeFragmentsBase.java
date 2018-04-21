@@ -56,13 +56,13 @@ public abstract class HomeFragmentsBase extends Fragment implements IHome.HomeBa
     public void onPause()
     {
         super.onPause();
-        mPresenter.unSubEventBus();
+        mPresenter.onPause();
     }
 
     @Override
     public void onResume()
     {
         super.onResume();
-        mPresenter.subEventBus();
+        mPresenter.onResume();
     }
 }

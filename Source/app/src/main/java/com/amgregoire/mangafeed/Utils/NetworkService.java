@@ -1,16 +1,16 @@
 package com.amgregoire.mangafeed.Utils;
 
 
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.Headers;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class NetworkService
 {
@@ -20,10 +20,10 @@ public class NetworkService
 
     private NetworkService()
     {
-        mClient = new OkHttpClient();
-        mClient.setConnectTimeout(10, TimeUnit.SECONDS);
-        mClient.setWriteTimeout(10, TimeUnit.SECONDS);
-        mClient.setReadTimeout(30, TimeUnit.SECONDS);
+        mClient = new OkHttpClient.Builder().readTimeout(10, TimeUnit.SECONDS)
+                                            .writeTimeout(10, TimeUnit.SECONDS)
+                                            .readTimeout(30, TimeUnit.SECONDS)
+                                            .build();
     }
 
     public static NetworkService getPermanentInstance()
@@ -63,9 +63,9 @@ public class NetworkService
             }
             catch (Throwable e)
             {
-                subscriber.onError(e);
+                subscriber.tryOnError(e);
             }
-        }).subscribeOn(Schedulers.io());
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     /***
@@ -91,10 +91,9 @@ public class NetworkService
             }
             catch (Throwable e)
             {
-                subscriber.onError(e);
+                subscriber.tryOnError(e);
             }
-        })
-                         .subscribeOn(Schedulers.io());
+        }).subscribeOn(Schedulers.io());
     }
 
     /***
@@ -114,7 +113,7 @@ public class NetworkService
             }
             catch (Throwable e)
             {
-                subscriber.onError(e);
+                subscriber.tryOnError(e);
             }
         }).subscribeOn(Schedulers.io());
     }

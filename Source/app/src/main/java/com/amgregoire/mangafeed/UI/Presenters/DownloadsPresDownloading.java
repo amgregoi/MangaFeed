@@ -10,6 +10,8 @@ import com.amgregoire.mangafeed.UI.Mappers.IDownloads;
 import com.amgregoire.mangafeed.Utils.BusEvents.DownloadEventUpdateComplete;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
+import io.reactivex.disposables.Disposable;
+
 /**
  * Created by Andy Gregoire on 3/18/2018.
  */
@@ -19,14 +21,16 @@ public class DownloadsPresDownloading implements IDownloads.DownloadsDownloading
     public final static String TAG = DownloadsPresDownloading.class.getSimpleName();
 
     private IDownloads.DownloadsDownloadingMap mMap;
+    private DownloadScheduleAdapter lAdapter;
+    private RecyclerView.LayoutManager lManager;
+
+    private Disposable mDisposableDownloadListener;
 
     public DownloadsPresDownloading(IDownloads.DownloadsDownloadingMap map)
     {
         mMap = map;
     }
 
-    DownloadScheduleAdapter lAdapter;
-    RecyclerView.LayoutManager lManager;
 
     @Override
     public void init(Bundle bundle)
@@ -39,7 +43,6 @@ public class DownloadsPresDownloading implements IDownloads.DownloadsDownloading
             lAdapter = new DownloadScheduleAdapter();
 
             mMap.registerAdapter(lAdapter, lManager);
-            test();
         }
         catch (Exception ex)
         {
@@ -47,19 +50,43 @@ public class DownloadsPresDownloading implements IDownloads.DownloadsDownloading
         }
     }
 
-    private void test()
+
+    @Override
+    public void onPause()
     {
-        MangaFeed.getInstance()
-                 .rxBus()
-                 .toObservable()
-                 .subscribe(o ->
-                 {
-                     if (o instanceof DownloadEventUpdateComplete)
-                     {
-                         mMap.scrollToUpdateViews();
-                     }
-                 }, throwable -> MangaLogger.logError(TAG, throwable.getMessage()));
+        try
+        {
+            if (mDisposableDownloadListener != null)
+            {
+                mDisposableDownloadListener.dispose();
+                mDisposableDownloadListener = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
     }
 
-
+    @Override
+    public void onResume()
+    {
+        try
+        {
+            mDisposableDownloadListener = MangaFeed.getInstance()
+                                                   .rxBus()
+                                                   .toObservable()
+                                                   .subscribe(o ->
+                                                   {
+                                                       if (o instanceof DownloadEventUpdateComplete)
+                                                       {
+                                                           mMap.scrollToUpdateViews();
+                                                       }
+                                                   }, throwable -> MangaLogger.logError(TAG, throwable.getMessage()));
+        }
+        catch (Exception ex)
+        {
+            MangaLogger.logError(TAG, ex.getMessage());
+        }
+    }
 }

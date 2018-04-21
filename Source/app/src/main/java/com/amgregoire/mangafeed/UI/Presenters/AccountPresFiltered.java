@@ -57,7 +57,7 @@ public class AccountPresFiltered implements IAccount.AccountFilteredPres
     }
 
     @Override
-    public void unSubEventBus()
+    public void onPause()
     {
         try
         {
@@ -71,7 +71,7 @@ public class AccountPresFiltered implements IAccount.AccountFilteredPres
     }
 
     @Override
-    public void subEventBus()
+    public void onResume()
     {
         try
         {
