@@ -26,6 +26,10 @@ public interface IReader
         void onPrevChapter();
 
         void updateToolbars(String message, String page, String total, int position);
+
+        void startToolbarTimer(int chPosition);
+
+        void stopToolbarTimer(int chPosition);
     }
 
     interface ReaderMapChapter extends PagerAdapterMap, ContextMap, InitViewMap, GestureViewPager.UserGestureListener
@@ -53,5 +57,7 @@ public interface IReader
         void updateCurrentPosition(int position);
 
         void setNewChapterToolbar();
+
+        void onDestroy();
     }
 }

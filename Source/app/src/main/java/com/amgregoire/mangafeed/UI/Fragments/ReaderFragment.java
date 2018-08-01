@@ -20,9 +20,11 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
@@ -33,6 +35,8 @@ import com.amgregoire.mangafeed.UI.Services.ToolbarTimerService;
 import com.amgregoire.mangafeed.UI.Widgets.NoScrollViewPager;
 import com.amgregoire.mangafeed.Utils.BusEvents.ReaderPageChangeEvent;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
+import com.bumptech.glide.Glide;
+import com.github.clans.fab.FloatingActionButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,8 +58,13 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
     @BindView(R.id.textViewReaderCurrentPage) TextView mCurrentPage;
     @BindView(R.id.textViewReaderTotalPages) TextView mTotalPages;
 
+    @BindView(R.id.topContainer) LinearLayout mToolbarContainer;
+
     @BindView(R.id.relativeLayoutChapterHeader) RelativeLayout mReaderHeader;
     @BindView(R.id.relativeLayoutChapterFooter) RelativeLayout mReaderFooter;
+
+    @BindView(R.id.fabReaderNextPage) FloatingActionButton mFABNextPage;
+    @BindView(R.id.fabReaderPreviousPage) FloatingActionButton mFABPrevPage;
 
     private IReader.ReaderPres mPresenter;
 
@@ -118,17 +127,25 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
     @Override
     public void initViews()
     {
-        setRetainInstance(true);
         setupToolbar();
 
-        ViewGroup.MarginLayoutParams lToolbarParams = (ViewGroup.MarginLayoutParams) mToolbar.getLayoutParams();
-        lToolbarParams.topMargin = getStatusBarHeight();
+//        ViewGroup.MarginLayoutParams lToolbarParams = (ViewGroup.MarginLayoutParams) mToolbar.getLayoutParams();
+//        lToolbarParams.topMargin = getStatusBarHeight();
+//
+//        ViewGroup.MarginLayoutParams lFooterParams = (ViewGroup.MarginLayoutParams) mReaderFooter.getLayoutParams();
+//        lFooterParams.bottomMargin = getNavBarHeight();
 
-        ViewGroup.MarginLayoutParams lFooterParams = (ViewGroup.MarginLayoutParams) mReaderFooter.getLayoutParams();
-        lFooterParams.bottomMargin = getNavBarHeight();
+        if (MangaFeed.getInstance().getCurrentSourceType() == MangaEnums.SourceType.NOVEL)
+        {
+            mFABNextPage.setVisibility(View.GONE);
+            mFABPrevPage.setVisibility(View.GONE);
+        }
 
         setupViewPager();
         setupToolbarService();
+
+        mToolbarContainer.setPadding(0, getStatusBarHeight(), 0, 0);
+        mReaderFooter.setPadding(0, 0, 0, getNavBarHeight());
     }
 
     /***
@@ -138,15 +155,10 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
     public void hideToolbar()
     {
 
-        mToolbar.animate()
-                .translationY(-mToolbar.getHeight() - getStatusBarHeight())
-                .setInterpolator(new AccelerateInterpolator())
-                .start();
-
-        mReaderHeader.animate()
-                     .translationY(-mReaderHeader.getHeight() - mToolbar.getHeight())
-                     .setInterpolator(new AccelerateInterpolator())
-                     .start();
+        mToolbarContainer.animate()
+                         .translationY(-mToolbarContainer.getHeight() - getStatusBarHeight())
+                         .setInterpolator(new AccelerateInterpolator())
+                         .start();
 
         mReaderFooter.animate()
                      .translationY(mReaderFooter.getHeight() + getNavBarHeight())
@@ -174,15 +186,10 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
      */
     public void showToolbar()
     {
-        mToolbar.animate()
-                .translationY(mToolbar.getScrollY())
-                .setInterpolator(new AccelerateInterpolator())
-                .start();
-
-        mReaderHeader.animate()
-                     .translationY(mReaderHeader.getScrollY() + mToolbar.getScrollY())
-                     .setInterpolator(new AccelerateInterpolator())
-                     .start();
+        mToolbarContainer.animate()
+                         .translationY(mToolbarContainer.getScrollY())
+                         .setInterpolator(new AccelerateInterpolator())
+                         .start();
 
         mReaderFooter.animate()
                      .translationY(-mReaderFooter.getScrollY())
@@ -214,7 +221,6 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
     {
         mViewPager.setAdapter(adapter);
         mViewPager.setOffscreenPageLimit(1);
-        mToolBarService.startToolBarTimer();
     }
 
     @Override
@@ -235,7 +241,7 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
             showToolbar();
         }
 
-        mToolBarService.startToolBarTimer();
+        startToolbarTimer();
     }
 
     @Override
@@ -243,15 +249,15 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
     {
         showToolbar();
         mViewPager.incrementCurrentItem();
-        mToolBarService.startToolBarTimer();
+        stopToolbarTimer();
     }
 
     @Override
     public void onPrevChapter()
     {
         showToolbar();
-        mViewPager.decrememntCurrentItem();
-        mToolBarService.startToolBarTimer();
+        mViewPager.decrementCurrentItem();
+        stopToolbarTimer();
     }
 
     @Override
@@ -291,18 +297,36 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
         mPresenter.onRestoreState(savedInstanceState);
     }
 
+    @Override
+    public void stopToolbarTimer(int chPosition)
+    {
+        if (chPosition == mViewPager.getCurrentItem())
+        {
+            mToolBarService.stopTimer();
+        }
+    }
+
+    @Override
+    public void startToolbarTimer(int chPosition)
+    {
+        if (chPosition == mViewPager.getCurrentItem())
+        {
+            mToolBarService.startToolBarTimer();
+        }
+    }
+
     @OnClick(R.id.fabReaderPreviousPage)
     public void onFABPrevPage()
     {
         MangaFeed.getInstance().rxBus().send(new ReaderPageChangeEvent(false));
-        mToolBarService.startToolBarTimer();
+        startToolbarTimer();
     }
 
     @OnClick(R.id.fabReaderNextPage)
     public void onFABNextPage()
     {
         MangaFeed.getInstance().rxBus().send(new ReaderPageChangeEvent(true));
-        mToolBarService.startToolBarTimer();
+        startToolbarTimer();
     }
 
     @OnClick(R.id.fabReaderPreviousChapter)
@@ -322,21 +346,21 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
     {
         MangaFeed.getInstance().makeToastShort("NOT IMPLEMENTED");
 //        mPresenter.refresh();
-//        mToolBarService.stopTimer();
+//        stopToolbarTimer();
     }
 
     @OnClick(R.id.imageViewReaderScreenOrientationToggle)
     public void onScreenRotateClicked()
     {
         MangaFeed.getInstance().makeToastShort("NOT IMPLEMENTED");
-        mToolBarService.startToolBarTimer();
+        startToolbarTimer();
     }
 
     @OnClick(R.id.imageViewReaderVerticalScrollToggle)
     public void onVerticalScrollClicked()
     {
         MangaFeed.getInstance().makeToastShort("NOT IMPLEMENTED");
-        mToolBarService.startToolBarTimer();
+        startToolbarTimer();
     }
 
     /***
@@ -432,5 +456,15 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
 
         Intent intent = new Intent(getActivity(), ToolbarTimerService.class);
         getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    private void startToolbarTimer()
+    {
+        startToolbarTimer(mViewPager.getCurrentItem());
+    }
+
+    private void stopToolbarTimer()
+    {
+        stopToolbarTimer(mViewPager.getCurrentItem());
     }
 }

@@ -12,13 +12,14 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Dark">
         <activity
             android:name=".UI.Activities.NavigationActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -27,7 +28,7 @@
 
         <receiver
             android:name=".Common.WifiBroadcastReceiver"
-            android:enabled="true" >
+            android:enabled="true">
             <intent-filter>
                 <action android:name="android.net.wifi.STATE_CHANGE" />
             </intent-filter>

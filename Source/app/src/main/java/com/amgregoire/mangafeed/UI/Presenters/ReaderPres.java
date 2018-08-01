@@ -14,6 +14,7 @@ import com.amgregoire.mangafeed.UI.Mappers.IReader;
 import com.amgregoire.mangafeed.Utils.BusEvents.ReaderChapterChangeEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.ReaderSingleTapEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.ReaderToolbarUpdateEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.ToolbarTimerEvent;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
@@ -157,6 +158,18 @@ public class ReaderPres implements IReader.ReaderPres
             {
                 ReaderToolbarUpdateEvent lEvent = (ReaderToolbarUpdateEvent) o;
                 mMap.updateToolbars(lEvent.message, lEvent.currentPage, lEvent.totalPages, lEvent.chapterPosition);
+            }
+            else if (o instanceof ToolbarTimerEvent)
+            {
+                ToolbarTimerEvent lEvent = (ToolbarTimerEvent) o;
+                if (lEvent.isStart)
+                {
+                    mMap.startToolbarTimer(lEvent.chapterPosition);
+                }
+                else
+                {
+                    mMap.stopToolbarTimer(lEvent.chapterPosition);
+                }
             }
         }, throwable -> MangaLogger.logError(TAG, throwable.getMessage()));
     }

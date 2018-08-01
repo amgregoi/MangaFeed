@@ -7,6 +7,8 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.amgregoire.mangafeed.Common.MangaEnums;
+import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.UI.Adapters.ImagePagerAdapter;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
@@ -104,13 +106,13 @@ public class GestureViewPager extends ViewPager implements GestureDetector.OnGes
     {
         if (getCurrentItem() == 0 && checkSwipe(ev) == eSwipeDirection.LEFT)
         {
-            mUserGestureListener.onLeft();
+            if (MangaFeed.getInstance().getCurrentSourceType() == MangaEnums.SourceType.MANGA)
+                mUserGestureListener.onLeft();
         }
-        else if (getAdapter() != null &&
-                getAdapter().getCount() - 1 == getCurrentItem() &&
-                checkSwipe(ev) == eSwipeDirection.RIGHT)
+        else if (getAdapter() != null && getAdapter().getCount() - 1 == getCurrentItem() && checkSwipe(ev) == eSwipeDirection.RIGHT)
         {
-            mUserGestureListener.onRight();
+            if (MangaFeed.getInstance().getCurrentSourceType() == MangaEnums.SourceType.MANGA)
+                mUserGestureListener.onRight();
         }
     }
 
@@ -285,7 +287,7 @@ public class GestureViewPager extends ViewPager implements GestureDetector.OnGes
         }
     }
 
-    public void setUserGesureListener(UserGestureListener singleTapListener)
+    public void setUserGestureListener(UserGestureListener singleTapListener)
     {
         mUserGestureListener = singleTapListener;
     }

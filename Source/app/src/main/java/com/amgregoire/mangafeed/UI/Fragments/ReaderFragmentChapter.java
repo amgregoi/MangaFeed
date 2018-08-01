@@ -79,6 +79,13 @@ public class ReaderFragmentChapter extends Fragment implements IReader.ReaderMap
     }
 
     @Override
+    public void onDestroyView()
+    {
+        super.onDestroyView();
+        mPresenter.onDestroy();
+    }
+
+    @Override
     public void registerAdapter(PagerAdapter adapter)
     {
         mViewPager.setAdapter(adapter);
@@ -89,7 +96,7 @@ public class ReaderFragmentChapter extends Fragment implements IReader.ReaderMap
     @Override
     public void initViews()
     {
-        mViewPager.setUserGesureListener(this);
+        mViewPager.setUserGestureListener(this);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
         {
             @Override

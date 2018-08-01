@@ -4,16 +4,31 @@
     android:layout_height="match_parent">
 
     <com.amgregoire.mangafeed.UI.Widgets.GestureImageView
-        android:layout_width="match_parent"
-        android:scaleType="center"
         android:id="@+id/gestureImageViewReaderChapter"
-        android:layout_height="match_parent" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="center"
+        android:visibility="gone" />
 
-    <!--<com.amgregoire.mangafeed.UI.Widgets.GestureImageView-->
-        <!--android:id="@+id/chapterPageImageView"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="fill_parent"-->
-        <!--android:scaleType="center"-->
-        <!--/>-->
+    <android.support.v4.widget.NestedScrollView
+        android:scrollbarSize="5dp"
+        android:scrollbarThumbVertical="@color/colorAccent"
+        android:scrollbars="vertical"
+        android:visibility="gone"
+        android:id="@+id/scrollViewTextContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
+        <com.amgregoire.mangafeed.UI.Widgets.GestureTextView
+            android:id="@+id/gestureTextViewReaderChapter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/manga_white"
+            android:textSize="17sp"
+            android:fontFamily="sans-serif"
+            android:paddingEnd="15dp"
+            android:paddingStart="15dp"
+            android:paddingTop="15dp" />
+    </android.support.v4.widget.NestedScrollView>
 </RelativeLayout>

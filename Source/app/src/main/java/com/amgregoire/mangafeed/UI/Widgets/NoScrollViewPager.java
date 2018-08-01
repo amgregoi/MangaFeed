@@ -46,7 +46,7 @@ public class NoScrollViewPager extends ViewPager
         }
     }
 
-    public void decrememntCurrentItem()
+    public void decrementCurrentItem()
     {
         int lPosition = getCurrentItem();
         if (lPosition != 0)

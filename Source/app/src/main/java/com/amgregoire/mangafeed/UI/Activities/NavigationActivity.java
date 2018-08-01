@@ -43,6 +43,8 @@ import com.amgregoire.mangafeed.Utils.DownloadManager;
 import com.amgregoire.mangafeed.Utils.DownloadScheduler;
 import com.amgregoire.mangafeed.Utils.LoginManager;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
+import com.bumptech.glide.Glide;
+import com.squareup.picasso.Picasso;
 
 
 import butterknife.BindDrawable;
@@ -78,6 +80,20 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         ButterKnife.bind(this);
 
         initViews();
+    }
+
+    @Override
+    public void onLowMemory()
+    {
+        super.onLowMemory();
+        Glide.with(this).onLowMemory();
+    }
+
+    @Override
+    public void onTrimMemory(int level)
+    {
+        super.onTrimMemory(level);
+        Glide.with(this).onTrimMemory(Glide.TRIM_MEMORY_RUNNING_LOW);
     }
 
     private void initViews()
@@ -233,6 +249,8 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     @Override
     public void onBackPressed()
     {
+        Glide.get(this).clearMemory();
+
         if (selectedFragment == null || selectedFragment.onBackPressed())
         {
             FragmentManager lManager = getSupportFragmentManager();
@@ -279,9 +297,9 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                                            .commit();
 
                 MangaFeed.getInstance().makeSnackBarShort(findViewById(R.id.coordinatorLayoutSnack), "Source changed to " + MangaFeed
-                                         .getInstance()
-                                         .getCurrentSource()
-                                         .getSourceName());
+                        .getInstance()
+                        .getCurrentSource()
+                        .getSourceName());
             }
             else if (o instanceof MangaSelectedEvent)
             {

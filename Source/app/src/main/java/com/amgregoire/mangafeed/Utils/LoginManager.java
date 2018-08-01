@@ -6,6 +6,7 @@ import android.support.v7.app.AlertDialog;
 
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.UI.Activities.NavigationActivity;
+import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLoginAttemptEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLoginSuccessEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLogoutEvent;
 import com.google.android.gms.auth.api.Auth;

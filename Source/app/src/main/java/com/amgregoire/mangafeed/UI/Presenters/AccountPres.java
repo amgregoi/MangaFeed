@@ -91,8 +91,8 @@ public class AccountPres implements IAccount.AccountPres
                     // remove branching after done implementing login/out sequence and cleaning up
                     if (lEvent.userAccount == null)
                     {
-                        lEmail = "jsmith@gmail.com";
-                        lName = "John Smith";
+                        lEmail = "amgregoi08@gmail.com";
+                        lName = "Andy Gregoire";
                     }
                     else
                     {

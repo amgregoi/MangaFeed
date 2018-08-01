@@ -1,6 +1,8 @@
 package com.amgregoire.mangafeed.UI.Presenters;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 
 import com.amgregoire.mangafeed.Common.RequestWrapper;
 import com.amgregoire.mangafeed.MangaFeed;
@@ -11,7 +13,9 @@ import com.amgregoire.mangafeed.UI.Fragments.ReaderFragmentChapter;
 import com.amgregoire.mangafeed.UI.Mappers.IReader;
 import com.amgregoire.mangafeed.Utils.BusEvents.ReaderPageChangeEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.ReaderToolbarUpdateEvent;
+import com.amgregoire.mangafeed.Utils.BusEvents.ToolbarTimerEvent;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +23,7 @@ import java.util.List;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Andy Gregoire on 3/22/2018.
@@ -73,6 +78,7 @@ public class ReaderPresChapter implements IReader.ReaderPresChapter
         mChapterContent = MangaFeed.getInstance()
                                    .getCurrentSource()
                                    .getChapterImageListObservable(new RequestWrapper(mChapter))
+                                   .subscribeOn(Schedulers.io())
                                    .observeOn(AndroidSchedulers.mainThread())
                                    .subscribe(
                                            url ->
@@ -87,10 +93,15 @@ public class ReaderPresChapter implements IReader.ReaderPresChapter
                                            },
                                            () ->
                                            {
+                                               mAdapter = null;
                                                updateToolbar(mChapter.chapterTitle, 1, mImageUrls.size());
                                                mChapter.setTotalPages(mImageUrls.size());
-                                               mAdapter = new ImagePagerAdapter(mMap.getContext(), mImageUrls);
-                                               mMap.registerAdapter(mAdapter);
+                                               if (mImageUrls.size() > 0)
+                                               {
+                                                   mAdapter = new ImagePagerAdapter(((Fragment) mMap), mMap.getContext(), mImageUrls);
+                                                   mMap.registerAdapter(mAdapter);
+                                                   MangaFeed.getInstance().rxBus().send(new ToolbarTimerEvent(true, mChapterPosition));
+                                               }
                                                mFinishedImageUrls = true;
                                            });
     }
@@ -128,15 +139,16 @@ public class ReaderPresChapter implements IReader.ReaderPresChapter
 
     private void updateToolbar(String message, int page, int total)
     {
-        MangaFeed.getInstance()
-                 .rxBus()
-                 .send(new ReaderToolbarUpdateEvent(message, page, total, mChapterPosition));
+        MangaFeed.getInstance().rxBus().send(new ReaderToolbarUpdateEvent(message, page, total, mChapterPosition));
+        MangaFeed.getInstance().rxBus().send(new ToolbarTimerEvent(mAdapter != null, mChapterPosition));
     }
 
 
     @Override
     public void onPause()
     {
+        Glide.with(((Fragment) mMap)).onTrimMemory(Glide.TRIM_MEMORY_COMPLETE);
+
         if (mRxBus != null)
         {
             mRxBus.dispose();
@@ -147,6 +159,15 @@ public class ReaderPresChapter implements IReader.ReaderPresChapter
         {
             mChapterContent.dispose();
             mChapterContent = null;
+        }
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        if (mAdapter != null)
+        {
+            mAdapter.cleanup();
         }
     }
 

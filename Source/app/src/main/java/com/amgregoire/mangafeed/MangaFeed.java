@@ -17,11 +17,14 @@ import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.Utils.RxBus;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
 import com.bumptech.glide.request.target.ViewTarget;
+import com.squareup.picasso.Cache;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -39,6 +42,7 @@ public class MangaFeed extends Application
     private RxBus mBus;
 
     private ArrayList<Chapter> mCurrentChapters;
+    private Picasso mPicasso;
 
     public MangaFeed()
     {
@@ -51,6 +55,10 @@ public class MangaFeed extends Application
         super.onCreate();
         ViewTarget.setTagId(R.id.glide_tag);
         mBus = new RxBus();
+
+        mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).memoryCache(Cache.NONE).indicatorsEnabled(true).build();
+        mPicasso.setIndicatorsEnabled(true);
+        Picasso.setSingletonInstance(mPicasso);
 
         MangaDB.getInstance().createDB(); // Copy pre-loaded database if not already done.
         MangaDB.getInstance().initDao();

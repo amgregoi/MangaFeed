@@ -30,12 +30,6 @@ public class GestureTextView extends AppCompatTextView implements GestureDetecto
         super(context, attrs, defStyleAttr);
     }
 
-//    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-//    public GestureTextView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes)
-//    {
-//        super(context, attrs, defStyleAttr, defStyleRes);
-//    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
