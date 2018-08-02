@@ -2,6 +2,7 @@ package com.amgregoire.mangafeed.Utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 
 import com.amgregoire.mangafeed.MangaFeed;
@@ -16,6 +17,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.Task;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by Andy Gregoire on 3/17/2018.
@@ -55,12 +63,12 @@ public class LoginManager
         {
             MangaFeed.getInstance().makeToastShort("Attempting to login");
 
-//            MangaFeed.getInstance().rxBus().send(new GoogleLoginAttemptEvent());
+            MangaFeed.getInstance().rxBus().send(new GoogleLoginAttemptEvent());
 
             // TODO
             // Remove this, and uncomment above line when done testing login features
             // Login only succeeds with signed apks
-            MangaFeed.getInstance().rxBus().send(new GoogleLoginSuccessEvent(null));
+//            MangaFeed.getInstance().rxBus().send(new GoogleLoginSuccessEvent(null));
         }
         else
         {
@@ -114,13 +122,55 @@ public class LoginManager
         try
         {
             GoogleSignInAccount account = task.getResult(ApiException.class);
-            MangaFeed.getInstance().rxBus().send(new GoogleLoginSuccessEvent(account));
+            SharedPrefs.setUserEmail(account.getEmail());
+            SharedPrefs.setUserName(account.getDisplayName());
+
+            MangaFeed.getInstance().makeToastShort("Signed in (kinda): " + SharedPrefs.getUserEmail());
+
+
+            RequestParams lParams = new RequestParams();
+            lParams.put("email", SharedPrefs.getUserEmail());
+            lParams.put("name", SharedPrefs.getUserName());
+
+            MangaFeedRest.postUser(lParams, new JsonHttpResponseHandler()
+            {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response)
+                {
+                    super.onSuccess(statusCode, headers, response);
+
+                    try
+                    {
+                        JSONObject lUser = response.getJSONObject("user");
+
+                        SharedPrefs.setUserEmail(lUser.getString("email"));
+                        SharedPrefs.setUserName(lUser.getString("name"));
+                        SharedPrefs.setUserId(lUser.getInt("id"));
+
+                        MangaFeed.getInstance().makeToastShort("Successfully signed in");
+                        MangaDB.getInstance().updateNewUsersLibrary();
+                        MangaFeed.getInstance().rxBus().send(new GoogleLoginSuccessEvent());
+                    }
+                    catch (JSONException e)
+                    {
+                        MangaFeed.getInstance().makeToastLong("There was an issue, please try again.");
+                        MangaLogger.logError(TAG, e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse)
+                {
+                    super.onFailure(statusCode, headers, throwable, errorResponse);
+                    MangaLogger.logError(TAG, errorResponse.toString());
+
+                    MangaFeed.getInstance().makeToastLong(throwable.toString());
+                }
+            });
         }
         catch (ApiException e)
         {
-            MangaFeed.getInstance().makeToastShort("Failed to login");
             MangaLogger.logError(TAG, "failure code: " + e.getStatusCode());
-
         }
     }
 }

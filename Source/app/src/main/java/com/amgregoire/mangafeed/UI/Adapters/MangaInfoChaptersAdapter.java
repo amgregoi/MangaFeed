@@ -18,7 +18,7 @@ import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.Utils.BusEvents.ChapterSelectedEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.ToggleDownloadViewEvent;
 import com.amgregoire.mangafeed.Utils.DownloadScheduler;
-import com.amgregoire.mangafeed.Utils.MangaLogger;
+import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -290,7 +290,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         @BindDrawable(R.drawable.ic_check_circle_outline_white_24dp) Drawable mWhiteCheck;
         @BindDrawable(R.drawable.ic_checkbox_blank_circle_outline_black_24dp) Drawable mBlackOutline;
         @BindDrawable(R.drawable.ic_checkbox_blank_circle_outline_white_24dp) Drawable mWhiteOutline;
-
+        @BindDrawable(R.drawable.icon_seen) Drawable mDrawableSeen;
 
         public ViewHolderChapter(View itemView)
         {
@@ -318,7 +318,15 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             }
             else
             {
-                mDownloadBox.setVisibility(View.GONE);
+                if (MangaDB.getInstance().getChapter(lChapter.url) != null)
+                {
+                    mDownloadBox.setVisibility(View.VISIBLE);
+                    mDownloadBox.setImageDrawable(mDrawableSeen);
+                }
+                else
+                {
+                    mDownloadBox.setVisibility(View.GONE);
+                }
             }
         }
 

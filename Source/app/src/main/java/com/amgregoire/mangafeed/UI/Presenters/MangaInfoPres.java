@@ -122,6 +122,11 @@ public class MangaInfoPres implements IManga.MangaPres
     {
         try
         {
+            if(mAdapter != null)
+            {
+                mAdapter.notifyDataSetChanged();
+            }
+
             if (mManga != null)
             {
                 mManga = MangaDB.getInstance().getManga(mManga.link);
@@ -137,7 +142,6 @@ public class MangaInfoPres implements IManga.MangaPres
                 {
                     mManga = MangaDB.getInstance().getManga(mManga.link);
                     setStartContinueReading();
-                    // TODO : re init chapter list item views with new indicators
                 }
             }, throwable -> MangaLogger.logError(TAG, throwable.getMessage()));
         }

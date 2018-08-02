@@ -122,6 +122,8 @@ public class ReaderPres implements IReader.ReaderPres
         mCurrentPosition = position;
         updateRecentChapter();
         ((ReaderFragmentChapter) mAdapter.getItem(position)).update();
+
+        MangaDB.getInstance().putChapter(mChapterList.get(mCurrentPosition));
     }
 
 

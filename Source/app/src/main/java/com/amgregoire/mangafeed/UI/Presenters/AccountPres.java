@@ -8,6 +8,7 @@ import com.amgregoire.mangafeed.UI.Adapters.AccountPagerAdapter;
 import com.amgregoire.mangafeed.UI.Mappers.IAccount;
 import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLoginSuccessEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLogoutEvent;
+import com.amgregoire.mangafeed.Utils.LoginManager;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaFeedRest;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
@@ -15,6 +16,7 @@ import com.amgregoire.mangafeed.Utils.SharedPrefs;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -83,60 +85,13 @@ public class AccountPres implements IAccount.AccountPres
             {
                 if (o instanceof GoogleLoginSuccessEvent)
                 {
+                    mMap.setHeaderUserName();
 
-                    final GoogleLoginSuccessEvent lEvent = (GoogleLoginSuccessEvent) o;
-                    final String lEmail, lName;
-
-                    // TODO
-                    // remove branching after done implementing login/out sequence and cleaning up
-                    if (lEvent.userAccount == null)
+                    if (SharedPrefs.getUserEmail() == null || SharedPrefs.getUserName() == null)
                     {
-                        lEmail = "amgregoi08@gmail.com";
-                        lName = "Andy Gregoire";
+                        MangaFeed.getInstance().makeToastShort("Login failed");
+                        LoginManager.logout();
                     }
-                    else
-                    {
-                        lEmail = lEvent.userAccount.getEmail();
-                        lName = lEvent.userAccount.getDisplayName();
-                    }
-
-                    RequestParams lParams = new RequestParams();
-                    lParams.put("email", lEmail);
-                    lParams.put("name", lName);
-
-                    MangaFeedRest.postUser(lParams, new JsonHttpResponseHandler()
-                    {
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, JSONObject response)
-                        {
-                            super.onSuccess(statusCode, headers, response);
-
-                            try
-                            {
-                                JSONObject lUser = response.getJSONObject("user");
-
-                                SharedPrefs.setUserEmail(lUser.getString("email"));
-                                SharedPrefs.setUserName(lUser.getString("name"));
-                                SharedPrefs.setUserId(lUser.getInt("id"));
-
-                                MangaFeed.getInstance().makeToastShort("Successfully signed in");
-                                MangaDB.getInstance().updateNewUsersLibrary();
-                            }
-                            catch (JSONException e)
-                            {
-                                MangaLogger.logError(TAG, e.getMessage());
-                            }
-
-                            mMap.setHeaderUserName();
-                        }
-
-                        @Override
-                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse)
-                        {
-                            super.onFailure(statusCode, headers, throwable, errorResponse);
-                            MangaLogger.logError(TAG, errorResponse.toString());
-                        }
-                    });
                 }
                 else if (o instanceof GoogleLogoutEvent)
                 {
@@ -146,6 +101,7 @@ public class AccountPres implements IAccount.AccountPres
         }
         catch (Exception ex)
         {
+            MangaFeed.getInstance().makeToastShort("fucking errors : " + ex.getMessage());
             MangaLogger.logError(TAG, ex.getMessage());
         }
     }
