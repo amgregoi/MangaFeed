@@ -71,6 +71,13 @@ public class MangaDB extends SQLiteOpenHelper
         //empty
     }
 
+    @Override
+    public void onOpen(SQLiteDatabase db)
+    {
+        super.onOpen(db);
+        db.enableWriteAheadLogging();
+    }
+
     /***
      * This function gets an instance of the MangaDB helper.
      */
@@ -85,7 +92,8 @@ public class MangaDB extends SQLiteOpenHelper
 
     public void initDao()
     {
-        mSession = new DaoMaster(MangaDB.getInstance().getWritableDatabase()).newSession();
+        SQLiteDatabase lDb = getWritableDatabase();
+        mSession = new DaoMaster(lDb).newSession();
     }
 
     /***
@@ -96,7 +104,6 @@ public class MangaDB extends SQLiteOpenHelper
         boolean dbExist = DBExists();
         if (!dbExist)
         {
-            this.getReadableDatabase();
             copyDBFromResource();
         }
     }
@@ -138,11 +145,15 @@ public class MangaDB extends SQLiteOpenHelper
      */
     private void copyDBFromResource()
     {
-        String lFilePath = DB_PATH + DB_NAME;
+        MangaDB helper = new MangaDB(MangaFeed.getInstance());
+        SQLiteDatabase lDb = helper.getReadableDatabase();
+        String filePath = lDb.getPath();
+        lDb.close();
+
         try
         {
             InputStream lInputStream = MangaFeed.getInstance().getAssets().open(DB_NAME);
-            OutputStream lOutStream = new FileOutputStream(lFilePath);
+            OutputStream lOutStream = new FileOutputStream(filePath);
 
             byte[] lBuffer = new byte[1024];
             int lLength;
@@ -286,7 +297,8 @@ public class MangaDB extends SQLiteOpenHelper
             try
             {
                 List<Manga> lManga = DownloadManager.getMangaWithSavedChapters();
-                Collections.sort(lManga, (emp1, emp2) -> emp1.getTitle().compareToIgnoreCase(emp2.getTitle()));
+                Collections.sort(lManga, (emp1, emp2) -> emp1.getTitle()
+                                                             .compareToIgnoreCase(emp2.getTitle()));
 
                 subscriber.onNext(lManga);
                 subscriber.onComplete();
@@ -307,8 +319,10 @@ public class MangaDB extends SQLiteOpenHelper
                 List<Chapter> lResult = DownloadManager.getSavedChapters(manga);
                 Collections.sort(lResult, (emp1, emp2) ->
                 {
-                    if(emp1.chapterNumber > emp2.chapterNumber)
+                    if (emp1.chapterNumber > emp2.chapterNumber)
+                    {
                         return -1;
+                    }
                     return 1;
                 });
 
@@ -527,7 +541,10 @@ public class MangaDB extends SQLiteOpenHelper
     {
         ContentValues cv = new ContentValues();
         cv.put("following", 0);
-        getWritableDatabase().update("Manga", cv, "NOT following = ?", new String[]{"0"});
+
+        SQLiteDatabase lDb = getWritableDatabase();
+        lDb.update("Manga", cv, "NOT following = ?", new String[]{"0"});
+        lDb.close();
 
         // Clear Dao cache, to get pull fresh db values
         mSession.clear();
