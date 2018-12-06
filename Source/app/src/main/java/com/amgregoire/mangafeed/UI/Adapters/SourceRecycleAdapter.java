@@ -118,6 +118,10 @@ public class SourceRecycleAdapter extends RecyclerView.Adapter<RecyclerView.View
                     mBackGround.setImageDrawable(mReadLightLogo);
                     mLink.setText("https://www.readlightnovel.org/");
                     break;
+                case Wuxia:
+                    mBackGround.setImageDrawable(null);
+                    mLink.setText("https://www.WuxiaWorld.com/");
+                    break;
             }
         }
 
