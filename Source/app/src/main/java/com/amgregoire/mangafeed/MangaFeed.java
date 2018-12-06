@@ -63,11 +63,6 @@ public class MangaFeed extends Application
         MangaDB.getInstance().createDB(); // Copy pre-loaded database if not already done.
         MangaDB.getInstance().initDao();
         updateCatalogs(false); // check if we should update local database on application open
-
-        if(BuildConfig.VERSION_CODE < 2)
-        {
-            updateCatalogs(true);
-        }
     }
 
     /***

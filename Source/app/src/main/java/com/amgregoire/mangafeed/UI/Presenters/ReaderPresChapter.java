@@ -1,9 +1,9 @@
 package com.amgregoire.mangafeed.UI.Presenters;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
+import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Common.RequestWrapper;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Chapter;
@@ -11,6 +11,7 @@ import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.UI.Adapters.ImagePagerAdapter;
 import com.amgregoire.mangafeed.UI.Fragments.ReaderFragmentChapter;
 import com.amgregoire.mangafeed.UI.Mappers.IReader;
+import com.amgregoire.mangafeed.UI.Widgets.GestureViewPager;
 import com.amgregoire.mangafeed.Utils.BusEvents.ReaderPageChangeEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.ReaderToolbarUpdateEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.ToolbarTimerEvent;
@@ -22,7 +23,6 @@ import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -98,7 +98,14 @@ public class ReaderPresChapter implements IReader.ReaderPresChapter
                                                mChapter.setTotalPages(mImageUrls.size());
                                                if (mImageUrls.size() > 0)
                                                {
-                                                   mAdapter = new ImagePagerAdapter(((Fragment) mMap), mMap.getContext(), mImageUrls);
+                                                   if (MangaFeed.getInstance().getCurrentSourceType().equals(MangaEnums.SourceType.MANGA))
+                                                   {
+                                                       mAdapter = new ImagePagerAdapter(((Fragment) mMap), mMap.getContext(), mImageUrls);
+                                                   }
+                                                   else
+                                                   {
+                                                       mAdapter = new ImagePagerAdapter(((Fragment) mMap), mMap.getContext(), mImageUrls, mMap);
+                                                   }
                                                    mMap.registerAdapter(mAdapter);
                                                    MangaFeed.getInstance().rxBus().send(new ToolbarTimerEvent(true, mChapterPosition));
                                                }
