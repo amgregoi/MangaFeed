@@ -26,6 +26,7 @@ import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.BackHandledFragment;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragment;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentFiltered;
+import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentSettings;
 import com.amgregoire.mangafeed.UI.Fragments.DownloadsFragment;
 import com.amgregoire.mangafeed.UI.Fragments.HomeFragment;
 import com.amgregoire.mangafeed.UI.Fragments.MangaInfoFragment;
@@ -198,6 +199,11 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         {
             case R.id.menuAccountSettings:
                 // start settings fragment
+                getSupportFragmentManager().beginTransaction()
+                                           .add(R.id.frameLayoutMasterContainer, AccountFragmentSettings.newInstance(), AccountFragmentSettings.TAG)
+                                           .addToBackStack(AccountFragmentSettings.TAG)
+                                           .commit();
+
                 break;
             case R.id.menuDownloadsCancelAll:
                 DownloadScheduler.clearDownloads();
