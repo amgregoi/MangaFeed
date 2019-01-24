@@ -27,7 +27,7 @@ public class MangaEden extends SourceManga
     final public static String URL = "funmanga";
 
     final private String SourceKey = "MangaEden";
-    final private String mBaseUrl = "http://www.mangaeden.com";
+    final private String mBaseUrl = "https://www.mangaeden.com";
     final private String mUpdatesUrl = "http://www.mangaeden.com/ajax/news/1/0/";
     final private String mGenres[] = {
             "Action",
@@ -72,6 +72,12 @@ public class MangaEden extends SourceManga
     }
 
     @Override
+    public String getBaseUrl()
+    {
+        return mBaseUrl;
+    }
+
+    @Override
     public MangaEnums.SourceType getSourceType()
     {
         return MangaEnums.SourceType.MANGA;
@@ -101,9 +107,9 @@ public class MangaEden extends SourceManga
             Element iTitleElement = iMangaBlock.select("div.manga_tooltop_header > a").first();
 
             String lTitle = iTitleElement.text();
-            String lUrl = "https://www.mangaeden.com/api/manga/" + iUrlElement.id()
-                                                                              .substring(0, 24) + "/";
+            String lUrl = "https://www.mangaeden.com/api/manga/" + iUrlElement.id().substring(0, 24) + "/";
 
+            lUrl = lUrl.replaceFirst(Manga.LinkRegex, "{" + SourceKey + "}");
             Manga lManga = MangaDB.getInstance().getManga(lUrl);
 
             if (lManga != null)
@@ -155,7 +161,7 @@ public class MangaEden extends SourceManga
                 }
             }
 
-            Manga lNewManga = MangaDB.getInstance().getManga(request.getMangaUrl());
+            Manga lNewManga = MangaDB.getInstance().getManga(request.getManga().link);
 
             lNewManga.setArtist(lParsedJsonObject.getString("artist"));
             lNewManga.setAuthor(lParsedJsonObject.getString("author"));
@@ -192,13 +198,13 @@ public class MangaEden extends SourceManga
             MangaLogger.logError(TAG, aException.getMessage());
         }
 
-        MangaLogger.logInfo(TAG, "Finished parsing chapter list (" + request.getMangaTitle() + ")");
+        MangaLogger.logInfo(TAG, "Finished parsing chapter list (" + request.getManga().link + ")");
         return lChapterList;
 
     }
 
     @Override
-    public List<String> parseResponseToPageUrls(final String responseBody)
+    public List<String> parseResponseToPageUrls(final RequestWrapper requestWrapper, final String responseBody)
     {
         List<String> lImageList = null;
 
@@ -288,10 +294,10 @@ public class MangaEden extends SourceManga
      */
     private Chapter constructChapterFromJSONArray(JSONArray aChapterNode, RequestWrapper request) throws JSONException
     {
-        Chapter lNewChapter = new Chapter(request.getMangaTitle(), request.getMangaUrl());
+        Chapter lNewChapter = new Chapter(request.getManga().title, request.getManga().link);
 
         lNewChapter.setChapterUrl("https://www.mangaeden.com/api/chapter/" + aChapterNode.getString(3) + "/");
-        lNewChapter.setChapterTitle(request.getMangaTitle() + " " + aChapterNode.getDouble(0));
+        lNewChapter.setChapterTitle(request.getManga().title + " " + aChapterNode.getDouble(0));
 
         Date lDate = new Date(aChapterNode.getLong(1) * 1000);
         lNewChapter.setChapterDate(lDate.toString());

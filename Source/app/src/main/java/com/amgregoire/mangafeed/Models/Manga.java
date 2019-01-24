@@ -3,6 +3,8 @@ package com.amgregoire.mangafeed.Models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.amgregoire.mangafeed.Common.MangaEnums;
+import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaFeedRest;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
@@ -11,9 +13,9 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Property;
-import org.greenrobot.greendao.annotation.Generated;
 import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
@@ -22,7 +24,7 @@ import cz.msebera.android.httpclient.Header;
 public class Manga implements Parcelable
 {
     public final static String TAG = "MANGA";
-
+    public static String LinkRegex = "(http)*s*:\\/\\/www.[a-zA-Z]*.(com|net|org|cc)";
 
     public final static int UNFOLLOW = 0;
     public final static int FOLLOW_READING = 1;
@@ -81,7 +83,7 @@ public class Manga implements Parcelable
     public Manga(String aTitle, String aUrl, String aSource)
     {
         title = aTitle;
-        link = aUrl;
+        link = aUrl.replaceFirst(LinkRegex, "{" + aSource + "}");
         source = aSource;
         initialized = 0;
         _id = null;
@@ -213,9 +215,15 @@ public class Manga implements Parcelable
         title = aTitle;
     }
 
-    public String getDescription() { return description;}
+    public String getDescription()
+    {
+        return description;
+    }
 
-    public void setDescription(String aDesc) {description = aDesc;}
+    public void setDescription(String aDesc)
+    {
+        description = aDesc;
+    }
 
     public String getPicUrl()
     {
@@ -227,9 +235,10 @@ public class Manga implements Parcelable
         image = aPicUrl;
     }
 
-    public String getMangaURL()
+    public String getFullUrl()
     {
-        return link;
+        String fullUrl = link.replace("{" + source + "}", MangaEnums.Source.valueOf(source).getBaseUrl());
+        return fullUrl;
     }
 
     public void setMangaUrl(String aUrl)
@@ -277,9 +286,15 @@ public class Manga implements Parcelable
         source = aSource;
     }
 
-    public String getAlternate() { return alternate; }
+    public String getAlternate()
+    {
+        return alternate;
+    }
 
-    public void setAlternate(String aAlternate) { alternate = aAlternate; }
+    public void setAlternate(String aAlternate)
+    {
+        alternate = aAlternate;
+    }
 
     public long getFollowing()
     {
@@ -320,7 +335,9 @@ public class Manga implements Parcelable
         boolean lCompare = false;
         if (aObject != null && aObject instanceof Manga)
         {
-            if (link.equals(((Manga) aObject).getMangaURL()))
+            String lLink1 = link.replace("https", "http");
+            String lLink2 = ((Manga) aObject).getFullUrl().replace("https", "http");
+            if (lLink1.equals(lLink2))
             {
                 lCompare = true;
             }
@@ -377,7 +394,7 @@ public class Manga implements Parcelable
     {
         int lUserId = SharedPrefs.getUserId();
 
-        if(lUserId < 0)
+        if (lUserId < 0)
         {
             return;
         }
@@ -387,7 +404,8 @@ public class Manga implements Parcelable
         params.put("url", link);
         params.put("followStatus", following);
 
-        MangaFeedRest.postFollowedUpdate(lUserId, params, new JsonHttpResponseHandler(){
+        MangaFeedRest.postFollowedUpdate(lUserId, params, new JsonHttpResponseHandler()
+        {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response)
             {

@@ -23,12 +23,15 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Headers;
+import okhttp3.RequestBody;
 
 public abstract class SourceBase
 {
     private String TAG = SourceBase.class.getSimpleName();
 
     public abstract String getSourceName();
+
+    public abstract String getBaseUrl();
 
     /***
      * This function returns the type of content the source provides.
@@ -79,7 +82,7 @@ public abstract class SourceBase
      * @param responseBody
      * @return
      */
-    public abstract List<String> parseResponseToPageUrls(final String responseBody);
+    public abstract List<String> parseResponseToPageUrls(final RequestWrapper requestWrapper, final String responseBody);
 
     /***
      * This function pareses the response body and returns the image url of its page.
@@ -128,7 +131,7 @@ public abstract class SourceBase
     public Observable<List<Chapter>> getChapterListObservable(final RequestWrapper request)
     {
         return NetworkService.getPermanentInstance()
-                             .getResponseCustomHeaders(request.getMangaUrl(), constructRequestHeaders())
+                             .getResponseCustomHeaders(request.getManga().getFullUrl(), constructRequestHeaders())
                              .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
                              .flatMap(aResponseBody -> Observable.just(parseResponseToChapters(request, aResponseBody)))
                              .subscribeOn(Schedulers.computation())
@@ -145,7 +148,7 @@ public abstract class SourceBase
     public Observable<Manga> updateMangaObservable(final RequestWrapper request)
     {
         return NetworkService.getPermanentInstance()
-                             .getResponseCustomHeaders(request.getMangaUrl(), constructRequestHeaders())
+                             .getResponseCustomHeaders(request.getManga().getFullUrl(), constructRequestHeaders())
                              .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
                              .flatMap(aResponseBody -> Observable.just(parseResponseToManga(request, aResponseBody)))
                              .subscribeOn(Schedulers.computation())

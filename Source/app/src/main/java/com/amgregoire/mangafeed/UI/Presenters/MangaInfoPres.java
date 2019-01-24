@@ -62,14 +62,15 @@ public class MangaInfoPres implements IManga.MangaPres
             mOfflineFlag = bundle.getBoolean(MangaInfoFragment.OFFLINE_KEY);
             mDownloadFlag = false;
 
+            if (mManga != null)
+            {
+                mManga = MangaDB.getInstance().getManga(mManga.link);
+            }
 
             mMap.initViews();
-
+            mMap.startRefresh();
             setStartContinueReading();
             mMap.setBottomNavFollowTitle(mManga.following);
-
-
-            mMap.startRefresh();
 
             if (mOfflineFlag)
             {
@@ -125,11 +126,6 @@ public class MangaInfoPres implements IManga.MangaPres
             if(mAdapter != null)
             {
                 mAdapter.notifyDataSetChanged();
-            }
-
-            if (mManga != null)
-            {
-                mManga = MangaDB.getInstance().getManga(mManga.link);
             }
 
             mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->

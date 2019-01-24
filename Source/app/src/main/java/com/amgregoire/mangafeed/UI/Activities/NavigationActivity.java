@@ -2,6 +2,7 @@ package com.amgregoire.mangafeed.UI.Activities;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -22,6 +23,8 @@ import android.widget.FrameLayout;
 
 import com.amgregoire.mangafeed.Common.WifiBroadcastReceiver;
 import com.amgregoire.mangafeed.MangaFeed;
+import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.MangaDao;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.BackHandledFragment;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragment;
@@ -43,15 +46,24 @@ import com.amgregoire.mangafeed.Utils.BusEvents.UpdateSourceEvent;
 import com.amgregoire.mangafeed.Utils.DownloadManager;
 import com.amgregoire.mangafeed.Utils.DownloadScheduler;
 import com.amgregoire.mangafeed.Utils.LoginManager;
+import com.amgregoire.mangafeed.Utils.MangaDB;
+import com.amgregoire.mangafeed.Utils.MangaFeedRest;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
+import com.amgregoire.mangafeed.Utils.SharedPrefs;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.common.util.SharedPreferencesUtils;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.squareup.picasso.Picasso;
 
+
+import java.util.ArrayList;
 
 import butterknife.BindDrawable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 public class NavigationActivity extends AppCompatActivity implements WifiBroadcastReceiver.WifiResponseListener, BackHandledFragment.BackHandlerInterface
 {

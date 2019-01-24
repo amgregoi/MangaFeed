@@ -20,13 +20,14 @@ import java.util.List;
 
 public class FunManga extends SourceManga
 {
-    final public static String TAG = FunManga.class.getSimpleName();
-    final public static String URL = "funmanga";
+    public final static String TAG = FunManga.class.getSimpleName();
+    public final static String URL = "funmanga";
 
-    final private String SourceKey = "FunManga";
-    final private String mUpdatesUrl = "http://funmanga.com/latest-chapters";
-    final private String mCatalogUrl = "http://funmanga.com/manga-list/";
-    final private String mGenres[] =
+    private final String SourceKey = "FunManga";
+    private final String mBaseUrl = "https://www.funmanga.com";
+    private final String mUpdatesUrl = "http://funmanga.com/latest-chapters";
+    private final String mCatalogUrl = "http://funmanga.com/manga-list/";
+    private final String mGenres[] =
             {
                     "Joy",
                     "Action",
@@ -78,6 +79,12 @@ public class FunManga extends SourceManga
     }
 
     @Override
+    public String getBaseUrl()
+    {
+        return mBaseUrl;
+    }
+
+    @Override
     public MangaEnums.SourceType getSourceType()
     {
         return MangaEnums.SourceType.MANGA;
@@ -119,6 +126,7 @@ public class FunManga extends SourceManga
                         lMangaUrl += "/"; //add ending slash to url if missing
                     }
 
+                    lMangaUrl = lMangaUrl.replaceFirst(Manga.LinkRegex, "{" + SourceKey + "}");
                     Manga lManga = MangaDB.getInstance().getManga(lMangaUrl);
                     if (lManga != null)
                     {
@@ -200,7 +208,7 @@ public class FunManga extends SourceManga
                 }
             }
 
-            Manga lManga = MangaDB.getInstance().getManga(request.getMangaUrl());
+            Manga lManga = MangaDB.getInstance().getManga(request.getManga().link);
             lManga.setAlternate(lAlternate);
             lManga.setPicUrl(lImage);
             lManga.setDescription(lDescription);
@@ -209,7 +217,7 @@ public class FunManga extends SourceManga
             lManga.setGenres(lGenres);
             lManga.setStatus(lStatus);
             lManga.setSource(SourceKey);
-            lManga.setMangaUrl(request.getMangaUrl());
+            lManga.setMangaUrl(request.getManga().link);
 
             MangaDB.getInstance().putManga(lManga);
 
@@ -218,10 +226,10 @@ public class FunManga extends SourceManga
         }
         catch (Exception aException)
         {
-            MangaLogger.logError(TAG, request.getMangaUrl(), aException.getMessage());
+            MangaLogger.logError(TAG, request.getManga().link, aException.getMessage());
         }
 
-        return MangaDB.getInstance().getManga(request.getMangaUrl());
+        return MangaDB.getInstance().getManga(request.getManga().link);
     }
 
     @Override
@@ -234,7 +242,7 @@ public class FunManga extends SourceManga
     }
 
     @Override
-    public List<String> parseResponseToPageUrls(final String responseBody)
+    public List<String> parseResponseToPageUrls(final RequestWrapper requestWrapper, final String responseBody)
     {
         List<String> lImages = new ArrayList<>();
 
@@ -331,7 +339,7 @@ public class FunManga extends SourceManga
             lChapterTitle = iChapterElement.select("span").first().text();
             lChapterDate = iChapterElement.select("span").get(1).text();
 
-            lChapterList.add(new Chapter(lChapterUrl, request.getMangaTitle(), lChapterTitle, lChapterDate, lNumChapters, request.getMangaUrl()));
+            lChapterList.add(new Chapter(lChapterUrl, request.getManga().title, lChapterTitle, lChapterDate, lNumChapters, request.getManga().link));
 
             lNumChapters--;
         }

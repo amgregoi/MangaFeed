@@ -112,6 +112,11 @@ public class MangaEnums
         {
             return lSource;
         }
+
+        public String getBaseUrl()
+        {
+            return lSource.getBaseUrl();
+        }
     }
 
     /***

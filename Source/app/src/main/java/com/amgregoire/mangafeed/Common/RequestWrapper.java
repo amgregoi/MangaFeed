@@ -49,34 +49,14 @@ public class RequestWrapper implements Parcelable
         return mManga.getSource();
     }
 
-    /***
-     * This function returns the manga item url
-     *
-     * @return
-     */
-    public String getMangaUrl()
+    public Manga getManga()
     {
-        return mManga.getMangaURL();
+        return mManga;
     }
 
-    /***
-     * This function returns the manga item title
-     *
-     * @return
-     */
-    public String getMangaTitle()
+    public Chapter getChapter()
     {
-        return mManga.getTitle();
-    }
-
-    /***
-     * This function returns the chapter item url
-     *
-     * @return
-     */
-    public String getChapterUrl()
-    {
-        return mChapter.getChapterUrl();
+        return mChapter;
     }
 
     @Override

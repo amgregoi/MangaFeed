@@ -32,12 +32,19 @@ public class Wuxia extends SourceNovel
     final public static String URL = "https://www.wuxiaworld.com";
 
     private final String SourceKey = "Wuxia";
+    private final String mBaseUrl = "https://www.wuxiaworld.com";
 
 
     @Override
     public String getSourceName()
     {
         return SourceKey;
+    }
+
+    @Override
+    public String getBaseUrl()
+    {
+        return mBaseUrl;
     }
 
     @Override
@@ -73,6 +80,8 @@ public class Wuxia extends SourceNovel
             {
                 String lMangaUrl = URL + lNovel.select("td").first().select("span.title").select("a").attr("href");
                 String lMangaTitle = lNovel.select("td").first().select("span.title").select("a").text();
+
+                lMangaUrl = lMangaUrl.replaceFirst(Manga.LinkRegex, "{" + SourceKey + "}");
                 Manga lManga = MangaDB.getInstance().getManga(lMangaUrl);
                 if (lManga == null)
                 {
@@ -114,7 +123,7 @@ public class Wuxia extends SourceNovel
             Elements lContentLeft = lParsedDocument.select("div.media.media-novel-index").select("div.media-left");
             Elements lContentRight = lParsedDocument.select("div.media.media-novel-index").select("div.media-body");
 
-            Manga lManga = MangaDB.getInstance().getManga(request.getMangaUrl());
+            Manga lManga = MangaDB.getInstance().getManga(request.getManga().link);
             String lImage = lContentLeft.select("img.media-object").attr("src");
 
             StringBuilder lDetails = new StringBuilder();
@@ -174,7 +183,7 @@ public class Wuxia extends SourceNovel
             {
                 String lUrl = URL + iChapter.attr("href");
                 String lChapterTitle = iChapter.text();
-                lChapterList.add(new Chapter(lUrl, request.getMangaTitle(), lChapterTitle, "-", lCount, request.getMangaUrl()));
+                lChapterList.add(new Chapter(lUrl, request.getManga().title, lChapterTitle, "-", lCount, request.getManga().link));
                 lCount++;
             }
         }
@@ -188,7 +197,7 @@ public class Wuxia extends SourceNovel
     }
 
     @Override
-    public List<String> parseResponseToPageUrls(String aResponseBody)
+    public List<String> parseResponseToPageUrls(RequestWrapper requestWrapper, String aResponseBody)
     {
         return null;
     }
@@ -223,7 +232,7 @@ public class Wuxia extends SourceNovel
         {
             try
             {
-                for(String link : lLinks)
+                for (String link : lLinks)
                 {
                     emitter.onNext(link);
                 }
@@ -251,7 +260,7 @@ public class Wuxia extends SourceNovel
 
                         Elements lDesc = group.select("div.media-body").select("p");
 
-                        for(Element desc : lDesc)
+                        for (Element desc : lDesc)
                         {
                             lDescription.append(desc.text()).append("\n\n");
                         }
