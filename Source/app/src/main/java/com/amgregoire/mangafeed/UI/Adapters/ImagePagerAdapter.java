@@ -22,6 +22,7 @@ import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Widgets.GestureImageView;
 import com.amgregoire.mangafeed.UI.Widgets.GestureTextView;
+import com.amgregoire.mangafeed.UI.Widgets.GestureViewPager;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.bumptech.glide.GenericTransitionOptions;
 import com.bumptech.glide.Glide;
@@ -50,12 +51,23 @@ public class ImagePagerAdapter extends PagerAdapter
     private SparseArray<View> mImageViews = new SparseArray<>();
     private boolean isManga;
 
+    private GestureViewPager.UserGestureListener mNovelListener;
+
     public ImagePagerAdapter(Fragment fragment, Context context, List<String> data)
     {
         this.mContext = context;
         this.mImageUrlList = data;
         mParent = fragment;
-        isManga = MangaFeed.getInstance().getCurrentSourceType() == MangaEnums.SourceType.MANGA;
+        isManga = true;
+    }
+
+    public ImagePagerAdapter(Fragment fragment, Context context, List<String> data, GestureViewPager.UserGestureListener listener)
+    {
+        this.mContext = context;
+        this.mImageUrlList = data;
+        mParent = fragment;
+        isManga = false;
+        mNovelListener = listener;
     }
 
     public void cleanup()
@@ -98,6 +110,7 @@ public class ImagePagerAdapter extends PagerAdapter
         View lView = LayoutInflater.from(mContext).inflate(R.layout.item_reader_image_adapter, container, false);
         GestureTextView mNovel = lView.findViewById(R.id.gestureTextViewReaderChapter);
         NestedScrollView mContainer = lView.findViewById(R.id.scrollViewTextContainer);
+        mNovel.setUserGesureListener(mNovelListener);
 
         mNovel.setVisibility(View.VISIBLE);
         mContainer.setVisibility(View.VISIBLE);

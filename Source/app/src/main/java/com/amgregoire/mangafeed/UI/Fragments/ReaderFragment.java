@@ -219,6 +219,10 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
     @Override
     public void registerAdapter(PagerAdapter adapter)
     {
+        if(MangaFeed.getInstance().getCurrentSourceType().equals(MangaEnums.SourceType.NOVEL))
+        {
+            mViewPager.setPagingEnabled(true);
+        }
         mViewPager.setAdapter(adapter);
         mViewPager.setOffscreenPageLimit(1);
     }

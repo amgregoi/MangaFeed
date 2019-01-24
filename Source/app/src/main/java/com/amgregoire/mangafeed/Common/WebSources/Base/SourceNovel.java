@@ -16,9 +16,9 @@ public abstract class SourceNovel extends SourceBase
     {
         final NetworkService lCurrentService = NetworkService.getTemporaryInstance();
 
-        return lCurrentService.getResponse(request.getChapterUrl())
+        return lCurrentService.getResponse(request.getChapter().url)
                               .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
-                              .flatMap(aUnparsedHtml -> Observable.just(parseResponseToImageUrls(aUnparsedHtml, request.getChapterUrl())));
+                              .flatMap(aUnparsedHtml -> Observable.just(parseResponseToImageUrls(aUnparsedHtml, request.getChapter().url)));
     }
 
 }

@@ -180,7 +180,6 @@ public class MangaDB extends SQLiteOpenHelper
     public void putManga(Manga manga)
     {
         MangaDao lDao = mSession.getMangaDao();
-
         if (lDao.hasKey(manga))
         {
             lDao.update(manga);
@@ -350,7 +349,7 @@ public class MangaDB extends SQLiteOpenHelper
             {
                 subscriber.onNext(mSession.getChapterDao()
                                           .queryBuilder()
-                                          .where(ChapterDao.Properties.MangaUrl.eq(manga.getMangaURL()))
+                                          .where(ChapterDao.Properties.MangaUrl.eq(manga.getFullUrl()))
                                           .list());
                 subscriber.onComplete();
             }
@@ -375,10 +374,8 @@ public class MangaDB extends SQLiteOpenHelper
             {
                 ArrayList<Manga> lMangaList = new ArrayList<>(mSession.getMangaDao()
                                                                       .queryBuilder()
-                                                                      .where(MangaDao.Properties.Source
-                                                                              .eq(SharedPrefs.getSavedSource()))
-                                                                      .where(MangaDao.Properties.Following
-                                                                              .notEq(0))
+                                                                      .where(MangaDao.Properties.Source.eq(SharedPrefs.getSavedSource()))
+                                                                      .where(MangaDao.Properties.Following.notEq(0))
                                                                       .list());
 
                 subscriber.onNext(lMangaList);
@@ -404,10 +401,8 @@ public class MangaDB extends SQLiteOpenHelper
             {
                 ArrayList<Manga> lMangaList = new ArrayList<>(mSession.getMangaDao()
                                                                       .queryBuilder()
-                                                                      .where(MangaDao.Properties.Source
-                                                                              .eq(SharedPrefs.getSavedSource()))
-                                                                      .where(MangaDao.Properties.Following
-                                                                              .eq(filter))
+                                                                      .where(MangaDao.Properties.Source.eq(SharedPrefs.getSavedSource()))
+                                                                      .where(MangaDao.Properties.Following.eq(filter))
                                                                       .list());
 
                 subscriber.onNext(lMangaList);

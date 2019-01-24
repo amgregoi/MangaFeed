@@ -62,7 +62,7 @@ public class MangaFeed extends Application
 
         MangaDB.getInstance().createDB(); // Copy pre-loaded database if not already done.
         MangaDB.getInstance().initDao();
-        updateCatalogs(); // check if we should update local database on application open
+        updateCatalogs(false); // check if we should update local database on application open
     }
 
     /***
@@ -209,14 +209,14 @@ public class MangaFeed extends Application
      * Currently it is set to update no more than once a week.
      *
      */
-    public void updateCatalogs()
+    public void updateCatalogs(boolean isForceUpdate)
     {
         int lWeekSeconds = 604800;
         int lWeekMs = lWeekSeconds * 1000;
 
         // Check if we updated in the last week, if we have we'll skip.
         Date lLowerLimit = new Date(SharedPrefs.getLastCatalogUpdate().getTime() + lWeekMs);
-        if (lLowerLimit.before(new Date()))
+        if (lLowerLimit.before(new Date()) || isForceUpdate)
         {
             Observable.create((ObservableEmitter<SourceBase> subscriber) ->
             {

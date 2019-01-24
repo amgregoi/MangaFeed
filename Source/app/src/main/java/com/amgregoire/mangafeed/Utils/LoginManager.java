@@ -13,6 +13,7 @@ import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLogoutEvent;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -166,10 +167,18 @@ public class LoginManager
 
                     MangaFeed.getInstance().makeToastLong(throwable.toString());
                 }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
+                {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                    MangaFeed.getInstance().makeToastLong(throwable.toString());
+                }
             });
         }
         catch (ApiException e)
         {
+            MangaFeed.getInstance().makeToastLong("failure code: " + e.getStatusCode());
             MangaLogger.logError(TAG, "failure code: " + e.getStatusCode());
         }
     }

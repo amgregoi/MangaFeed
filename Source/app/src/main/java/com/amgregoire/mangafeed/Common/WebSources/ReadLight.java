@@ -29,12 +29,19 @@ public class ReadLight extends SourceNovel
     final public static String URL = "readlight";
 
     private final String SourceKey = "ReadLight";
+    private final String mBaseUrl = "https://www.readlightnovel.org";
 
 
     @Override
     public String getSourceName()
     {
         return SourceKey;
+    }
+
+    @Override
+    public String getBaseUrl()
+    {
+        return mBaseUrl;
     }
 
     @Override
@@ -75,6 +82,7 @@ public class ReadLight extends SourceNovel
                 String lThumb = lMenuItems.select("div.novel-cover").select("img").attr("src");
                 lMangaTitle = lMangaTitle.replaceFirst(" Ch. \\d+", "");
 
+                lMangaUrl = lMangaUrl.replaceFirst(Manga.LinkRegex, "{" + SourceKey + "}");
                 Manga lManga = MangaDB.getInstance().getManga(lMangaUrl);
                 if (lManga == null)
                 {
@@ -122,7 +130,7 @@ public class ReadLight extends SourceNovel
                                                        .select("div.novel-detail-item");
 
 
-            Manga lManga = MangaDB.getInstance().getManga(request.getMangaUrl());
+            Manga lManga = MangaDB.getInstance().getManga(request.getManga().link);
             String lImage = lContentLeft.select("div.novel-cover").select("img").attr("src");
 
             StringBuilder lDetails = new StringBuilder();
@@ -237,7 +245,7 @@ public class ReadLight extends SourceNovel
             {
                 String lUrl = iChapter.attr("href");
                 String lChapterTitle = iChapter.text();
-                lChapterList.add(new Chapter(lUrl, request.getMangaTitle(), lChapterTitle, "-", lCount, request.getMangaUrl()));
+                lChapterList.add(new Chapter(lUrl, request.getManga().title, lChapterTitle, "-", lCount, request.getManga().link));
                 lCount++;
             }
         }
@@ -251,7 +259,7 @@ public class ReadLight extends SourceNovel
     }
 
     @Override
-    public List<String> parseResponseToPageUrls(String aResponseBody)
+    public List<String> parseResponseToPageUrls(RequestWrapper requestWrapper, String aResponseBody)
     {
         return null;
     }

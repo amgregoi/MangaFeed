@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
@@ -20,9 +19,9 @@ public abstract class SourceManga extends SourceBase
         final List<String> lTemporaryCachedImageUrls = new ArrayList<>();
         final NetworkService lCurrentService = NetworkService.getTemporaryInstance();
 
-        return lCurrentService.getResponse(aRequest.getChapterUrl())
+        return lCurrentService.getResponse(aRequest.getChapter().getChapterUrl())
                               .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
-                              .flatMap(aUnparsedHtml -> Observable.just(parseResponseToPageUrls(aUnparsedHtml)))
+                              .flatMap(aUnparsedHtml -> Observable.just(parseResponseToPageUrls(aRequest, aUnparsedHtml)))
                               .flatMap(aPageUrls -> Observable.fromArray(aPageUrls.toArray(new String[aPageUrls.size()])))
                               .buffer(10)
                               .concatMap(batchedPageUrls ->
@@ -32,8 +31,7 @@ public abstract class SourceManga extends SourceBase
                                   {
                                       Observable<String> lTemporaryObservable = lCurrentService.getResponse(iPageUrl)
                                                                                                .flatMap(NetworkService::mapResponseToString)
-                                                                                               .flatMap(unparsedHtml -> Observable
-                                                                                                       .just(parseResponseToImageUrls(unparsedHtml, iPageUrl)));
+                                                                                               .flatMap(unparsedHtml -> Observable.just(parseResponseToImageUrls(unparsedHtml, iPageUrl)));
                                       lImageUrlObservables.add(lTemporaryObservable);
                                   }
 
@@ -49,6 +47,5 @@ public abstract class SourceManga extends SourceBase
                               })
                               .concatMap(batchedImageUrls -> Observable.fromArray(batchedImageUrls.toArray(new String[batchedImageUrls.size()])))
                               .doOnNext(lTemporaryCachedImageUrls::add);
-//                              .onBackpressureBuffer();
     }
 }

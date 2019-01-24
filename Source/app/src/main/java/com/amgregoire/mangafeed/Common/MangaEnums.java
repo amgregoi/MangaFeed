@@ -6,6 +6,7 @@ import com.amgregoire.mangafeed.Common.WebSources.MangaEden;
 import com.amgregoire.mangafeed.Common.WebSources.MangaHere;
 import com.amgregoire.mangafeed.Common.WebSources.FunManga;
 import com.amgregoire.mangafeed.Common.WebSources.ReadLight;
+import com.amgregoire.mangafeed.Common.WebSources.Wuxia;
 
 public class MangaEnums
 {
@@ -97,7 +98,8 @@ public class MangaEnums
         ReadLight(new ReadLight()),
         FunManga(new FunManga()),
         MangaHere(new MangaHere()),
-        MangaEden(new MangaEden());
+        MangaEden(new MangaEden()),
+        Wuxia(new Wuxia());
 
         SourceBase lSource;
 
@@ -109,6 +111,11 @@ public class MangaEnums
         public SourceBase getSource()
         {
             return lSource;
+        }
+
+        public String getBaseUrl()
+        {
+            return lSource.getBaseUrl();
         }
     }
 
