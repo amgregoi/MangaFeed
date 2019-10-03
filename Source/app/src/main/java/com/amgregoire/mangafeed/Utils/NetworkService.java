@@ -1,6 +1,14 @@
 package com.amgregoire.mangafeed.Utils;
 
 
+import android.util.Log;
+
+import com.amgregoire.mangafeed.Cloudflare;
+import com.amgregoire.mangafeed.Cloudflare2;
+
+import java.net.HttpCookie;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -26,8 +34,33 @@ public class NetworkService
                                             .build();
     }
 
+    public static Map<String, String> cookies;
+
+    public static String defaultUserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21";
+    public static String secondUserAgent = "Mozilla/5.0 (Windows NT 6.3; WOW64)";
+
+    public static void test()
+    {
+        if(cookies != null) return;
+
+        Cloudflare2 cf = new Cloudflare2("https://www.funmanga.com/");
+        cf.setUser_agent("Mozilla/5.0 (Windows NT 6.3; WOW64)");
+        cf.getCookies(new Cloudflare2.cfCallback() {
+            @Override
+            public void onSuccess(List<HttpCookie> cookieList) {
+                Log.e("cloudflare-success", cookieList.toString());
+                cookies = Cloudflare2.List2Map(cookieList);
+            }
+
+            @Override
+            public void onFail() {
+                Log.e("cloudflare-fail", "whyyyy");
+            }
+        });
+    }
     public static NetworkService getPermanentInstance()
     {
+        test();
         if (sInstance == null)
         {
             sInstance = new NetworkService();
@@ -38,6 +71,7 @@ public class NetworkService
 
     public static NetworkService getTemporaryInstance()
     {
+        test();
         return new NetworkService();
     }
 
@@ -53,10 +87,16 @@ public class NetworkService
         {
             try
             {
-                Request request = new Request.Builder()
+                Request.Builder builder = new Request.Builder()
                         .url(url)
-                        .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21")
-                        .build();
+                        .header("User-Agent", secondUserAgent);
+
+                for(String key : cookies.keySet())
+                {
+                    builder.addHeader("Cookie", String.format("%s=%s", key, cookies.get(key)));
+                }
+
+                Request request = builder.build();
 
                 subscriber.onNext(mClient.newCall(request).execute());
                 subscriber.onComplete();
@@ -81,10 +121,16 @@ public class NetworkService
         {
             try
             {
-                Request request = new Request.Builder()
+                Request.Builder builder = new Request.Builder()
                         .url(url)
-                        .headers(headers)
-                        .build();
+                        .headers(headers);
+
+                for(String key : cookies.keySet())
+                {
+                    builder.addHeader("Cookie", String.format("%s=%s", key, cookies.get(key)));
+                }
+
+                Request request = builder.build();
 
                 subscriber.onNext(mClient.newCall(request).execute());
                 subscriber.onComplete();

@@ -23,9 +23,13 @@ import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Widgets.GestureImageView;
 import com.amgregoire.mangafeed.UI.Widgets.GestureTextView;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
+import com.amgregoire.mangafeed.Utils.NetworkService;
 import com.bumptech.glide.GenericTransitionOptions;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaderFactory;
+import com.bumptech.glide.load.model.LazyHeaders;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -35,6 +39,8 @@ import com.squareup.picasso.Target;
 import com.squareup.picasso.Transformation;
 
 import java.util.List;
+
+import okhttp3.Request;
 
 /**
  * Created by Andy Gregoire on 3/21/2018.
@@ -95,7 +101,8 @@ public class ImagePagerAdapter extends PagerAdapter
 
     private View instantiateNovel(ViewGroup container, int position)
     {
-        View lView = LayoutInflater.from(mContext).inflate(R.layout.item_reader_image_adapter, container, false);
+        View lView = LayoutInflater.from(mContext)
+                                   .inflate(R.layout.item_reader_image_adapter, container, false);
         GestureTextView mNovel = lView.findViewById(R.id.gestureTextViewReaderChapter);
         NestedScrollView mContainer = lView.findViewById(R.id.scrollViewTextContainer);
 
@@ -118,7 +125,8 @@ public class ImagePagerAdapter extends PagerAdapter
 
     private View instantiateImage(ViewGroup container, int position)
     {
-        View lView = LayoutInflater.from(mContext).inflate(R.layout.item_reader_image_adapter, container, false);
+        View lView = LayoutInflater.from(mContext)
+                                   .inflate(R.layout.item_reader_image_adapter, container, false);
         GestureImageView mImage = lView.findViewById(R.id.gestureImageViewReaderChapter);
         mImage.setVisibility(View.VISIBLE);
 
@@ -130,9 +138,20 @@ public class ImagePagerAdapter extends PagerAdapter
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
 
+
+        LazyHeaders.Builder builder = new LazyHeaders.Builder().addHeader("User-Agent", NetworkService.secondUserAgent);
+
+
+        for (String key : NetworkService.cookies.keySet())
+        {
+            builder.addHeader("Cookie", String.format("%s=%s", key, NetworkService.cookies.get(key)));
+        }
+
+        GlideUrl glideUrl = new GlideUrl(mImageUrlList.get(position), builder.build());
+
         Glide.with(mParent)
              .asBitmap()
-             .load(mImageUrlList.get(position))
+             .load(glideUrl)
              .apply(lOptions)
              .transition(new GenericTransitionOptions<>().transition(android.R.anim.fade_in))
              .into(new BitmapImageViewTarget(mImage)

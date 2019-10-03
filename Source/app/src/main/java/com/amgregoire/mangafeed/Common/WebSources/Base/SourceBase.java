@@ -243,7 +243,7 @@ public abstract class SourceBase
      *
      * @return
      */
-    private Headers constructRequestHeaders()
+    public static Headers constructRequestHeaders()
     {
         Headers.Builder headerBuilder = new Headers.Builder();
         headerBuilder.add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64)");
