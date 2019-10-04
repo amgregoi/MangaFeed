@@ -14,10 +14,10 @@ public abstract class SourceNovel extends SourceBase
 {
     public Observable<String> getChapterImageListObservable(final RequestWrapper request)
     {
-        final NetworkService lCurrentService = NetworkService.getTemporaryInstance();
+        final NetworkService lCurrentService = NetworkService.Companion.getTemporaryInstance();
 
         return lCurrentService.getResponse(request.getChapter().url)
-                              .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
+                              .flatMap(aResponse -> NetworkService.Companion.mapResponseToString(aResponse))
                               .flatMap(aUnparsedHtml -> Observable.just(parseResponseToImageUrls(aUnparsedHtml, request.getChapter().url)));
     }
 

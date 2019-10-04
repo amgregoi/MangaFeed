@@ -62,14 +62,14 @@ public class LoginManager
     {
         if (SharedPrefs.getUserEmail() == null)
         {
-            MangaFeed.getInstance().makeToastShort("Attempting to login");
+            MangaFeed.Companion.getApp().makeToastShort("Attempting to login");
 
-            MangaFeed.getInstance().rxBus().send(new GoogleLoginAttemptEvent());
+            MangaFeed.Companion.getApp().rxBus().send(new GoogleLoginAttemptEvent());
 
             // TODO
             // Remove this, and uncomment above line when done testing login features
             // Login only succeeds with signed apks
-//            MangaFeed.getInstance().rxBus().send(new GoogleLoginSuccessEvent(null));
+//            MangaFeed.Companion.getApp().rxBus().send(new GoogleLoginSuccessEvent(null));
         }
         else
         {
@@ -79,7 +79,7 @@ public class LoginManager
             lDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No", (dialogInterface, i) -> lDialog.dismiss());
             lDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ok", (dialogInterface, i) ->
             {
-                MangaFeed.getInstance().rxBus().send(new GoogleLogoutEvent());
+                MangaFeed.Companion.getApp().rxBus().send(new GoogleLogoutEvent());
             });
 
             lDialog.show();
@@ -126,7 +126,7 @@ public class LoginManager
             SharedPrefs.setUserEmail(account.getEmail());
             SharedPrefs.setUserName(account.getDisplayName());
 
-            MangaFeed.getInstance().makeToastShort("Signed in (kinda): " + SharedPrefs.getUserEmail());
+            MangaFeed.Companion.getApp().makeToastShort("Signed in (kinda): " + SharedPrefs.getUserEmail());
 
 
             RequestParams lParams = new RequestParams();
@@ -148,13 +148,13 @@ public class LoginManager
                         SharedPrefs.setUserName(lUser.getString("name"));
                         SharedPrefs.setUserId(lUser.getInt("id"));
 
-                        MangaFeed.getInstance().makeToastShort("Successfully signed in");
+                        MangaFeed.Companion.getApp().makeToastShort("Successfully signed in");
                         MangaDB.getInstance().updateNewUsersLibrary();
-                        MangaFeed.getInstance().rxBus().send(new GoogleLoginSuccessEvent());
+                        MangaFeed.Companion.getApp().rxBus().send(new GoogleLoginSuccessEvent());
                     }
                     catch (JSONException e)
                     {
-                        MangaFeed.getInstance().makeToastLong("There was an issue, please try again.");
+                        MangaFeed.Companion.getApp().makeToastLong("There was an issue, please try again.");
                         MangaLogger.logError(TAG, e.getMessage());
                     }
                 }
@@ -165,20 +165,20 @@ public class LoginManager
                     super.onFailure(statusCode, headers, throwable, errorResponse);
                     MangaLogger.logError(TAG, errorResponse.toString());
 
-                    MangaFeed.getInstance().makeToastLong(throwable.toString());
+                    MangaFeed.Companion.getApp().makeToastLong(throwable.toString());
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
                 {
                     super.onFailure(statusCode, headers, responseString, throwable);
-                    MangaFeed.getInstance().makeToastLong(throwable.toString());
+                    MangaFeed.Companion.getApp().makeToastLong(throwable.toString());
                 }
             });
         }
         catch (ApiException e)
         {
-            MangaFeed.getInstance().makeToastLong("failure code: " + e.getStatusCode());
+            MangaFeed.Companion.getApp().makeToastLong("failure code: " + e.getStatusCode());
             MangaLogger.logError(TAG, "failure code: " + e.getStatusCode());
         }
     }

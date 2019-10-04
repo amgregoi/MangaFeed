@@ -72,7 +72,7 @@ public class AccountPresStats implements IAccount.AccountStatsPres
     {
         try
         {
-            mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
+            mRxBus = MangaFeed.Companion.getApp().rxBus().toObservable().subscribe(o ->
             {
                 if (o instanceof UpdateMangaItemViewEvent)
                 {
@@ -98,11 +98,11 @@ public class AccountPresStats implements IAccount.AccountStatsPres
         {
             if (mStatValues.get(filter - 1) > 0) // Filters are 1 indexed, stat list is 0 indexed
             {
-                MangaFeed.getInstance().rxBus().send(new StatusFilterEvent(filter, title));
+                MangaFeed.Companion.getApp().rxBus().send(new StatusFilterEvent(filter, title));
             }
             else
             {
-                MangaFeed.getInstance().makeToastShort("You have no items in this section");
+                MangaFeed.Companion.getApp().makeToastShort("You have no items in this section");
             }
         }
         catch (Exception ex)

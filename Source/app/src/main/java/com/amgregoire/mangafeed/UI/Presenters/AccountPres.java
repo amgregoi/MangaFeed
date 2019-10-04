@@ -81,7 +81,7 @@ public class AccountPres implements IAccount.AccountPres
     {
         try
         {
-            mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
+            mRxBus = MangaFeed.Companion.getApp().rxBus().toObservable().subscribe(o ->
             {
                 if (o instanceof GoogleLoginSuccessEvent)
                 {
@@ -89,7 +89,7 @@ public class AccountPres implements IAccount.AccountPres
 
                     if (SharedPrefs.getUserEmail() == null || SharedPrefs.getUserName() == null)
                     {
-                        MangaFeed.getInstance().makeToastShort("Login failed");
+                        MangaFeed.Companion.getApp().makeToastShort("Login failed");
                         LoginManager.logout();
                     }
                 }
@@ -101,7 +101,7 @@ public class AccountPres implements IAccount.AccountPres
         }
         catch (Exception ex)
         {
-            MangaFeed.getInstance().makeToastShort("fucking errors : " + ex.getMessage());
+            MangaFeed.Companion.getApp().makeToastShort("fucking errors : " + ex.getMessage());
             MangaLogger.logError(TAG, ex.getMessage());
         }
     }

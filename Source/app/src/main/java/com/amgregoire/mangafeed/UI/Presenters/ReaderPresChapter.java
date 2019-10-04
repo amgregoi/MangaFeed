@@ -55,7 +55,7 @@ public class ReaderPresChapter implements IReader.ReaderPresChapter
     {
         mManga = bundle.getParcelable(ReaderFragmentChapter.MANGA_KEY);
         mChapterPosition = bundle.getInt(ReaderFragmentChapter.POSITION_KEY);
-        List<Chapter> lChapterList = MangaFeed.getInstance().getCurrentChapters();
+        List<Chapter> lChapterList = MangaFeed.Companion.getApp().getCurrentChapters();
 
         if (lChapterList == null)
         {
@@ -75,7 +75,7 @@ public class ReaderPresChapter implements IReader.ReaderPresChapter
 
         updateToolbar("Loading pages..", 0, 0);
 
-        mChapterContent = MangaFeed.getInstance()
+        mChapterContent = MangaFeed.Companion.getApp()
                                    .getCurrentSource()
                                    .getChapterImageListObservable(new RequestWrapper(mChapter))
                                    .subscribeOn(Schedulers.io())
@@ -98,16 +98,16 @@ public class ReaderPresChapter implements IReader.ReaderPresChapter
                                                mChapter.setTotalPages(mImageUrls.size());
                                                if (mImageUrls.size() > 0)
                                                {
-                                                   if (MangaFeed.getInstance().getCurrentSourceType().equals(MangaEnums.SourceType.MANGA))
+                                                   if (MangaFeed.Companion.getApp().getCurrentSourceType().equals(MangaEnums.SourceType.MANGA))
                                                    {
-                                                       mAdapter = new ImagePagerAdapter(((Fragment) mMap), mMap.getContext(), mImageUrls);
+                                                       mAdapter = new ImagePagerAdapter(((Fragment) mMap), mMap.getContext(), mImageUrls, null);
                                                    }
                                                    else
                                                    {
                                                        mAdapter = new ImagePagerAdapter(((Fragment) mMap), mMap.getContext(), mImageUrls, mMap);
                                                    }
                                                    mMap.registerAdapter(mAdapter);
-                                                   MangaFeed.getInstance().rxBus().send(new ToolbarTimerEvent(true, mChapterPosition));
+                                                   MangaFeed.Companion.getApp().rxBus().send(new ToolbarTimerEvent(true, mChapterPosition));
                                                }
                                                mFinishedImageUrls = true;
                                            });
@@ -115,17 +115,17 @@ public class ReaderPresChapter implements IReader.ReaderPresChapter
 
     private void getChapters()
     {
-        MangaFeed.getInstance()
+        MangaFeed.Companion.getApp()
                  .getCurrentSource()
                  .getChapterListObservable(new RequestWrapper(mManga))
                  .subscribe(
-                         chapters -> MangaFeed.getInstance().setCurrentChapters(chapters),
+                         chapters -> MangaFeed.Companion.getApp().setCurrentChapters(chapters),
                          throwable ->
                          {
                              String lMessage = "Failed to retrieve chapters (" + mManga.getTitle() + ")";
                              MangaLogger.logError(TAG, lMessage, throwable.getMessage());
                          },
-                         () -> init(MangaFeed.getInstance().getCurrentChapters())
+                         () -> init(MangaFeed.Companion.getApp().getCurrentChapters())
                  );
     }
 
@@ -146,8 +146,8 @@ public class ReaderPresChapter implements IReader.ReaderPresChapter
 
     private void updateToolbar(String message, int page, int total)
     {
-        MangaFeed.getInstance().rxBus().send(new ReaderToolbarUpdateEvent(message, page, total, mChapterPosition));
-        MangaFeed.getInstance().rxBus().send(new ToolbarTimerEvent(mAdapter != null, mChapterPosition));
+        MangaFeed.Companion.getApp().rxBus().send(new ReaderToolbarUpdateEvent(message, page, total, mChapterPosition));
+        MangaFeed.Companion.getApp().rxBus().send(new ToolbarTimerEvent(mAdapter != null, mChapterPosition));
     }
 
 
@@ -170,18 +170,9 @@ public class ReaderPresChapter implements IReader.ReaderPresChapter
     }
 
     @Override
-    public void onDestroy()
-    {
-        if (mAdapter != null)
-        {
-            mAdapter.cleanup();
-        }
-    }
-
-    @Override
     public void onResume()
     {
-        mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
+        mRxBus = MangaFeed.Companion.getApp().rxBus().toObservable().subscribe(o ->
         {
             if (o instanceof ReaderPageChangeEvent)
             {

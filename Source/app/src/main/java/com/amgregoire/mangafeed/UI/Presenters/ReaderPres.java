@@ -56,22 +56,22 @@ public class ReaderPres implements IReader.ReaderPres
 
             mManager = ((ReaderFragment) mMap).getFragmentManager();
             mCurrentPosition = bundle.getInt(ReaderFragment.POSITION_KEY);
-            mChapterList = MangaFeed.getInstance().getCurrentChapters();
+            mChapterList = MangaFeed.Companion.getApp().getCurrentChapters();
 
             mMap.initViews();
 
             if (mChapterList == null)
             {
-                MangaFeed.getInstance()
+                MangaFeed.Companion.getApp()
                          .getCurrentSource()
                          .getChapterListObservable(new RequestWrapper(mManga))
                          .subscribe(
-                                 chapters -> MangaFeed.getInstance().setCurrentChapters(chapters),
+                                 chapters -> MangaFeed.Companion.getApp().setCurrentChapters(chapters),
                                  throwable -> MangaLogger.logError(TAG, "Failed to parse chapters", throwable
                                          .getMessage()),
                                  () ->
                                  {
-                                     mChapterList = MangaFeed.getInstance().getCurrentChapters();
+                                     mChapterList = MangaFeed.Companion.getApp().getCurrentChapters();
                                      finishInit();
                                  }
                          );
@@ -138,7 +138,7 @@ public class ReaderPres implements IReader.ReaderPres
     @Override
     public void onResume()
     {
-        mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
+        mRxBus = MangaFeed.Companion.getApp().rxBus().toObservable().subscribe(o ->
         {
             if (o instanceof ReaderSingleTapEvent)
             {

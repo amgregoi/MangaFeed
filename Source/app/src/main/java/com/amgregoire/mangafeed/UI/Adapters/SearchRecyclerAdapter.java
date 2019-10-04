@@ -243,7 +243,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         @OnClick(R.id.cardViewMangaGridItem)
         public void onCardItemClick()
         {
-            MangaFeed.getInstance()
+            MangaFeed.Companion.getApp()
                      .rxBus()
                      .send(new MangaSelectedEvent(mFilteredData.get(getLayoutPosition()), mIsOfflineFlag));
         }

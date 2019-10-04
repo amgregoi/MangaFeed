@@ -10,6 +10,10 @@
         <item name="actionOverflowMenuStyle">@style/MangaFeed.Widget.PopupMenu.OverflowMenu</item>
     </style>
 
+    <style name="Splash" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/splash_bg</item>
+    </style>
+
     <style name="AppTheme.Dark" parent="AppTheme">
         <item name="background_color">@color/manga_charcoal</item>
         <item name="background_color2">@color/manga_light_charcoal</item>

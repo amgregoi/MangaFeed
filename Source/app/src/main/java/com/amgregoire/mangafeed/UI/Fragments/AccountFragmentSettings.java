@@ -42,7 +42,7 @@ public class AccountFragmentSettings extends Fragment
     @OnClick(R.id.force_update_sources)
     public void onForceUpdateSources()
     {
-        MangaFeed.getInstance().updateCatalogs(true);
+        MangaFeed.Companion.getApp().updateCatalogs(true);
     }
 
     @OnClick(R.id.reset_followed_manga_pref)

@@ -166,11 +166,11 @@ public class MangaInfoFragment extends BackHandledFragment implements IManga.Man
                 {
                     onDownloadDownload(); // start download
                     onDownloadCancel(); // exit download view
-                    MangaFeed.getInstance().makeToastShort("Starting downloads now");
+                    MangaFeed.Companion.getApp().makeToastShort("Starting downloads now");
                 }
                 else
                 {
-                    MangaFeed.getInstance()
+                    MangaFeed.Companion.getApp()
                              .makeToastShort("Need storage permissions to download chapters.");
                 }
                 break;

@@ -80,7 +80,7 @@ public class DownloadScheduler
         // send update complete to update adapter ui
         if (mDownloading.size() > 0)
         {
-            MangaFeed.getInstance()
+            MangaFeed.Companion.getApp()
                      .rxBus()
                      .send(new DownloadEventUpdateComplete(mDownloading.get(0).getChapter().url));
         }

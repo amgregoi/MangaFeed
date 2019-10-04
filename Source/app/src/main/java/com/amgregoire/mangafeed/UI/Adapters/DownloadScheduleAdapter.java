@@ -185,7 +185,7 @@ public class DownloadScheduleAdapter extends RecyclerView.Adapter<RecyclerView.V
 
             if (mRxBus == null)
             {
-                mRxBus = MangaFeed.getInstance()
+                mRxBus = MangaFeed.Companion.getApp()
                                   .rxBus()
                                   .toObservable()
                                   .subscribe(o ->

@@ -60,7 +60,7 @@ public abstract class HomePresBase implements IHome.HomeBasePres
     {
         try
         {
-            mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
+            mRxBus = MangaFeed.Companion.getApp().rxBus().toObservable().subscribe(o ->
             {
                 if (o instanceof UpdateMangaItemViewEvent)
                 {

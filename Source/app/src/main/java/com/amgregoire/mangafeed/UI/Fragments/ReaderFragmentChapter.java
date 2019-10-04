@@ -82,7 +82,6 @@ public class ReaderFragmentChapter extends Fragment implements IReader.ReaderMap
     public void onDestroyView()
     {
         super.onDestroyView();
-        mPresenter.onDestroy();
     }
 
     @Override
@@ -122,19 +121,19 @@ public class ReaderFragmentChapter extends Fragment implements IReader.ReaderMap
     @Override
     public void onSingleTap()
     {
-        MangaFeed.getInstance().rxBus().send(new ReaderSingleTapEvent());
+        MangaFeed.Companion.getApp().rxBus().send(new ReaderSingleTapEvent());
     }
 
     @Override
     public void onLeft()
     {
-        MangaFeed.getInstance().rxBus().send(new ReaderChapterChangeEvent(false));
+        MangaFeed.Companion.getApp().rxBus().send(new ReaderChapterChangeEvent(false));
     }
 
     @Override
     public void onRight()
     {
-        MangaFeed.getInstance().rxBus().send(new ReaderChapterChangeEvent(true));
+        MangaFeed.Companion.getApp().rxBus().send(new ReaderChapterChangeEvent(true));
     }
 
     @Override

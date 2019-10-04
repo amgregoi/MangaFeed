@@ -106,12 +106,12 @@ public abstract class SourceBase
      */
     public Observable<List<Manga>> getRecentMangaObservable()
     {
-        return NetworkService.getTemporaryInstance()
-                             .getResponse(getRecentUpdatesUrl())
-                             .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
-                             .flatMap(aHtml -> Observable.just(parseResponseToRecentList(aHtml)))
-                             .observeOn(AndroidSchedulers.mainThread())
-                             .retry(3);
+        return NetworkService.Companion.getTemporaryInstance()
+                                       .getResponse(getRecentUpdatesUrl())
+                                       .flatMap(aResponse -> NetworkService.Companion.mapResponseToString(aResponse))
+                                       .flatMap(aHtml -> Observable.just(parseResponseToRecentList(aHtml)))
+                                       .observeOn(AndroidSchedulers.mainThread())
+                                       .retry(3);
     }
 
     /***
@@ -130,12 +130,12 @@ public abstract class SourceBase
      */
     public Observable<List<Chapter>> getChapterListObservable(final RequestWrapper request)
     {
-        return NetworkService.getPermanentInstance()
-                             .getResponseCustomHeaders(request.getManga().getFullUrl(), constructRequestHeaders())
-                             .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
-                             .flatMap(aResponseBody -> Observable.just(parseResponseToChapters(request, aResponseBody)))
-                             .subscribeOn(Schedulers.computation())
-                             .observeOn(AndroidSchedulers.mainThread());
+        return NetworkService.Companion.getPermanentInstance()
+                                       .getResponseCustomHeaders(request.getManga().getFullUrl(), constructRequestHeaders())
+                                       .flatMap(aResponse -> NetworkService.Companion.mapResponseToString(aResponse))
+                                       .flatMap(aResponseBody -> Observable.just(parseResponseToChapters(request, aResponseBody)))
+                                       .subscribeOn(Schedulers.computation())
+                                       .observeOn(AndroidSchedulers.mainThread());
     }
 
     /***
@@ -147,12 +147,12 @@ public abstract class SourceBase
      */
     public Observable<Manga> updateMangaObservable(final RequestWrapper request)
     {
-        return NetworkService.getPermanentInstance()
-                             .getResponseCustomHeaders(request.getManga().getFullUrl(), constructRequestHeaders())
-                             .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
-                             .flatMap(aResponseBody -> Observable.just(parseResponseToManga(request, aResponseBody)))
-                             .subscribeOn(Schedulers.computation())
-                             .observeOn(AndroidSchedulers.mainThread());
+        return NetworkService.Companion.getPermanentInstance()
+                                       .getResponseCustomHeaders(request.getManga().getFullUrl(), constructRequestHeaders())
+                                       .flatMap(aResponse -> NetworkService.Companion.mapResponseToString(aResponse))
+                                       .flatMap(aResponseBody -> Observable.just(parseResponseToManga(request, aResponseBody)))
+                                       .subscribeOn(Schedulers.computation())
+                                       .observeOn(AndroidSchedulers.mainThread());
     }
 
     /***
@@ -163,10 +163,10 @@ public abstract class SourceBase
      */
     public Observable updateCatalogObservable(String link)
     {
-        return NetworkService.getPermanentInstance()
-                             .getResponseCustomHeaders(link, constructRequestHeaders())
-                             .flatMap(aResponse -> NetworkService.mapResponseToString(aResponse))
-                             .subscribeOn(Schedulers.computation());
+        return NetworkService.Companion.getPermanentInstance()
+                                       .getResponseCustomHeaders(link, constructRequestHeaders())
+                                       .flatMap(aResponse -> NetworkService.Companion.mapResponseToString(aResponse))
+                                       .subscribeOn(Schedulers.computation());
     }
 
     /***
@@ -225,7 +225,7 @@ public abstract class SourceBase
                         lOptions.skipMemoryCache(true)
                                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
 
-                        FutureTarget<Drawable> cacheFuture = Glide.with(MangaFeed.getInstance())
+                        FutureTarget<Drawable> cacheFuture = Glide.with(MangaFeed.Companion.getApp())
                                                                   .load(imageUrl)
                                                                   .into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
 
@@ -246,10 +246,10 @@ public abstract class SourceBase
      *
      * @return
      */
-    private Headers constructRequestHeaders()
+    public static Headers constructRequestHeaders()
     {
         Headers.Builder headerBuilder = new Headers.Builder();
-        headerBuilder.add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64)");
+        headerBuilder.add("User-Agent", NetworkService.defaultUserAgent);
         headerBuilder.add("Cookie", "lang_option=English");
 
         return headerBuilder.build();

@@ -19,7 +19,7 @@ public class SharedPrefs
      */
     public static void initializePreferences()
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
 
         // Need to set storage preference per device
         SharedPreferences lSharedPrefs = PreferenceManager.getDefaultSharedPreferences(lContext);
@@ -52,7 +52,7 @@ public class SharedPrefs
      */
     public static String getUserName()
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         return PreferenceManager.getDefaultSharedPreferences(lContext)
                                 .getString(lContext.getString(R.string.PREF_USER_NAME), null);
     }
@@ -64,7 +64,7 @@ public class SharedPrefs
      */
     public static void setUserName(String name)
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         SharedPreferences.Editor lEditor = PreferenceManager.getDefaultSharedPreferences(lContext)
                                                             .edit();
         lEditor.putString(lContext.getString(R.string.PREF_USER_NAME), name);
@@ -78,7 +78,7 @@ public class SharedPrefs
      */
     public static String getUserEmail()
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         return PreferenceManager.getDefaultSharedPreferences(lContext)
                                 .getString(lContext.getString(R.string.PREF_USER_EMAIL), null);
     }
@@ -90,7 +90,7 @@ public class SharedPrefs
      */
     public static void setUserEmail(String aEmail)
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         SharedPreferences.Editor lEditor = PreferenceManager.getDefaultSharedPreferences(lContext)
                                                             .edit();
         lEditor.putString(lContext.getString(R.string.PREF_USER_EMAIL), aEmail);
@@ -104,7 +104,7 @@ public class SharedPrefs
      */
     public static void setUserId(int id)
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         SharedPreferences.Editor lEditor = PreferenceManager.getDefaultSharedPreferences(lContext)
                                                             .edit();
         lEditor.putInt(lContext.getString(R.string.PREF_USER_ID), id);
@@ -118,7 +118,7 @@ public class SharedPrefs
      */
     public static int getUserId()
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         return PreferenceManager.getDefaultSharedPreferences(lContext)
                                 .getInt(lContext.getString(R.string.PREF_USER_ID), -1);
     }
@@ -135,7 +135,7 @@ public class SharedPrefs
      */
     public static boolean getLayoutFormat()
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         return PreferenceManager.getDefaultSharedPreferences(lContext)
                                 .getBoolean(lContext.getString(R.string.PREF_APP_LAYOUT_IS_GRID), true);
     }
@@ -150,7 +150,7 @@ public class SharedPrefs
      */
     public static void setLayoutFormat(boolean aGrid)
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         SharedPreferences.Editor lEditor = PreferenceManager.getDefaultSharedPreferences(lContext)
                                                             .edit();
         lEditor.putBoolean(lContext.getString(R.string.PREF_APP_LAYOUT_IS_GRID), aGrid);
@@ -166,7 +166,7 @@ public class SharedPrefs
      */
     public static boolean getLayoutTheme()
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         return PreferenceManager.getDefaultSharedPreferences(lContext)
                                 .getBoolean(lContext.getString(R.string.PREF_APP_THEME_IS_LIGHT), false);
     }
@@ -180,7 +180,7 @@ public class SharedPrefs
      */
     public static void setLayoutTheme(boolean aLightTheme)
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         SharedPreferences.Editor lEditor = PreferenceManager.getDefaultSharedPreferences(lContext)
                                                             .edit();
         lEditor.putBoolean(lContext.getString(R.string.PREF_APP_THEME_IS_LIGHT), aLightTheme);
@@ -194,7 +194,7 @@ public class SharedPrefs
      */
     public static String getSavedSource()
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         return PreferenceManager.getDefaultSharedPreferences(lContext)
                                 .getString(lContext.getString(R.string.PREF_USER_SOURCE), MangaEnums.Source.FunManga
                                         .name());
@@ -207,7 +207,7 @@ public class SharedPrefs
      */
     public static void setSavedSource(String aSource)
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         SharedPreferences.Editor lEditor = PreferenceManager.getDefaultSharedPreferences(lContext)
                                                             .edit();
         lEditor.putString(lContext.getString(R.string.PREF_USER_SOURCE), aSource);
@@ -221,7 +221,7 @@ public class SharedPrefs
      */
     public static boolean getChapterScrollVertical()
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         return PreferenceManager.getDefaultSharedPreferences(lContext)
                                 .getBoolean(lContext.getString(R.string.PREF_CHAPTER_SCROLL_VERTICAL), false);
     }
@@ -233,7 +233,7 @@ public class SharedPrefs
      */
     public static void setChapterScrollVertical(boolean aVertical)
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         SharedPreferences.Editor lEditor = PreferenceManager.getDefaultSharedPreferences(lContext)
                                                             .edit();
         lEditor.putBoolean(lContext.getString(R.string.PREF_CHAPTER_SCROLL_VERTICAL), aVertical);
@@ -247,7 +247,7 @@ public class SharedPrefs
      */
     public static boolean getChapterScreenOrientation()
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         return PreferenceManager.getDefaultSharedPreferences(lContext)
                                 .getBoolean(lContext.getString(R.string.PREF_CHAPTER_SCREEN_ORIENTATION), false);
     }
@@ -259,7 +259,7 @@ public class SharedPrefs
      */
     public static void setChapterScreenOrientation(boolean aLandscape)
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         SharedPreferences.Editor lEditor = PreferenceManager.getDefaultSharedPreferences(lContext)
                                                             .edit();
         lEditor.putBoolean(lContext.getString(R.string.PREF_CHAPTER_SCREEN_ORIENTATION), aLandscape);
@@ -273,7 +273,7 @@ public class SharedPrefs
      */
     public static Date getLastCatalogUpdate()
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         return new Date(PreferenceManager.getDefaultSharedPreferences(lContext)
                                          .getLong(lContext.getString(R.string.PREF_LAST_CATALOG_UPDATE), 0));
     }
@@ -284,7 +284,7 @@ public class SharedPrefs
      */
     public static void setLastCatalogUpdate()
     {
-        Context lContext = MangaFeed.getInstance();
+        Context lContext = MangaFeed.Companion.getApp();
         SharedPreferences.Editor lEditor = PreferenceManager.getDefaultSharedPreferences(lContext)
                                                             .edit();
         lEditor.putLong(lContext.getString(R.string.PREF_LAST_CATALOG_UPDATE), new Date().getTime());

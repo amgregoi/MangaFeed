@@ -57,7 +57,5 @@ public interface IReader
         void updateCurrentPosition(int position);
 
         void setNewChapterToolbar();
-
-        void onDestroy();
     }
 }

@@ -73,7 +73,7 @@ public class DownloadsPresDownloading implements IDownloads.DownloadsDownloading
     {
         try
         {
-            mDisposableDownloadListener = MangaFeed.getInstance()
+            mDisposableDownloadListener = MangaFeed.Companion.getApp()
                                                    .rxBus()
                                                    .toObservable()
                                                    .subscribe(o ->

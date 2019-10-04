@@ -106,12 +106,12 @@ public class GestureViewPager extends ViewPager implements GestureDetector.OnGes
     {
         if (getCurrentItem() == 0 && checkSwipe(ev) == eSwipeDirection.LEFT)
         {
-            if (MangaFeed.getInstance().getCurrentSourceType() == MangaEnums.SourceType.MANGA)
+            if (MangaFeed.Companion.getApp().getCurrentSourceType() == MangaEnums.SourceType.MANGA)
                 mUserGestureListener.onLeft();
         }
         else if (getAdapter() != null && getAdapter().getCount() - 1 == getCurrentItem() && checkSwipe(ev) == eSwipeDirection.RIGHT)
         {
-            if (MangaFeed.getInstance().getCurrentSourceType() == MangaEnums.SourceType.MANGA)
+            if (MangaFeed.Companion.getApp().getCurrentSourceType() == MangaEnums.SourceType.MANGA)
                 mUserGestureListener.onRight();
         }
     }
@@ -142,7 +142,7 @@ public class GestureViewPager extends ViewPager implements GestureDetector.OnGes
 
     private void fetchGestureImageViewByTag()
     {
-        mGestureImageView = (GestureImageView) findViewWithTag(ImagePagerAdapter.TAG + ":" + getCurrentItem());
+        mGestureImageView = (GestureImageView) findViewWithTag(ImagePagerAdapter.Companion.getTAG() + ":" + getCurrentItem());
     }
 
     /**

@@ -46,7 +46,6 @@ import com.amgregoire.mangafeed.Utils.BusEvents.UpdateSourceEvent;
 import com.amgregoire.mangafeed.Utils.DownloadManager;
 import com.amgregoire.mangafeed.Utils.DownloadScheduler;
 import com.amgregoire.mangafeed.Utils.LoginManager;
-import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaFeedRest;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
@@ -162,7 +161,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
             @Override
             public boolean onQueryTextChange(String s)
             {
-                MangaFeed.getInstance().rxBus().send(new SearchQueryChangeEvent(s));
+                MangaFeed.Companion.getApp().rxBus().send(new SearchQueryChangeEvent(s));
                 return true;
             }
         });
@@ -183,7 +182,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         switch (mCurrentMenu)
         {
             case R.menu.menu_toolbar_home:
-                setTitle(MangaFeed.getInstance().getCurrentSource().getSourceName());
+                setTitle(MangaFeed.Companion.getApp().getCurrentSource().getSourceName());
                 setupSearchView(menu);
                 break;
             case R.menu.menu_toolbar_downloads:
@@ -234,7 +233,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
         {
             Log.v(TAG, "Permission: " + permissions[0] + "was " + grantResults[0]);
-            MangaFeed.getInstance().makeToastShort("You may now download chapters!");
+            MangaFeed.Companion.getApp().makeToastShort("You may now download chapters!");
         }
     }
 
@@ -282,7 +281,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                 }
                 else
                 {
-                    MangaFeed.getInstance().rxBus().send(new UpdateMangaInfoEvent());
+                    MangaFeed.Companion.getApp().rxBus().send(new UpdateMangaInfoEvent());
                 }
             }
             else
@@ -299,7 +298,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
      */
     private void setupRxBus()
     {
-        mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
+        mRxBus = MangaFeed.Companion.getApp().rxBus().toObservable().subscribe(o ->
         {
             if (o instanceof UpdateSourceEvent)
             {
@@ -314,8 +313,8 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
                                            .attach(lAccount)
                                            .commit();
 
-                MangaFeed.getInstance().makeSnackBarShort(findViewById(R.id.coordinatorLayoutSnack), "Source changed to " + MangaFeed
-                        .getInstance()
+                MangaFeed.Companion.getApp().makeToastLong("Source changed to " + MangaFeed
+                        .Companion.getApp()
                         .getCurrentSource()
                         .getSourceName());
             }
@@ -463,7 +462,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     private void setupToolbar()
     {
         setSupportActionBar(mToolbar);
-        setTitle(MangaFeed.getInstance().getCurrentSource().getSourceName());
+        setTitle(MangaFeed.Companion.getApp().getCurrentSource().getSourceName());
     }
 
     @Override

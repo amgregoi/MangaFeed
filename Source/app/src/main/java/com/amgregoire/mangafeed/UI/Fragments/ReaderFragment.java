@@ -135,7 +135,7 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
 //        ViewGroup.MarginLayoutParams lFooterParams = (ViewGroup.MarginLayoutParams) mReaderFooter.getLayoutParams();
 //        lFooterParams.bottomMargin = getNavBarHeight();
 
-        if (MangaFeed.getInstance().getCurrentSourceType() == MangaEnums.SourceType.NOVEL)
+        if (MangaFeed.Companion.getApp().getCurrentSourceType() == MangaEnums.SourceType.NOVEL)
         {
             mFABNextPage.setVisibility(View.GONE);
             mFABPrevPage.setVisibility(View.GONE);
@@ -219,7 +219,7 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
     @Override
     public void registerAdapter(PagerAdapter adapter)
     {
-        if(MangaFeed.getInstance().getCurrentSourceType().equals(MangaEnums.SourceType.NOVEL))
+        if(MangaFeed.Companion.getApp().getCurrentSourceType().equals(MangaEnums.SourceType.NOVEL))
         {
             mViewPager.setPagingEnabled(true);
         }
@@ -322,14 +322,14 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
     @OnClick(R.id.fabReaderPreviousPage)
     public void onFABPrevPage()
     {
-        MangaFeed.getInstance().rxBus().send(new ReaderPageChangeEvent(false));
+        MangaFeed.Companion.getApp().rxBus().send(new ReaderPageChangeEvent(false));
         startToolbarTimer();
     }
 
     @OnClick(R.id.fabReaderNextPage)
     public void onFABNextPage()
     {
-        MangaFeed.getInstance().rxBus().send(new ReaderPageChangeEvent(true));
+        MangaFeed.Companion.getApp().rxBus().send(new ReaderPageChangeEvent(true));
         startToolbarTimer();
     }
 
@@ -348,7 +348,7 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
     @OnClick(R.id.imageViewReaderRefresh)
     public void onRefreshClicked()
     {
-        MangaFeed.getInstance().makeToastShort("NOT IMPLEMENTED");
+        MangaFeed.Companion.getApp().makeToastShort("NOT IMPLEMENTED");
 //        mPresenter.refresh();
 //        stopToolbarTimer();
     }
@@ -356,14 +356,14 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
     @OnClick(R.id.imageViewReaderScreenOrientationToggle)
     public void onScreenRotateClicked()
     {
-        MangaFeed.getInstance().makeToastShort("NOT IMPLEMENTED");
+        MangaFeed.Companion.getApp().makeToastShort("NOT IMPLEMENTED");
         startToolbarTimer();
     }
 
     @OnClick(R.id.imageViewReaderVerticalScrollToggle)
     public void onVerticalScrollClicked()
     {
-        MangaFeed.getInstance().makeToastShort("NOT IMPLEMENTED");
+        MangaFeed.Companion.getApp().makeToastShort("NOT IMPLEMENTED");
         startToolbarTimer();
     }
 

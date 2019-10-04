@@ -350,8 +350,8 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             }
             else
             {
-                MangaFeed.getInstance().setCurrentChapters(mChapterData);
-                MangaFeed.getInstance()
+                MangaFeed.Companion.getApp().setCurrentChapters(mChapterData);
+                MangaFeed.Companion.getApp()
                          .rxBus()
                          .send(new ChapterSelectedEvent(mManga, lChapter.getChapterNumber() - 1));
             }
@@ -365,7 +365,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             {
                 mDownloadList = new ArrayList<>();
                 mDownloadList.add(mChapterData.get(getAdapterPosition() - getHeaderCount()));
-                MangaFeed.getInstance().rxBus().send(new ToggleDownloadViewEvent(mManga));
+                MangaFeed.Companion.getApp().rxBus().send(new ToggleDownloadViewEvent(mManga));
 
                 return true;
             }
@@ -430,7 +430,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         mDownloadViewFlag = false;
         mDownloadList.clear();
         notifyDataSetChanged();
-        MangaFeed.getInstance().rxBus().send(new ToggleDownloadViewEvent(mManga));
+        MangaFeed.Companion.getApp().rxBus().send(new ToggleDownloadViewEvent(mManga));
     }
 
     /***
@@ -445,13 +445,13 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         }
         else
         {
-            MangaFeed.getInstance().makeToastShort("No items have been selected");
+            MangaFeed.Companion.getApp().makeToastShort("No items have been selected");
         }
     }
 
     public void onDownloadRemove()
     {
-        MangaFeed.getInstance().makeToastShort("NOT IMPLEMENTED");
+        MangaFeed.Companion.getApp().makeToastShort("NOT IMPLEMENTED");
     }
 
     /***

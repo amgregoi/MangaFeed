@@ -35,7 +35,7 @@ public class HomePresRecent extends HomePresBase
 
 
             mMap.startRefresh();
-            mDisposableMangaList = MangaFeed.getInstance()
+            mDisposableMangaList = MangaFeed.Companion.getApp()
                                             .getCurrentSource()
                                             .getRecentMangaObservable()
                                             .cache()

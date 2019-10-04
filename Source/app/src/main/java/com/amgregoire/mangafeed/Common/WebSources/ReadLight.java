@@ -308,7 +308,7 @@ public class ReadLight extends SourceNovel
                                 Manga lNewManga = new Manga(name, url, SourceKey);
                                 lDatabase.putManga(lNewManga);
                                 // update new entry info
-                                MangaFeed.getInstance()
+                                MangaFeed.Companion.getApp()
                                          .getSourceByTag(TAG)
                                          .updateMangaObservable(new RequestWrapper(lNewManga))
                                          .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating (" + TAG + ") " + manga.title),

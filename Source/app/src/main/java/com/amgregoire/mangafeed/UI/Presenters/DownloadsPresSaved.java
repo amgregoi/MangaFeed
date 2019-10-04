@@ -67,7 +67,7 @@ public class DownloadsPresSaved implements IDownloads.DownloadsSavedPres
     {
         try
         {
-            mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
+            mRxBus = MangaFeed.Companion.getApp().rxBus().toObservable().subscribe(o ->
             {
                 // onNext
                 if (o instanceof StartDownloadEvent)

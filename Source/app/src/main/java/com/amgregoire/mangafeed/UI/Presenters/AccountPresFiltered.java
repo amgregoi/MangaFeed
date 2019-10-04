@@ -75,7 +75,7 @@ public class AccountPresFiltered implements IAccount.AccountFilteredPres
     {
         try
         {
-            mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(
+            mRxBus = MangaFeed.Companion.getApp().rxBus().toObservable().subscribe(
                     o ->
                     {
                         if (o instanceof UpdateMangaItemViewEvent)

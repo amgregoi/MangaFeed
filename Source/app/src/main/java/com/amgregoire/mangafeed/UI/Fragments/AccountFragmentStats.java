@@ -101,7 +101,7 @@ public class AccountFragmentStats extends Fragment implements IAccount.AccountSt
     @Override
     public void initViews()
     {
-        mSourceName.setText(MangaFeed.getInstance().getCurrentSource().getSourceName());
+        mSourceName.setText(MangaFeed.Companion.getApp().getCurrentSource().getSourceName());
     }
 
     @SuppressLint("SetTextI18n")

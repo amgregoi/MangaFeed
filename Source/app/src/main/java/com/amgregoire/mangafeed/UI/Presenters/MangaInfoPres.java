@@ -128,7 +128,7 @@ public class MangaInfoPres implements IManga.MangaPres
                 mAdapter.notifyDataSetChanged();
             }
 
-            mRxBus = MangaFeed.getInstance().rxBus().toObservable().subscribe(o ->
+            mRxBus = MangaFeed.Companion.getApp().rxBus().toObservable().subscribe(o ->
             {
                 if (o instanceof ToggleDownloadViewEvent)
                 {
@@ -205,7 +205,7 @@ public class MangaInfoPres implements IManga.MangaPres
         try
         {
             Chapter lChapter = null;
-            ArrayList<Chapter> lNewChapterList = new ArrayList<>(MangaFeed.getInstance()
+            ArrayList<Chapter> lNewChapterList = new ArrayList<>(MangaFeed.Companion.getApp()
                                                                           .getCurrentChapters());
 
             for (Chapter iChapter : lNewChapterList)
@@ -223,7 +223,7 @@ public class MangaInfoPres implements IManga.MangaPres
             }
 
             int lPosition = lNewChapterList.indexOf(lChapter);
-            MangaFeed.getInstance().rxBus().send(new ChapterSelectedEvent(mManga, lPosition));
+            MangaFeed.Companion.getApp().rxBus().send(new ChapterSelectedEvent(mManga, lPosition));
         }
         catch (Exception aException)
         {
@@ -258,7 +258,7 @@ public class MangaInfoPres implements IManga.MangaPres
             }
             MangaDB.getInstance().putManga(mManga);
 
-            MangaFeed.getInstance().rxBus().send(new UpdateMangaItemViewEvent(mManga));
+            MangaFeed.Companion.getApp().rxBus().send(new UpdateMangaItemViewEvent(mManga));
             mMap.setBottomNavFollowTitle(status);
         }
         catch (Exception ex)
@@ -330,7 +330,7 @@ public class MangaInfoPres implements IManga.MangaPres
     {
         try
         {
-            mDisposableMangaInfo = MangaFeed.getInstance()
+            mDisposableMangaInfo = MangaFeed.Companion.getApp()
                                             .getCurrentSource()
                                             .updateMangaObservable(new RequestWrapper(mManga))
                                             .subscribe
@@ -368,14 +368,14 @@ public class MangaInfoPres implements IManga.MangaPres
     {
         try
         {
-            mDisposableChapterList = MangaFeed.getInstance()
+            mDisposableChapterList = MangaFeed.Companion.getApp()
                                               .getCurrentSource()
                                               .getChapterListObservable(new RequestWrapper(mManga))
                                               .subscribe(
                                                       chapters ->
                                                       {
                                                           mChaptersFlag = ViewState.FINISH;
-                                                          MangaFeed.getInstance().setCurrentChapters(chapters);
+                                                          MangaFeed.Companion.getApp().setCurrentChapters(chapters);
                                                           mChapterList = new ArrayList<>(chapters);
                                                           initView();
                                                       },

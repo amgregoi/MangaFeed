@@ -57,7 +57,7 @@ public class DownloadManager
     {
         mChapter = chapter;
         mManga = MangaDB.getInstance().getManga(mChapter.mangaUrl);
-        mSource = MangaFeed.getInstance().getSourceByUrl(mChapter.getUrl());
+        mSource = MangaFeed.Companion.getApp().getSourceByUrl(mChapter.getUrl());
         setChapterFilePath();
 
         mChapterUrls = new ArrayList<>();
@@ -261,12 +261,12 @@ public class DownloadManager
             MangaDB.getInstance().putChapter(mChapter);
 
             DownloadScheduler.removeChapterDownloading(this);
-            MangaFeed.getInstance().rxBus().send(new DownloadEventUpdateComplete(mChapter.url));
+            MangaFeed.Companion.getApp().rxBus().send(new DownloadEventUpdateComplete(mChapter.url));
             MangaLogger.logInfo(TAG, "Finished downloading: " + mChapter.chapterTitle);
         }
         else
         {
-            MangaFeed.getInstance().rxBus().send(new DownloadEventUpdatePageCount(mChapter.url));
+            MangaFeed.Companion.getApp().rxBus().send(new DownloadEventUpdatePageCount(mChapter.url));
         }
     }
 
@@ -281,7 +281,7 @@ public class DownloadManager
     {
         if (Build.VERSION.SDK_INT >= 23)
         {
-            if (MangaFeed.getInstance()
+            if (MangaFeed.Companion.getApp()
                          .checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
             {
                 Log.v(TAG, "Storage permission is granted");

@@ -130,7 +130,7 @@ public class SourceRecycleAdapter extends RecyclerView.Adapter<RecyclerView.View
         {
             SharedPrefs.setSavedSource(mSource.name());
             notifyDataSetChanged();
-            MangaFeed.getInstance().rxBus().send(new UpdateSourceEvent());
+            MangaFeed.Companion.getApp().rxBus().send(new UpdateSourceEvent());
         }
 
         /***
@@ -139,7 +139,7 @@ public class SourceRecycleAdapter extends RecyclerView.Adapter<RecyclerView.View
          */
         public void setViews()
         {
-            if(mSource == MangaFeed.getInstance().getCurrentSource().getCurrentSource())
+            if(mSource == MangaFeed.Companion.getApp().getCurrentSource().getCurrentSource())
             {
                 mSourceName.setTextColor(mAccent);
                 mLink.setTextColor(mAccent);

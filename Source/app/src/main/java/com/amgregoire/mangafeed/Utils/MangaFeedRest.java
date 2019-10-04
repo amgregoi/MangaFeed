@@ -30,7 +30,7 @@ public class MangaFeedRest
      */
     public static void postUser(RequestParams params, AsyncHttpResponseHandler handler)
     {
-        client.post(MangaFeed.getInstance(), getAbsoluteUrl("user"), params, handler);
+        client.post(MangaFeed.Companion.getApp(), getAbsoluteUrl("user"), params, handler);
     }
 
     /***
@@ -97,7 +97,7 @@ public class MangaFeedRest
      */
     public static void postFollowedUpdate(int userId, RequestParams params, AsyncHttpResponseHandler handler)
     {
-        client.post(MangaFeed.getInstance(), getAbsoluteUrl("follow/" + String.valueOf(userId) + "/update"), params, handler);
+        client.post(MangaFeed.Companion.getApp(), getAbsoluteUrl("follow/" + String.valueOf(userId) + "/update"), params, handler);
     }
 
     /***

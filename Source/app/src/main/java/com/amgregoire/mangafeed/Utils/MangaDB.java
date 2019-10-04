@@ -85,7 +85,7 @@ public class MangaDB extends SQLiteOpenHelper
     {
         if (mInstance == null)
         {
-            mInstance = new MangaDB(MangaFeed.getInstance());
+            mInstance = new MangaDB(MangaFeed.Companion.getApp());
         }
         return mInstance;
     }
@@ -145,14 +145,14 @@ public class MangaDB extends SQLiteOpenHelper
      */
     private void copyDBFromResource()
     {
-        MangaDB helper = new MangaDB(MangaFeed.getInstance());
+        MangaDB helper = new MangaDB(MangaFeed.Companion.getApp());
         SQLiteDatabase lDb = helper.getReadableDatabase();
         String filePath = lDb.getPath();
         lDb.close();
 
         try
         {
-            InputStream lInputStream = MangaFeed.getInstance().getAssets().open(DB_NAME);
+            InputStream lInputStream = MangaFeed.Companion.getApp().getAssets().open(DB_NAME);
             OutputStream lOutStream = new FileOutputStream(filePath);
 
             byte[] lBuffer = new byte[1024];
@@ -511,7 +511,7 @@ public class MangaDB extends SQLiteOpenHelper
                     }
 
                     mSession.clear();
-                    MangaFeed.getInstance().rxBus().send(new UpdateMangaItemViewEvent());
+                    MangaFeed.Companion.getApp().rxBus().send(new UpdateMangaItemViewEvent());
                 }
                 catch (JSONException e)
                 {
@@ -543,7 +543,7 @@ public class MangaDB extends SQLiteOpenHelper
 
         // Clear Dao cache, to get pull fresh db values
         mSession.clear();
-        MangaFeed.getInstance().rxBus().send(new UpdateMangaItemViewEvent());
+        MangaFeed.Companion.getApp().rxBus().send(new UpdateMangaItemViewEvent());
     }
 
 }
