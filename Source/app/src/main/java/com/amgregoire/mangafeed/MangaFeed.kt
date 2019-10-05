@@ -20,12 +20,16 @@ import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import java.util.*
 import java.util.concurrent.Executors
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
  */
+val ioScope = CoroutineScope(Dispatchers.IO)
+val uiScope = CoroutineScope(Dispatchers.Main)
 
 class MangaFeed : Application()
 {

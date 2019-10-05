@@ -14,6 +14,12 @@ import io.reactivex.Observable;
 
 public abstract class SourceManga extends SourceBase
 {
+    @Override
+    public boolean requiresCloudFlare()
+    {
+        return false;
+    }
+
     public Observable<String> getChapterImageListObservable(final RequestWrapper aRequest)
     {
         final List<String> lTemporaryCachedImageUrls = new ArrayList<>();

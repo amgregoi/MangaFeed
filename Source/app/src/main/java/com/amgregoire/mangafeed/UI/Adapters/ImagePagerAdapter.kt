@@ -116,7 +116,7 @@ class ImagePagerAdapter(
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
 
 
-        val builder = LazyHeaders.Builder()
+        val builder = LazyHeaders.Builder().addHeader("User-Agent", NetworkService.defaultUserAgent)
 
         CloudflareService().getCFCookies(url, NetworkService.defaultUserAgent) { cookies ->
             for (cookie in cookies) builder.addHeader("Cookie", cookie)

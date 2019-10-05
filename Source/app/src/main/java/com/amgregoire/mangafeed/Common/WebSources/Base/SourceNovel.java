@@ -12,6 +12,12 @@ import io.reactivex.Observable;
 
 public abstract class SourceNovel extends SourceBase
 {
+    @Override
+    public boolean requiresCloudFlare()
+    {
+        return false;
+    }
+
     public Observable<String> getChapterImageListObservable(final RequestWrapper request)
     {
         final NetworkService lCurrentService = NetworkService.Companion.getTemporaryInstance();

@@ -71,6 +71,11 @@ public class FunManga extends SourceManga
                     "Yuri"
             };
 
+    @Override
+    public boolean requiresCloudFlare()
+    {
+        return true;
+    }
 
     @Override
     public String getSourceName()
@@ -105,8 +110,6 @@ public class FunManga extends SourceManga
     @Override
     public List<Manga> parseResponseToRecentList(final String responseBody)
     {
-        MangaLogger.logError("FunManga -> Recent", responseBody);
-
         List<Manga> lMangaList = new ArrayList<>();
 
         try
@@ -168,7 +171,7 @@ public class FunManga extends SourceManga
     @Override
     public Manga parseResponseToManga(final RequestWrapper request, final String responseBody)
     {
-        MangaLogger.logError("FunManga -> Manga", responseBody);
+        MangaLogger.logError("FunManga", request.getManga().link);
 
         Document lHtml = Jsoup.parse(responseBody);
 
@@ -239,8 +242,6 @@ public class FunManga extends SourceManga
     @Override
     public List<Chapter> parseResponseToChapters(RequestWrapper request, String responseBody)
     {
-        MangaLogger.logError("FunManga -> Chapters", responseBody);
-
         Document lParsedDocument = Jsoup.parse(responseBody);
         List<Chapter> lChapterList = resolveChaptersFromParsedDocument(lParsedDocument, request);
 
@@ -269,7 +270,6 @@ public class FunManga extends SourceManga
     @Override
     public String parseResponseToImageUrls(final String responseBody, final String responseUrl)
     {
-        MangaLogger.logError("FunManga -> ImgUrl", responseBody);
         Document lParsedDocument = Jsoup.parse(responseBody);
         String lLink = lParsedDocument.select("img.img-responsive").attr("src");
 

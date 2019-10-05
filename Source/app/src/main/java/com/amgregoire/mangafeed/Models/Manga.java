@@ -237,8 +237,7 @@ public class Manga implements Parcelable
 
     public String getFullUrl()
     {
-        String fullUrl = link.replace("{" + source + "}", MangaEnums.Source.valueOf(source).getBaseUrl());
-        return fullUrl;
+        return link.replace("{" + source + "}", MangaEnums.Source.valueOf(source).getBaseUrl());
     }
 
     public void setMangaUrl(String aUrl)

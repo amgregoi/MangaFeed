@@ -12,7 +12,9 @@ import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateSourceEvent;
+import com.amgregoire.mangafeed.Utils.NetworkService;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
+import com.amgregoire.mangafeed.v2.service.CloudflareService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,8 @@ import butterknife.BindDrawable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
@@ -128,6 +132,18 @@ public class SourceRecycleAdapter extends RecyclerView.Adapter<RecyclerView.View
         @OnClick(R.id.cardViewSourceItemRoot)
         public void onCardItemClick()
         {
+            if (mSource.getSource().requiresCloudFlare())
+            {
+                new CloudflareService().getCookies(mSource.getBaseUrl(), NetworkService.defaultUserAgent, strings -> {
+                    changeSource();
+                    return null;
+                });
+            }
+            else changeSource();
+        }
+
+        private void changeSource()
+        {
             SharedPrefs.setSavedSource(mSource.name());
             notifyDataSetChanged();
             MangaFeed.Companion.getApp().rxBus().send(new UpdateSourceEvent());
@@ -139,7 +155,7 @@ public class SourceRecycleAdapter extends RecyclerView.Adapter<RecyclerView.View
          */
         public void setViews()
         {
-            if(mSource == MangaFeed.Companion.getApp().getCurrentSource().getCurrentSource())
+            if (mSource == MangaFeed.Companion.getApp().getCurrentSource().getCurrentSource())
             {
                 mSourceName.setTextColor(mAccent);
                 mLink.setTextColor(mAccent);

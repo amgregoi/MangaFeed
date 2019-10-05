@@ -29,6 +29,8 @@ public abstract class SourceBase
 {
     private String TAG = SourceBase.class.getSimpleName();
 
+    public abstract boolean requiresCloudFlare();
+
     public abstract String getSourceName();
 
     public abstract String getBaseUrl();

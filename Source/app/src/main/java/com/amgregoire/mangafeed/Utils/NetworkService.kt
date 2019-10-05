@@ -37,7 +37,7 @@ class NetworkService private constructor()
         return Observable.create { subscriber: ObservableEmitter<Response> ->
             try
             {
-                val builder = Request.Builder().url(url)//.header("User-Agent", defaultUserAgent)
+                val builder = Request.Builder().url(url).header("User-Agent", defaultUserAgent)
 
                 CloudflareService().getCFCookies(url, defaultUserAgent) { cookies ->
                     for (cookie in cookies) builder.addHeader("Cookie", cookie)
