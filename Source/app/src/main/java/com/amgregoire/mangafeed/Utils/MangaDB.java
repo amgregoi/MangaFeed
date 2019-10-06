@@ -5,14 +5,15 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.amgregoire.mangafeed.v2.database.AppDatabase;
+import com.amgregoire.mangafeed.v2.database.MangaDao;
 import com.amgregoire.mangafeed.MangaFeed;
+import com.amgregoire.mangafeed.MangaFeedKt;
 import com.amgregoire.mangafeed.Models.Chapter;
-import com.amgregoire.mangafeed.Models.ChapterDao;
-import com.amgregoire.mangafeed.Models.DaoMaster;
-import com.amgregoire.mangafeed.Models.DaoSession;
 import com.amgregoire.mangafeed.Models.Manga;
-import com.amgregoire.mangafeed.Models.MangaDao;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;
+import com.amgregoire.mangafeed.v2.di.ApplicationContext;
+import com.amgregoire.mangafeed.v2.di.DatabaseInfo;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -30,6 +31,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Singleton;
+
 import cz.msebera.android.httpclient.Header;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -40,17 +43,28 @@ import io.reactivex.schedulers.Schedulers;
  * Created by Andy Gregoire on 3/8/2018.
  */
 
+@Singleton
 public class MangaDB extends SQLiteOpenHelper
 {
     public static final String TAG = MangaDB.class.getSimpleName();
     private static final int DATABASE_VERSION = 1;
     private static final String DB_PATH = "/data/data/com.amgregoire.mangafeed/databases/";
-    private static final String DB_NAME = "MangaFeed.db";
+    public static final String DB_NAME = "MangaFeed.db";
     private static MangaDB mInstance;
 
 
-    private DaoSession mSession;
+    //    private DaoSession mSession;
     private Context mContext;
+
+    public MangaDB(@ApplicationContext Context context,
+                   @DatabaseInfo String dbName,
+                   @DatabaseInfo Integer version)
+    {
+        super(context, dbName, null, version);
+        mContext = context;
+    }
+
+    AppDatabase database;
 
     public MangaDB(Context context)
     {
@@ -90,10 +104,12 @@ public class MangaDB extends SQLiteOpenHelper
         return mInstance;
     }
 
-    public void initDao()
+    public void initDao(Context context)
     {
-        SQLiteDatabase lDb = getWritableDatabase();
-        mSession = new DaoMaster(lDb).newSession();
+//        SQLiteDatabase lDb = getWritableDatabase();
+//        mSession = new DaoMaster(lDb).newSession();
+        database = AppDatabase.Companion.getAppDatabase(context);
+
     }
 
     /***
@@ -145,7 +161,7 @@ public class MangaDB extends SQLiteOpenHelper
      */
     private void copyDBFromResource()
     {
-        MangaDB helper = new MangaDB(MangaFeed.Companion.getApp());
+        MangaDB helper = this;
         SQLiteDatabase lDb = helper.getReadableDatabase();
         String filePath = lDb.getPath();
         lDb.close();
@@ -179,15 +195,8 @@ public class MangaDB extends SQLiteOpenHelper
      */
     public void putManga(Manga manga)
     {
-        MangaDao lDao = mSession.getMangaDao();
-        if (lDao.hasKey(manga))
-        {
-            lDao.update(manga);
-        }
-        else
-        {
-            lDao.insert(manga);
-        }
+        MangaDao lDao = database.mangaDao();
+        lDao.insertAll(manga);
     }
 
     /***
@@ -198,15 +207,12 @@ public class MangaDB extends SQLiteOpenHelper
      */
     public Manga getManga(String link)
     {
-        return mSession.getMangaDao()
-                       .queryBuilder()
-                       .where(MangaDao.Properties.Link.eq(link))
-                       .unique();
+        return database.mangaDao().findByUrl(link, MangaFeedKt.getCurrentSource().getSourceName());
     }
 
-    public Manga getManga(long id)
+    public Manga getManga(int id)
     {
-        return mSession.getMangaDao().load(id);
+        return database.mangaDao().findById(id);
     }
 
     /***
@@ -217,10 +223,7 @@ public class MangaDB extends SQLiteOpenHelper
      */
     public boolean containsManga(String link)
     {
-        return mSession.getMangaDao()
-                       .queryBuilder()
-                       .where(MangaDao.Properties.Link.eq(link))
-                       .count() > 0;
+        return getManga(link) != null;
     }
 
 
@@ -231,17 +234,7 @@ public class MangaDB extends SQLiteOpenHelper
      */
     public void putChapter(Chapter chapter)
     {
-        ChapterDao lDao = mSession.getChapterDao();
-        Chapter lChapter = getChapter(chapter.url);
-        if (lChapter != null)
-        {
-            lChapter = lChapter.copy(chapter);
-            lDao.update(lChapter);
-        }
-        else
-        {
-            lDao.insert(chapter);
-        }
+        database.chapterDao().insertAll(chapter);
     }
 
     /***
@@ -252,15 +245,12 @@ public class MangaDB extends SQLiteOpenHelper
      */
     public Chapter getChapter(String url)
     {
-        return mSession.getChapterDao()
-                       .queryBuilder()
-                       .where(ChapterDao.Properties.Url.eq(url))
-                       .unique();
+        return database.chapterDao().findByUrl(url);
     }
 
-    public Chapter getChapter(long id)
+    public Chapter getChapter(int id)
     {
-        return mSession.getChapterDao().load(id);
+        return database.chapterDao().findById(id);
     }
 
     /***
@@ -272,14 +262,7 @@ public class MangaDB extends SQLiteOpenHelper
      */
     public Chapter getChapter(Chapter chapter)
     {
-        if (!mSession.getChapterDao().hasKey(chapter))
-        {
-            putChapter(chapter);
-        }
-
-        chapter = getChapter(chapter.url);
-
-        return chapter;
+        return database.chapterDao().findById(chapter.get_id());
     }
 
 
@@ -318,7 +301,7 @@ public class MangaDB extends SQLiteOpenHelper
                 List<Chapter> lResult = DownloadManager.getSavedChapters(manga);
                 Collections.sort(lResult, (emp1, emp2) ->
                 {
-                    if (emp1.chapterNumber > emp2.chapterNumber)
+                    if (emp1.getChapterNumber() > emp2.getChapterNumber())
                     {
                         return -1;
                     }
@@ -347,10 +330,7 @@ public class MangaDB extends SQLiteOpenHelper
         {
             try
             {
-                subscriber.onNext(mSession.getChapterDao()
-                                          .queryBuilder()
-                                          .where(ChapterDao.Properties.MangaUrl.eq(manga.getFullUrl()))
-                                          .list());
+                subscriber.onNext(database.chapterDao().findAllByMangaUrl(manga.getLink()));
                 subscriber.onComplete();
             }
             catch (Exception aException)
@@ -372,11 +352,7 @@ public class MangaDB extends SQLiteOpenHelper
         {
             try
             {
-                ArrayList<Manga> lMangaList = new ArrayList<>(mSession.getMangaDao()
-                                                                      .queryBuilder()
-                                                                      .where(MangaDao.Properties.Source.eq(SharedPrefs.getSavedSource()))
-                                                                      .where(MangaDao.Properties.Following.notEq(0))
-                                                                      .list());
+                ArrayList<Manga> lMangaList = new ArrayList<>(database.mangaDao().findFollowed(SharedPrefs.getSavedSource()));
 
                 subscriber.onNext(lMangaList);
                 subscriber.onComplete();
@@ -399,12 +375,7 @@ public class MangaDB extends SQLiteOpenHelper
         {
             try
             {
-                ArrayList<Manga> lMangaList = new ArrayList<>(mSession.getMangaDao()
-                                                                      .queryBuilder()
-                                                                      .where(MangaDao.Properties.Source.eq(SharedPrefs.getSavedSource()))
-                                                                      .where(MangaDao.Properties.Following.eq(filter))
-                                                                      .list());
-
+                ArrayList<Manga> lMangaList = new ArrayList<>(database.mangaDao().findFollowedWithFilter(SharedPrefs.getSavedSource(), filter));
                 subscriber.onNext(lMangaList);
                 subscriber.onComplete();
             }
@@ -429,12 +400,7 @@ public class MangaDB extends SQLiteOpenHelper
             {
                 for (int filter : filters)
                 {
-                    long lFilterCount = mSession.getMangaDao()
-                                                .queryBuilder()
-                                                .where(MangaDao.Properties.Source.eq(SharedPrefs.getSavedSource()))
-                                                .where(MangaDao.Properties.Following.eq(filter))
-                                                .count();
-
+                    long lFilterCount = database.mangaDao().findFollowedWithFilter(SharedPrefs.getSavedSource(), filter).size();
                     subscriber.onNext(lFilterCount);
                 }
 
@@ -460,12 +426,7 @@ public class MangaDB extends SQLiteOpenHelper
             try
             {
 
-                ArrayList<Manga> lMangaList = new ArrayList<>(mSession.getMangaDao()
-                                                                      .queryBuilder()
-                                                                      .where(MangaDao.Properties.Source
-                                                                              .eq(SharedPrefs.getSavedSource()))
-                                                                      .list());
-
+                ArrayList<Manga> lMangaList = new ArrayList<>(database.mangaDao().findAllBySource(SharedPrefs.getSavedSource()));
                 subscriber.onNext(lMangaList);
                 subscriber.onComplete();
             }
@@ -504,13 +465,12 @@ public class MangaDB extends SQLiteOpenHelper
                         Manga lManga = getManga(lFollow.getString("url"));
                         if (lManga != null)
                         {
-                            lManga.following = lFollow.getInt("followType");
-                            lManga.image = lFollow.getString("image");
+                            lManga.updateFollowing(lFollow.getInt("followType"));
+                            lManga.setImage(lFollow.getString("image"));
                             putManga(lManga);
                         }
                     }
 
-                    mSession.clear();
                     MangaFeed.Companion.getApp().rxBus().send(new UpdateMangaItemViewEvent());
                 }
                 catch (JSONException e)
@@ -541,8 +501,6 @@ public class MangaDB extends SQLiteOpenHelper
         lDb.update("Manga", cv, "NOT following = ?", new String[]{"0"});
         lDb.close();
 
-        // Clear Dao cache, to get pull fresh db values
-        mSession.clear();
         MangaFeed.Companion.getApp().rxBus().send(new UpdateMangaItemViewEvent());
     }
 

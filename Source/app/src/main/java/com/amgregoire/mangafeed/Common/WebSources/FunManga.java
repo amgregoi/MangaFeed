@@ -131,7 +131,7 @@ public class FunManga extends SourceManga
                         lMangaUrl += "/"; //add ending slash to url if missing
                     }
 
-                    lMangaUrl = lMangaUrl.replaceFirst(Manga.LinkRegex, "{" + SourceKey + "}");
+                    lMangaUrl = lMangaUrl.replaceFirst(Manga.Companion.getLinkRegex(), "{" + SourceKey + "}");
                     Manga lManga = MangaDB.getInstance().getManga(lMangaUrl);
                     if (lManga != null)
                     {
@@ -146,7 +146,7 @@ public class FunManga extends SourceManga
                         updateMangaObservable(new RequestWrapper(lManga))
                                 .subscribe
                                         (
-                                                manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
+                                                manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.getTitle()),
                                                 throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable
                                                         .getMessage())
                                         );
@@ -156,7 +156,8 @@ public class FunManga extends SourceManga
         }
         catch (Exception aException)
         {
-            MangaLogger.logError(TAG, " Failed to parse recent updates: ");
+            MangaLogger.logError(TAG, responseBody);
+            MangaLogger.logError(TAG, " Failed to parse recent updates: " + aException.getMessage());
         }
 
         MangaLogger.logInfo(TAG, "Finished parsing recent updates");
@@ -171,7 +172,7 @@ public class FunManga extends SourceManga
     @Override
     public Manga parseResponseToManga(final RequestWrapper request, final String responseBody)
     {
-        MangaLogger.logError("FunManga", request.getManga().link);
+        MangaLogger.logError("FunManga", request.getManga().getLink());
 
         Document lHtml = Jsoup.parse(responseBody);
 
@@ -215,16 +216,16 @@ public class FunManga extends SourceManga
                 }
             }
 
-            Manga lManga = MangaDB.getInstance().getManga(request.getManga().link);
+            Manga lManga = MangaDB.getInstance().getManga(request.getManga().getLink());
             lManga.setAlternate(lAlternate);
-            lManga.setPicUrl(lImage);
+            lManga.setImage(lImage);
             lManga.setDescription(lDescription);
             lManga.setArtist(lArtist);
             lManga.setAuthor(lAuthor);
             lManga.setGenres(lGenres);
             lManga.setStatus(lStatus);
             lManga.setSource(SourceKey);
-            lManga.setMangaUrl(request.getManga().link);
+            lManga.setLink(request.getManga().getLink());
 
             MangaDB.getInstance().putManga(lManga);
 
@@ -233,10 +234,10 @@ public class FunManga extends SourceManga
         }
         catch (Exception aException)
         {
-            MangaLogger.logError(TAG, request.getManga().link, aException.getMessage());
+            MangaLogger.logError(TAG, request.getManga().getLink(), aException.getMessage());
         }
 
-        return MangaDB.getInstance().getManga(request.getManga().link);
+        return MangaDB.getInstance().getManga(request.getManga().getLink());
     }
 
     @Override
@@ -305,7 +306,7 @@ public class FunManga extends SourceManga
                                          .getSourceByTag(TAG)
                                          .updateMangaObservable(new RequestWrapper(lNewManga))
                                          .subscribe(
-                                                 manga -> MangaLogger.logInfo(TAG, "Finished updating (" + TAG + ") " + manga.title),
+                                                 manga -> MangaLogger.logInfo(TAG, "Finished updating (" + TAG + ") " + manga.getTitle()),
                                                  throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable
                                                          .getMessage())
                                          );
@@ -346,7 +347,7 @@ public class FunManga extends SourceManga
             lChapterTitle = iChapterElement.select("span").first().text();
             lChapterDate = iChapterElement.select("span").get(1).text();
 
-            lChapterList.add(new Chapter(lChapterUrl, request.getManga().title, lChapterTitle, lChapterDate, lNumChapters, request.getManga().link));
+            lChapterList.add(new Chapter(lChapterUrl, request.getManga().getTitle(), lChapterTitle, lChapterDate, lNumChapters, request.getManga().getLink(), SourceKey));
 
             lNumChapters--;
         }

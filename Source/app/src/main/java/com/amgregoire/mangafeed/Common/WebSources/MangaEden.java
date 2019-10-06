@@ -109,7 +109,7 @@ public class MangaEden extends SourceManga
             String lTitle = iTitleElement.text();
             String lUrl = "https://www.mangaeden.com/api/manga/" + iUrlElement.id().substring(0, 24) + "/";
 
-            lUrl = lUrl.replaceFirst(Manga.LinkRegex, "{" + SourceKey + "}");
+            lUrl = lUrl.replaceFirst(Manga.Companion.getLinkRegex(), "{" + SourceKey + "}");
             Manga lManga = MangaDB.getInstance().getManga(lUrl);
 
             if (lManga != null)
@@ -125,7 +125,7 @@ public class MangaEden extends SourceManga
                 updateMangaObservable(new RequestWrapper(lManga))
                         .subscribe
                                 (
-                                        manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
+                                        manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.getTitle()),
                                         throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage())
                                 );
             }
@@ -161,13 +161,13 @@ public class MangaEden extends SourceManga
                 }
             }
 
-            Manga lNewManga = MangaDB.getInstance().getManga(request.getManga().link);
+            Manga lNewManga = MangaDB.getInstance().getManga(request.getManga().getLink());
 
             lNewManga.setArtist(lParsedJsonObject.getString("artist"));
             lNewManga.setAuthor(lParsedJsonObject.getString("author"));
             lNewManga.setDescription(lParsedJsonObject.getString("description").trim());
             lNewManga.setGenres(lGenres);
-            lNewManga.setPicUrl("https://cdn.mangaeden.com/mangasimg/" + lParsedJsonObject.getString("image"));
+            lNewManga.setImage("https://cdn.mangaeden.com/mangasimg/" + lParsedJsonObject.getString("image"));
             lNewManga.setInitialized(1);
 
             MangaDB.getInstance().putManga(lNewManga);
@@ -198,7 +198,7 @@ public class MangaEden extends SourceManga
             MangaLogger.logError(TAG, aException.getMessage());
         }
 
-        MangaLogger.logInfo(TAG, "Finished parsing chapter list (" + request.getManga().link + ")");
+        MangaLogger.logInfo(TAG, "Finished parsing chapter list (" + request.getManga().getLink() + ")");
         return lChapterList;
 
     }
@@ -294,10 +294,10 @@ public class MangaEden extends SourceManga
      */
     private Chapter constructChapterFromJSONArray(JSONArray aChapterNode, RequestWrapper request) throws JSONException
     {
-        Chapter lNewChapter = new Chapter(request.getManga().title, request.getManga().link);
+        Chapter lNewChapter = new Chapter(request.getManga().getTitle(), request.getManga().getLink(), SourceKey);
 
-        lNewChapter.setChapterUrl("https://www.mangaeden.com/api/chapter/" + aChapterNode.getString(3) + "/");
-        lNewChapter.setChapterTitle(request.getManga().title + " " + aChapterNode.getDouble(0));
+        lNewChapter.setUrl("https://www.mangaeden.com/api/chapter/" + aChapterNode.getString(3) + "/");
+        lNewChapter.setChapterTitle(request.getManga().getTitle() + " " + aChapterNode.getDouble(0));
 
         Date lDate = new Date(aChapterNode.getLong(1) * 1000);
         lNewChapter.setChapterDate(lDate.toString());

@@ -94,7 +94,7 @@ public class ReaderPresChapter implements IReader.ReaderPresChapter
                                            () ->
                                            {
                                                mAdapter = null;
-                                               updateToolbar(mChapter.chapterTitle, 1, mImageUrls.size());
+                                               updateToolbar(mChapter.getChapterTitle(), 1, mImageUrls.size());
                                                mChapter.setTotalPages(mImageUrls.size());
                                                if (mImageUrls.size() > 0)
                                                {

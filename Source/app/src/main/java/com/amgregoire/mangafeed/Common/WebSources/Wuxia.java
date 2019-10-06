@@ -81,7 +81,7 @@ public class Wuxia extends SourceNovel
                 String lMangaUrl = URL + lNovel.select("td").first().select("span.title").select("a").attr("href");
                 String lMangaTitle = lNovel.select("td").first().select("span.title").select("a").text();
 
-                lMangaUrl = lMangaUrl.replaceFirst(Manga.LinkRegex, "{" + SourceKey + "}");
+                lMangaUrl = lMangaUrl.replaceFirst(Manga.Companion.getLinkRegex(), "{" + SourceKey + "}");
                 Manga lManga = MangaDB.getInstance().getManga(lMangaUrl);
                 if (lManga == null)
                 {
@@ -91,7 +91,7 @@ public class Wuxia extends SourceNovel
                     updateMangaObservable(new RequestWrapper(lManga))
                             .subscribe
                                     (
-                                            manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
+                                            manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.getTitle()),
                                             throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage())
                                     );
                 }
@@ -123,7 +123,7 @@ public class Wuxia extends SourceNovel
             Elements lContentLeft = lParsedDocument.select("div.media.media-novel-index").select("div.media-left");
             Elements lContentRight = lParsedDocument.select("div.media.media-novel-index").select("div.media-body");
 
-            Manga lManga = MangaDB.getInstance().getManga(request.getManga().link);
+            Manga lManga = MangaDB.getInstance().getManga(request.getManga().getLink());
             String lImage = lContentLeft.select("img.media-object").attr("src");
 
             StringBuilder lDetails = new StringBuilder();
@@ -152,7 +152,7 @@ public class Wuxia extends SourceNovel
 
             lManga.setDescription(lDescription);
 
-            lManga.setPicUrl(lImage);
+            lManga.setImage(lImage);
 
             MangaDB.getInstance().putManga(lManga);
             return lManga;
@@ -183,7 +183,7 @@ public class Wuxia extends SourceNovel
             {
                 String lUrl = URL + iChapter.attr("href");
                 String lChapterTitle = iChapter.text();
-                lChapterList.add(new Chapter(lUrl, request.getManga().title, lChapterTitle, "-", lCount, request.getManga().link));
+                lChapterList.add(new Chapter(lUrl, request.getManga().getTitle(), lChapterTitle, "-", lCount, request.getManga().getLink(), SourceKey));
                 lCount++;
             }
         }
@@ -276,7 +276,7 @@ public class Wuxia extends SourceNovel
                             MangaFeed.Companion.getApp()
                                      .getSourceByTag(TAG)
                                      .updateMangaObservable(new RequestWrapper(lNewManga))
-                                     .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating (" + TAG + ") " + manga.title),
+                                     .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating (" + TAG + ") " + manga.getTitle()),
                                              throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable
                                                      .getMessage()));
                         }

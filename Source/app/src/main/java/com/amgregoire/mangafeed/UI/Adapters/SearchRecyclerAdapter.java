@@ -255,7 +255,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
          */
         public void setViews(Manga manga)
         {
-            int status = manga.following;
+            int status = manga.getFollowing();
 
             mFooter.setBackgroundColor(backGroundFactory(status));
             mTitle.setBackgroundColor(backGroundFactory(status));
@@ -270,9 +270,9 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
          */
         public void loadImage(Manga manga)
         {
-            if (manga.image != null && !manga.image.isEmpty())
+            if (manga.getImage() != null && !manga.getImage().isEmpty())
             {
-                Picasso.get().load(manga.getPicUrl())
+                Picasso.get().load(manga.getImage())
                        .error(mError)
                        .placeholder(mPlaceHolder)
                        .resize(200, 400) // resize image before placing in target to fix laggy scrolling

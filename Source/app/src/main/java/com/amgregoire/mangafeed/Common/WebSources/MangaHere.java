@@ -3,7 +3,6 @@ package com.amgregoire.mangafeed.Common.WebSources;
 
 import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Common.RequestWrapper;
-import com.amgregoire.mangafeed.Common.WebSources.Base.SourceBase;
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceManga;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
@@ -119,7 +118,7 @@ public class MangaHere extends SourceManga
                 updateMangaObservable(new RequestWrapper(lManga))
                         .subscribe
                                 (
-                                        manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
+                                        manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.getTitle()),
                                         throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage())
                                 );
             }
@@ -163,17 +162,17 @@ public class MangaHere extends SourceManga
         if (!lGenres.isEmpty()) lGenres = lGenres.substring(0, lGenres.length() - 2);
 
 
-        Manga lNewManga = MangaDB.getInstance().getManga(request.getManga().link);
-        lNewManga.setPicUrl(lImage);
+        Manga lNewManga = MangaDB.getInstance().getManga(request.getManga().getLink());
+        lNewManga.setImage(lImage);
         lNewManga.setDescription(lDescription);
         lNewManga.setGenres(lGenres);
         lNewManga.setSource(SourceKey);
-        lNewManga.setMangaUrl(request.getManga().link);
+        lNewManga.setLink(request.getManga().getLink());
 
 
         MangaDB.getInstance().putManga(lNewManga);
         MangaLogger.logInfo(TAG, "Finished creating/update manga (" + lNewManga.getTitle() + ")");
-        return MangaDB.getInstance().getManga(request.getManga().link);
+        return MangaDB.getInstance().getManga(request.getManga().getLink());
     }
 
     @Override
@@ -198,9 +197,9 @@ public class MangaHere extends SourceManga
 
         for (Element iUrl : lImageUpdates)
         {
-            if(iUrl.text().equals(">")) continue;
+            if (iUrl.text().equals(">")) continue;
             String page = iUrl.text();
-            lPageUrls.add(requestWrapper.getChapter().url.replaceFirst("[0-9]+.html", page + ".html"));
+            lPageUrls.add(requestWrapper.getChapter().getUrl().replaceFirst("[0-9]+.html", page + ".html"));
         }
 
         return lPageUrls;
@@ -235,13 +234,14 @@ public class MangaHere extends SourceManga
 
             lChapterUrl = MangaEnums.Source.valueOf(SourceKey).getBaseUrl() + lChapterUrl;
 
-            Chapter lCurChapter = new Chapter(lChapterUrl, request.getManga().title, lChapterTitle, lChapterDate, lNumChapters, request.getManga().link);
+            Chapter lCurChapter = new Chapter(lChapterUrl, request.getManga().getTitle(), lChapterTitle, lChapterDate, lNumChapters, request.getManga()
+                                                                                                                                            .getLink(), SourceKey);
             lNumChapters--;
 
             lChapterList.add(lCurChapter);
         }
 
-        MangaLogger.logInfo(TAG, " Finished parsing chapter list (" + request.getManga().link + ")");
+        MangaLogger.logInfo(TAG, " Finished parsing chapter list (" + request.getManga().getLink() + ")");
         return lChapterList;
     }
 }

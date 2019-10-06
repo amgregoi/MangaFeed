@@ -56,7 +56,7 @@ public class DownloadManager
     public DownloadManager(Chapter chapter)
     {
         mChapter = chapter;
-        mManga = MangaDB.getInstance().getManga(mChapter.mangaUrl);
+        mManga = MangaDB.getInstance().getManga(mChapter.getMangaUrl());
         mSource = MangaFeed.Companion.getApp().getSourceByUrl(mChapter.getUrl());
         setChapterFilePath();
 
@@ -87,7 +87,7 @@ public class DownloadManager
      */
     public void startDownload()
     {
-        if (mChapter._id == null)
+        if (mChapter.get_id() == null)
         {
             mChapter = MangaDB.getInstance().getChapter(mChapter);
         }
@@ -108,11 +108,11 @@ public class DownloadManager
                                                                              .append(mManga.getTitle()
                                                                                            .replaceAll("\\W", ""))
                                                                              .append("-")
-                                                                             .append(mManga._id)
+                                                                             .append(mManga.get_id())
                                                                              .append("/Ch")
                                                                              .append(mChapter.getChapterNumber())
                                                                              .append("-")
-                                                                             .append(mChapter._id)
+                                                                             .append(mChapter.get_id())
                                                                              .append("/")
                                                                              .toString());
         //Create missing directories
@@ -257,16 +257,16 @@ public class DownloadManager
         mSavedPages++;
         if (mSavedPages == mTotalPages)
         {
-            mChapter.downloadStatus = Chapter.DOWNLOAD_STATUS_FINISHED;
+            mChapter.setDownloadStatus(Chapter.Companion.getDOWNLOAD_STATUS_FINISHED());
             MangaDB.getInstance().putChapter(mChapter);
 
             DownloadScheduler.removeChapterDownloading(this);
-            MangaFeed.Companion.getApp().rxBus().send(new DownloadEventUpdateComplete(mChapter.url));
-            MangaLogger.logInfo(TAG, "Finished downloading: " + mChapter.chapterTitle);
+            MangaFeed.Companion.getApp().rxBus().send(new DownloadEventUpdateComplete(mChapter.getUrl()));
+            MangaLogger.logInfo(TAG, "Finished downloading: " + mChapter.getChapterTitle());
         }
         else
         {
-            MangaFeed.Companion.getApp().rxBus().send(new DownloadEventUpdatePageCount(mChapter.url));
+            MangaFeed.Companion.getApp().rxBus().send(new DownloadEventUpdatePageCount(mChapter.getUrl()));
         }
     }
 
@@ -321,7 +321,7 @@ public class DownloadManager
             if (matcher.find())
             {
                 String lId = matcher.group(0);
-                Manga lManga = MangaDB.getInstance().getManga(Long.parseLong(lId));
+                Manga lManga = MangaDB.getInstance().getManga(lId);
                 lResult.add(lManga);
             }
         }
@@ -343,7 +343,7 @@ public class DownloadManager
                                                                            .append(manga.getTitle()
                                                                                         .replaceAll("\\W", ""))
                                                                            .append("-")
-                                                                           .append(manga._id)
+                                                                           .append(manga.get_id())
                                                                            .toString());
 
         File[] mangaDirectories = lDirectory.listFiles();
@@ -356,7 +356,7 @@ public class DownloadManager
             if (matcher.find())
             {
                 String lId = matcher.group(0);
-                Chapter lChapter = MangaDB.getInstance().getChapter(Long.parseLong(lId));
+                Chapter lChapter = MangaDB.getInstance().getChapter(lId);
                 lResult.add(lChapter);
             }
         }
@@ -371,15 +371,15 @@ public class DownloadManager
      */
     public static File[] getSavedPages(Chapter chapter, Manga manga)
     {
-        if (chapter._id == null)
+        if (chapter.get_id() == null)
         {
-            chapter = MangaDB.getInstance().getChapter(chapter.url);
+            chapter = MangaDB.getInstance().getChapter(chapter.getUrl());
         }
 
-        if (manga._id == null)
-        {
-            manga = MangaDB.getInstance().getManga(manga.link);
-        }
+//        if (manga.get_id() == null)
+//        {
+//            manga = MangaDB.getInstance().getManga(manga.getLink());
+//        }
 
         return new File(new StringBuilder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                                                      .getPath()).append(DOWNLOAD_FOLDER)
@@ -387,11 +387,11 @@ public class DownloadManager
                                                                 .append(manga.getTitle()
                                                                              .replaceAll("\\W", ""))
                                                                 .append("-")
-                                                                .append(manga._id)
+                                                                .append(manga.get_id())
                                                                 .append("/Ch")
                                                                 .append(chapter.getChapterNumber())
                                                                 .append("-")
-                                                                .append(chapter._id)
+                                                                .append(chapter.get_id())
                                                                 .append("/")
                                                                 .toString()).listFiles();
     }

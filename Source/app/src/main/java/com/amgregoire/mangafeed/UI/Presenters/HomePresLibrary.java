@@ -76,7 +76,7 @@ public class HomePresLibrary extends HomePresBase
                     {
                         Manga manga = ((UpdateMangaItemViewEvent) o).manga;
                         mAdapter.updateItem(manga, manga.isFollowing());
-                        MangaLogger.logInfo(TAG, "updated view", manga.title);
+                        MangaLogger.logInfo(TAG, "updated view", manga.getTitle());
                     }
                 }
                 else if (o instanceof SearchQueryChangeEvent)

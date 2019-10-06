@@ -199,17 +199,17 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
          */
         public void initViews()
         {
-            mTitle.setText(mManga.title);
-            mAlternates.setText(mManga.alternate);
-            mArtist.setText(mManga.artist);
-            mAuthor.setText(mManga.author);
-            mDescription.setText(mManga.description);
-            mStatus.setText(mManga.status);
-            mGenres.setText(mManga.genres);
+            mTitle.setText(mManga.getTitle());
+            mAlternates.setText(mManga.getAlternate());
+            mArtist.setText(mManga.getArtist());
+            mAuthor.setText(mManga.getAuthor());
+            mDescription.setText(mManga.getDescription());
+            mStatus.setText(mManga.getStatus());
+            mGenres.setText(mManga.getGenres());
 
-            if (mManga.image != null && !mManga.image.isEmpty())
+            if (mManga.getImage() != null && !mManga.getImage().isEmpty())
             {
-                Picasso.get().load(mManga.image)
+                Picasso.get().load(mManga.getImage())
                        .error(mError)
                        .placeholder(mPlaceHolder)
                        .into(mImageTarget);
@@ -307,8 +307,8 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         {
             Chapter lChapter = mChapterData.get(position);
 
-            mTitle.setText(lChapter.chapterTitle);
-            mDate.setText(lChapter.date);
+            mTitle.setText(lChapter.getChapterTitle());
+            mDate.setText(lChapter.getChapterDate());
 
             if (mDownloadViewFlag)
             {
@@ -318,7 +318,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             }
             else
             {
-                if (MangaDB.getInstance().getChapter(lChapter.url) != null)
+                if (MangaDB.getInstance().getChapter(lChapter.getUrl()) != null)
                 {
                     mDownloadBox.setVisibility(View.VISIBLE);
                     mDownloadBox.setImageDrawable(mDrawableSeen);

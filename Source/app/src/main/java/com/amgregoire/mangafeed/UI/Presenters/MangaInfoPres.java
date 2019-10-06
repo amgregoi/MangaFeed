@@ -62,15 +62,16 @@ public class MangaInfoPres implements IManga.MangaPres
             mOfflineFlag = bundle.getBoolean(MangaInfoFragment.OFFLINE_KEY);
             mDownloadFlag = false;
 
+            MangaLogger.logError(TAG, "MangaId -> " + mManga.get_id());
             if (mManga != null)
             {
-                mManga = MangaDB.getInstance().getManga(mManga.link);
+                mManga = MangaDB.getInstance().getManga(mManga.getLink());
             }
 
             mMap.initViews();
             mMap.startRefresh();
             setStartContinueReading();
-            mMap.setBottomNavFollowTitle(mManga.following);
+            mMap.setBottomNavFollowTitle(mManga.getFollowing());
 
             if (mOfflineFlag)
             {
@@ -136,7 +137,7 @@ public class MangaInfoPres implements IManga.MangaPres
                 }
                 else if (o instanceof UpdateMangaInfoEvent)
                 {
-                    mManga = MangaDB.getInstance().getManga(mManga.link);
+                    mManga = MangaDB.getInstance().getManga(mManga.getLink());
                     setStartContinueReading();
                 }
             }, throwable -> MangaLogger.logError(TAG, throwable.getMessage()));
@@ -210,10 +211,10 @@ public class MangaInfoPres implements IManga.MangaPres
 
             for (Chapter iChapter : lNewChapterList)
             {
-                if (iChapter.getChapterUrl().equals(mManga.getRecentChapter()))
+                if (iChapter.getUrl().equals(mManga.getRecentChapter()))
                 {
                     lChapter = iChapter;
-                    mManga.setRecentChapter(lChapter.getChapterUrl());
+                    mManga.setRecentChapter(lChapter.getUrl());
                 }
             }
 
@@ -251,7 +252,7 @@ public class MangaInfoPres implements IManga.MangaPres
     {
         try
         {
-            mManga.setFollowing(status);
+            mManga.updateFollowing(status);
             if (status == Manga.UNFOLLOW)
             {
                 mManga.setRecentChapter("");
@@ -270,7 +271,7 @@ public class MangaInfoPres implements IManga.MangaPres
     @Override
     public String getTitle()
     {
-        return mManga.title;
+        return mManga.getTitle();
     }
 
     @Override
@@ -489,7 +490,7 @@ public class MangaInfoPres implements IManga.MangaPres
 
     private void setStartContinueReading()
     {
-        String lReadText = mManga.recentChapter == null ? "Start" : mManga.recentChapter.isEmpty() ? "Start" : "Continue";
+        String lReadText = mManga.getRecentChapter() == null ? "Start" : mManga.getRecentChapter().isEmpty() ? "Start" : "Continue";
         mMap.setBottomNavStartContinue(lReadText);
     }
 

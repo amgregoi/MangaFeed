@@ -18,12 +18,9 @@ import com.amgregoire.mangafeed.Utils.BusEvents.ToolbarTimerEvent;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 /**
  * Created by Andy Gregoire on 3/21/2018.
@@ -90,13 +87,13 @@ public class ReaderPres implements IReader.ReaderPres
     @Override
     public String getMangaTitle()
     {
-        return mManga.title;
+        return mManga.getTitle();
     }
 
     @Override
     public String getChapterTitle()
     {
-        return mChapterList.get(mCurrentPosition).chapterTitle;
+        return mChapterList.get(mCurrentPosition).getChapterTitle();
     }
 
     @Override
@@ -195,7 +192,7 @@ public class ReaderPres implements IReader.ReaderPres
     {
         if (mManga.isFollowing())
         {
-            mManga.setRecentChapter(mChapterList.get(mCurrentPosition).getChapterUrl());
+            mManga.setRecentChapter(mChapterList.get(mCurrentPosition).getUrl());
             MangaDB.getInstance().putManga(mManga);
         }
     }

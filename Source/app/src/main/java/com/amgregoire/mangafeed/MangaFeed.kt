@@ -12,10 +12,16 @@ import com.amgregoire.mangafeed.Models.Chapter
 import com.amgregoire.mangafeed.Utils.*
 import com.amgregoire.mangafeed.v2.FunMangaCookiePreferences
 import com.amgregoire.mangafeed.v2.UserPreferences
+import com.amgregoire.mangafeed.v2.di.component.AppComponent
+import com.amgregoire.mangafeed.v2.di.component.DaggerAppComponent
+import com.amgregoire.mangafeed.v2.di.module.AppContextModule
+import com.amgregoire.mangafeed.v2.di.module.ApplicationModule
+import com.amgregoire.mangafeed.v2.di.module.ContextModule
 import com.amgregoire.mangafeed.v2.service.CloudflareService
 import com.bumptech.glide.request.target.ViewTarget
 import com.squareup.picasso.Cache
 import com.squareup.picasso.Picasso
+import dagger.internal.DaggerCollections
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.disposables.CompositeDisposable
@@ -24,12 +30,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.util.*
 import java.util.concurrent.Executors
+import javax.inject.Inject
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
  */
 val ioScope = CoroutineScope(Dispatchers.IO)
 val uiScope = CoroutineScope(Dispatchers.Main)
+
+val currentSource: SourceBase
+    get() = MangaEnums.Source.valueOf(SharedPrefs.getSavedSource()).source
 
 class MangaFeed : Application()
 {
@@ -69,11 +79,25 @@ class MangaFeed : Application()
             mCurrentChapters!!.reverse()
         }
 
+    lateinit var appComponent: AppComponent
+
+
+    @Inject lateinit var db:MangaDB
+    @Inject lateinit var prefs:SharedPrefs
+
     override fun onCreate()
     {
         super.onCreate()
         mangaApp = this
         cookiePreferences.clear()
+
+
+        appComponent = DaggerAppComponent.builder()
+                .applicationModule(ApplicationModule(this))
+                .build()
+
+        appComponent.inject(this)
+
 
         ViewTarget.setTagId(R.id.glide_tag)
         mBus = RxBus()
@@ -83,7 +107,7 @@ class MangaFeed : Application()
         Picasso.setSingletonInstance(mPicasso!!)
 
         MangaDB.getInstance().createDB() // Copy pre-loaded database if not already done.
-        MangaDB.getInstance().initDao()
+        MangaDB.getInstance().initDao(this)
         updateCatalogs(false) // check if we should update local database on application open
     }
 

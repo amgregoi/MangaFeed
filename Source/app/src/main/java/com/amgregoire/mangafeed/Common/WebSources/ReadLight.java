@@ -82,18 +82,18 @@ public class ReadLight extends SourceNovel
                 String lThumb = lMenuItems.select("div.novel-cover").select("img").attr("src");
                 lMangaTitle = lMangaTitle.replaceFirst(" Ch. \\d+", "");
 
-                lMangaUrl = lMangaUrl.replaceFirst(Manga.LinkRegex, "{" + SourceKey + "}");
+                lMangaUrl = lMangaUrl.replaceFirst(Manga.Companion.getLinkRegex(), "{" + SourceKey + "}");
                 Manga lManga = MangaDB.getInstance().getManga(lMangaUrl);
                 if (lManga == null)
                 {
                     lManga = new Manga(lMangaTitle, lMangaUrl, SourceKey);
-                    lManga.setPicUrl(lThumb);
+                    lManga.setImage(lThumb);
                     MangaDB.getInstance().putManga(lManga);
 
                     updateMangaObservable(new RequestWrapper(lManga))
                             .subscribe
                                     (
-                                            manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title),
+                                            manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.getTitle()),
                                             throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.getMessage())
                                     );
                 }
@@ -130,7 +130,7 @@ public class ReadLight extends SourceNovel
                                                        .select("div.novel-detail-item");
 
 
-            Manga lManga = MangaDB.getInstance().getManga(request.getManga().link);
+            Manga lManga = MangaDB.getInstance().getManga(request.getManga().getLink());
             String lImage = lContentLeft.select("div.novel-cover").select("img").attr("src");
 
             StringBuilder lDetails = new StringBuilder();
@@ -214,7 +214,7 @@ public class ReadLight extends SourceNovel
                 lDetails.setLength(0);
             }
 
-            lManga.setPicUrl(lImage);
+            lManga.setImage(lImage);
 
             MangaDB.getInstance().putManga(lManga);
             return lManga;
@@ -245,7 +245,7 @@ public class ReadLight extends SourceNovel
             {
                 String lUrl = iChapter.attr("href");
                 String lChapterTitle = iChapter.text();
-                lChapterList.add(new Chapter(lUrl, request.getManga().title, lChapterTitle, "-", lCount, request.getManga().link));
+                lChapterList.add(new Chapter(lUrl, request.getManga().getTitle(), lChapterTitle, "-", lCount, request.getManga().getLink(), SourceKey));
                 lCount++;
             }
         }
@@ -311,7 +311,7 @@ public class ReadLight extends SourceNovel
                                 MangaFeed.Companion.getApp()
                                          .getSourceByTag(TAG)
                                          .updateMangaObservable(new RequestWrapper(lNewManga))
-                                         .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating (" + TAG + ") " + manga.title),
+                                         .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating (" + TAG + ") " + manga.getTitle()),
                                                  throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable
                                                          .getMessage()));
                             }

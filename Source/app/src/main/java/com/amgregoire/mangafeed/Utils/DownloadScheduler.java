@@ -39,7 +39,7 @@ public class DownloadScheduler
 //        mQueue.addAll(chapters);
         for (Chapter chapter : chapters)
         {
-            chapter.downloadStatus = Chapter.DOWNLOAD_STATUS_DOWNLOADING;
+            chapter.setDownloadStatus(Chapter.Companion.getDOWNLOAD_STATUS_DOWNLOADING());
             mQueue.add(MangaDB.getInstance().getChapter(chapter));
         }
 
@@ -82,7 +82,7 @@ public class DownloadScheduler
         {
             MangaFeed.Companion.getApp()
                      .rxBus()
-                     .send(new DownloadEventUpdateComplete(mDownloading.get(0).getChapter().url));
+                     .send(new DownloadEventUpdateComplete(mDownloading.get(0).getChapter().getUrl()));
         }
         mDownloading = new ArrayList<>();
     }

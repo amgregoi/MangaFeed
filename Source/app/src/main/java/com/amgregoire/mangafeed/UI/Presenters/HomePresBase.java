@@ -74,7 +74,7 @@ public abstract class HomePresBase implements IHome.HomeBasePres
                     {
                         Manga manga = lEvent.manga;
                         mAdapter.updateItem(manga);
-                        MangaLogger.logInfo(TAG, "updated view", manga.title);
+                        MangaLogger.logInfo(TAG, "updated view", manga.getTitle());
                     }
                 }
                 else if (o instanceof SearchQueryChangeEvent)

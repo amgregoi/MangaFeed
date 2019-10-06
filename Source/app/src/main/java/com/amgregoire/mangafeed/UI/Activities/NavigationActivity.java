@@ -23,8 +23,6 @@ import android.widget.FrameLayout;
 
 import com.amgregoire.mangafeed.Common.WifiBroadcastReceiver;
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.Models.Manga;
-import com.amgregoire.mangafeed.Models.MangaDao;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.BackHandledFragment;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragment;

@@ -10,9 +10,17 @@ import com.amgregoire.mangafeed.R;
 
 import java.util.Date;
 
+import javax.inject.Inject;
+
 public class SharedPrefs
 {
 
+
+    @Inject
+    public SharedPrefs()
+    {
+
+    }
 
     /***
      * This function initializes the shared prefs.

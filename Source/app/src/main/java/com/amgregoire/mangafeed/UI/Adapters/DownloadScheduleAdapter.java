@@ -62,11 +62,11 @@ public class DownloadScheduleAdapter extends RecyclerView.Adapter<RecyclerView.V
         }
         else if (lViewType == VIEW_TYPE_DOWNLOADING)
         {
-            return mDownloading.get(position - 1).chapterNumber;
+            return mDownloading.get(position - 1).getChapterNumber();
         }
         else
         {
-            return mQueue.get(position - mDownloadSizeOffset).chapterNumber;
+            return mQueue.get(position - mDownloadSizeOffset).getChapterNumber();
         }
     }
 
@@ -180,8 +180,8 @@ public class DownloadScheduleAdapter extends RecyclerView.Adapter<RecyclerView.V
 
             mTotalPages.setText("" + lManager.getTotalPageCount());
             mCurrentPage.setText("" + lManager.getCurrentPageCount());
-            mChapterTitle.setText(lManager.getChapter().chapterTitle);
-            mMangaUrl.setText(lManager.getChapter().mangaTitle);
+            mChapterTitle.setText(lManager.getChapter().getChapterTitle());
+            mMangaUrl.setText(lManager.getChapter().getMangaTitle());
 
             if (mRxBus == null)
             {
@@ -228,8 +228,8 @@ public class DownloadScheduleAdapter extends RecyclerView.Adapter<RecyclerView.V
 
                 mTotalPages.setText("?");
                 mCurrentPage.setText("0");
-                mChapterTitle.setText(lChapter.chapterTitle);
-                mMangaUrl.setText(lChapter.mangaTitle);
+                mChapterTitle.setText(lChapter.getChapterTitle());
+                mMangaUrl.setText(lChapter.getMangaTitle());
             }
             catch (Exception ex)
             {

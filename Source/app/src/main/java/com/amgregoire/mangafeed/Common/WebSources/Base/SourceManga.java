@@ -25,7 +25,7 @@ public abstract class SourceManga extends SourceBase
         final List<String> lTemporaryCachedImageUrls = new ArrayList<>();
         final NetworkService lCurrentService = NetworkService.Companion.getTemporaryInstance();
 
-        return lCurrentService.getResponse(aRequest.getChapter().getChapterUrl())
+        return lCurrentService.getResponse(aRequest.getChapter().getUrl())
                               .flatMap(aResponse -> NetworkService.Companion.mapResponseToString(aResponse))
                               .flatMap(aUnparsedHtml -> Observable.just(parseResponseToPageUrls(aRequest, aUnparsedHtml)))
                               .flatMap(aPageUrls -> Observable.fromArray(aPageUrls.toArray(new String[aPageUrls.size()])))
