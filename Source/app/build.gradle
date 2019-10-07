@@ -8,13 +8,13 @@ androidExtensions {
 }
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         multiDexEnabled true
 
         applicationId "com.amgregoire.mangafeed"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0.0"
         testInstrumentationRunner "android.support.getMangaWithSavedChapters.runner.AndroidJUnitRunner"
@@ -87,6 +87,8 @@ dependencies {
 
     implementation  'com.squareup.okhttp3:okhttp:4.2.1'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.9.1'
+    implementation 'android.arch.navigation:navigation-fragment-ktx:1.0.0'
+    implementation 'android.arch.navigation:navigation-ui-ktx:1.0.0'
 
 }
 

@@ -32,6 +32,11 @@
             android:windowSoftInputMode="adjustPan">
         </activity>
 
+        <activity
+            android:name=".v2.ui.MActivity"
+            android:windowSoftInputMode="adjustPan">
+        </activity>
+
         <receiver
             android:name=".Common.WifiBroadcastReceiver"
             android:enabled="true">

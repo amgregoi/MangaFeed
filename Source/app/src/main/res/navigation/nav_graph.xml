@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/startupScreen">
+
+    <activity
+        android:id="@+id/startupScreen"
+        android:name="com.amgregoire.mangafeed.UI.Activities.StartupScreen"
+        android:label="StartupScreen" >
+        <action
+            android:id="@+id/action_startupScreen_to_navigationActivity"
+            app:destination="@id/navigationActivity"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/action_startupScreen_to_MActivity"
+            app:destination="@id/MActivity"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+    </activity>
+    <activity
+        android:id="@+id/MActivity"
+        android:name="com.amgregoire.mangafeed.v2.ui.MActivity"
+        android:label="MActivity" >
+        <action
+            android:id="@+id/action_MActivity_to_MFragment"
+            app:destination="@id/MFragment" />
+    </activity>
+    <activity
+        android:id="@+id/navigationActivity"
+        android:name="com.amgregoire.mangafeed.UI.Activities.NavigationActivity"
+        android:label="activity_navigation"
+        tools:layout="@layout/activity_navigation" />
+    <fragment
+        android:id="@+id/MFragment"
+        android:name="com.amgregoire.mangafeed.v2.ui.MFragment"
+        android:label="MFragment" />
+</navigation>
