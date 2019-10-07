@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.amgregoire.mangafeed.v2.database.AppDatabase;
-import com.amgregoire.mangafeed.v2.database.MangaDao;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.MangaFeedKt;
 import com.amgregoire.mangafeed.Models.Chapter;
@@ -31,6 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import cz.msebera.android.httpclient.Header;
@@ -54,14 +54,17 @@ public class MangaDB extends SQLiteOpenHelper
 
 
     //    private DaoSession mSession;
-    private Context mContext;
+//    private Context mContext;
 
+    @Inject
     public MangaDB(@ApplicationContext Context context,
                    @DatabaseInfo String dbName,
-                   @DatabaseInfo Integer version)
+                   @DatabaseInfo Integer version,
+                   AppDatabase appDatabase)
     {
         super(context, dbName, null, version);
-        mContext = context;
+        createDB(context);
+        database = appDatabase;
     }
 
     AppDatabase database;
@@ -69,7 +72,7 @@ public class MangaDB extends SQLiteOpenHelper
     public MangaDB(Context context)
     {
         super(context, DB_NAME, null, DATABASE_VERSION);
-        mContext = context;
+//        mContext = context;
     }
 
 
@@ -97,27 +100,15 @@ public class MangaDB extends SQLiteOpenHelper
      */
     public static synchronized MangaDB getInstance()
     {
-        if (mInstance == null)
-        {
-            mInstance = new MangaDB(MangaFeed.Companion.getApp());
-        }
-        return mInstance;
-    }
-
-    public void initDao(Context context)
-    {
-//        SQLiteDatabase lDb = getWritableDatabase();
-//        mSession = new DaoMaster(lDb).newSession();
-        database = AppDatabase.Companion.getAppDatabase(context);
-
+        return MangaFeedKt.getAppComponent().getDataManager();
     }
 
     /***
      * This function verifies if the app needs to copy the shipped database.
      */
-    public void createDB()
+    public void createDB(Context context)
     {
-        boolean dbExist = DBExists();
+        boolean dbExist = DBExists(context);
         if (!dbExist)
         {
             copyDBFromResource();
@@ -129,13 +120,13 @@ public class MangaDB extends SQLiteOpenHelper
      *
      * @return true if database exists
      */
-    private boolean DBExists()
+    private boolean DBExists(Context context)
     {
         SQLiteDatabase lDb = null;
 
         try
         {
-            File lDatabase = mContext.getDatabasePath(DB_NAME);
+            File lDatabase = context.getDatabasePath(DB_NAME);
             if (lDatabase.exists())
             {
                 lDb = SQLiteDatabase.openDatabase(lDatabase.getPath(), null, SQLiteDatabase.OPEN_READWRITE);
@@ -195,8 +186,7 @@ public class MangaDB extends SQLiteOpenHelper
      */
     public void putManga(Manga manga)
     {
-        MangaDao lDao = database.mangaDao();
-        lDao.insertAll(manga);
+        database.mangaDao().insertAll(manga);
     }
 
     /***

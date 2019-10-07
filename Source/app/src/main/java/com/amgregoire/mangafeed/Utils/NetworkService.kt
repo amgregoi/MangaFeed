@@ -111,7 +111,7 @@ class NetworkService private constructor()
             return Observable.create { subscriber: ObservableEmitter<String> ->
                 try
                 {
-                    response.body()?.let { body -> subscriber.onNext(body.string()) }
+                    response.body?.let { body -> subscriber.onNext(body.string()) }
                     subscriber.onComplete()
                 }
                 catch (e: Throwable)

@@ -9,19 +9,20 @@ import com.amgregoire.mangafeed.Common.WebSources.MangaEden
 import com.amgregoire.mangafeed.Common.WebSources.MangaHere
 import com.amgregoire.mangafeed.Common.WebSources.ReadLight
 import com.amgregoire.mangafeed.Models.Chapter
-import com.amgregoire.mangafeed.Utils.*
+import com.amgregoire.mangafeed.Utils.MangaDB
+import com.amgregoire.mangafeed.Utils.MangaLogger
+import com.amgregoire.mangafeed.Utils.RxBus
+import com.amgregoire.mangafeed.Utils.SharedPrefs
 import com.amgregoire.mangafeed.v2.FunMangaCookiePreferences
 import com.amgregoire.mangafeed.v2.UserPreferences
 import com.amgregoire.mangafeed.v2.di.component.AppComponent
 import com.amgregoire.mangafeed.v2.di.component.DaggerAppComponent
-import com.amgregoire.mangafeed.v2.di.module.AppContextModule
+import com.amgregoire.mangafeed.v2.di.module.ApiModule
 import com.amgregoire.mangafeed.v2.di.module.ApplicationModule
-import com.amgregoire.mangafeed.v2.di.module.ContextModule
-import com.amgregoire.mangafeed.v2.service.CloudflareService
+import com.amgregoire.mangafeed.v2.di.module.RoomModule
 import com.bumptech.glide.request.target.ViewTarget
 import com.squareup.picasso.Cache
 import com.squareup.picasso.Picasso
-import dagger.internal.DaggerCollections
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.disposables.CompositeDisposable
@@ -41,6 +42,8 @@ val uiScope = CoroutineScope(Dispatchers.Main)
 val currentSource: SourceBase
     get() = MangaEnums.Source.valueOf(SharedPrefs.getSavedSource()).source
 
+val appComponent: AppComponent = MangaFeed.app.appComponent
+
 class MangaFeed : Application()
 {
     private var mBus: RxBus? = null
@@ -51,23 +54,31 @@ class MangaFeed : Application()
     val cookiePreferences by lazy { FunMangaCookiePreferences(app) }
     val userPreferences by lazy { UserPreferences(app) }
 
-    /***
-     * This function returns the current sources source type
+    /************************************************************************
      *
-     * NOVEL, MANGA
+     * Dagger
      *
-     * @return
-     */
+     ***********************************************************************/
+    val appComponent: AppComponent by lazy {
+        DaggerAppComponent.builder()
+                .applicationModule(ApplicationModule(this))
+                .roomModule(RoomModule(this))
+                .apiModule(ApiModule())
+                .build()
+    }
+
+    @Inject lateinit var db: MangaDB
+    @Inject lateinit var prefs: SharedPrefs
+
+    /************************************************************************
+     *
+     *
+     *
+     ***********************************************************************/
+
     val currentSourceType: MangaEnums.SourceType
         get() = MangaEnums.Source.valueOf(SharedPrefs.getSavedSource()).source.sourceType
 
-    /***
-     * This function returns the current source.
-     *
-     * MangaEden, MangaHere. FunManga, ReadLight
-     *
-     * @return
-     */
     val currentSource: SourceBase
         get() = MangaEnums.Source.valueOf(SharedPrefs.getSavedSource()).source
 
@@ -79,11 +90,11 @@ class MangaFeed : Application()
             mCurrentChapters!!.reverse()
         }
 
-    lateinit var appComponent: AppComponent
-
-
-    @Inject lateinit var db:MangaDB
-    @Inject lateinit var prefs:SharedPrefs
+    /************************************************************************
+     *
+     * Dagger
+     *
+     ***********************************************************************/
 
     override fun onCreate()
     {
@@ -91,13 +102,7 @@ class MangaFeed : Application()
         mangaApp = this
         cookiePreferences.clear()
 
-
-        appComponent = DaggerAppComponent.builder()
-                .applicationModule(ApplicationModule(this))
-                .build()
-
         appComponent.inject(this)
-
 
         ViewTarget.setTagId(R.id.glide_tag)
         mBus = RxBus()
@@ -105,9 +110,6 @@ class MangaFeed : Application()
         mPicasso = Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).memoryCache(Cache.NONE).indicatorsEnabled(true).build()
         mPicasso!!.setIndicatorsEnabled(true)
         Picasso.setSingletonInstance(mPicasso!!)
-
-        MangaDB.getInstance().createDB() // Copy pre-loaded database if not already done.
-        MangaDB.getInstance().initDao(this)
         updateCatalogs(false) // check if we should update local database on application open
     }
 
@@ -149,21 +151,12 @@ class MangaFeed : Application()
      */
     fun getSourceByTag(tag: String): SourceBase
     {
-        return if (tag == FunManga.TAG)
+        return when (tag)
         {
-            FunManga()
-        }
-        else if (tag == MangaEden.TAG)
-        {
-            MangaEden()
-        }
-        else if (tag == MangaHere.TAG)
-        {
-            MangaHere()
-        }
-        else
-        {
-            ReadLight()
+            FunManga.TAG -> FunManga()
+            MangaEden.TAG -> MangaEden()
+            MangaHere.TAG -> MangaHere()
+            else -> ReadLight()
         }
     }
 
@@ -175,21 +168,12 @@ class MangaFeed : Application()
      */
     fun getSourceByUrl(url: String): SourceBase
     {
-        return if (url.contains(FunManga.URL))
+        return when
         {
-            FunManga()
-        }
-        else if (url.contains(MangaEden.URL))
-        {
-            MangaEden()
-        }
-        else if (url.contains(MangaHere.URL))
-        {
-            MangaHere()
-        }
-        else
-        {
-            ReadLight()
+            url.contains(FunManga.URL) -> FunManga()
+            url.contains(MangaEden.URL) -> MangaEden()
+            url.contains(MangaHere.URL) -> MangaHere()
+            else -> ReadLight()
         }
     }
 

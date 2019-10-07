@@ -157,7 +157,7 @@ public class FunManga extends SourceManga
         catch (Exception aException)
         {
             MangaLogger.logError(TAG, responseBody);
-            MangaLogger.logError(TAG, " Failed to parse recent updates: " + aException.getMessage());
+//            MangaLogger.logError(TAG, " Failed to parse recent updates: " + aException.getMessage());
         }
 
         MangaLogger.logInfo(TAG, "Finished parsing recent updates");
