@@ -1,18 +1,17 @@
 package com.amgregoire.mangafeed.v2.ui
 
+import android.graphics.Color
+import android.support.constraint.ConstraintLayout
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentManager
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
+import android.view.View
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
 import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
 import kotlinx.android.synthetic.main.activity_m.*
 import kotlinx.android.synthetic.main.widget_toolbar_2.*
-
-import android.graphics.Color
-import android.support.constraint.ConstraintLayout
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.view.Menu
-import android.view.View
 
 /**
  * Created by amgregoi on 1/24/19.
@@ -36,11 +35,11 @@ interface FragmentNavMap
 
     fun popBackStack(tag: String, popInclusive: Boolean)
 
-//    fun replaceFragment(fragment: Fragment, tag: String) = replaceFragment(fragment, tag, )
+    //    fun replaceFragment(fragment: Fragment, tag: String) = replaceFragment(fragment, tag, )
 
     fun replaceFragment(fragment: Fragment, tag: String, enter: Int = R.anim.fab_slide_in_from_right, exit: Int = R.anim.fab_slide_out_to_left, popEnter: Int = R.anim.fab_slide_in_from_left, popExit: Int = R.anim.fab_slide_out_to_right)
 
-//    fun addFragment(fragment: Fragment, tag: String)
+    //    fun addFragment(fragment: Fragment, tag: String)
 
     fun addFragment(fragment: Fragment, tag: String, enter: Int = R.anim.fab_slide_in_from_right, exit: Int = R.anim.fab_slide_out_to_left, popEnter: Int = R.anim.fab_slide_in_from_left, popExit: Int = R.anim.fab_slide_out_to_right)
 
@@ -51,7 +50,7 @@ open abstract class _NavigationActivity : AppCompatActivity(), FragmentNavMap, T
 {
     protected var mMenuId = 0
 
-    override fun replaceFragment(fragment: Fragment, tag: String, enter:Int, exit: Int, popEnter: Int, popExit: Int)
+    override fun replaceFragment(fragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
     {
         supportFragmentManager.beginTransaction()
                 .setPrimaryNavigationFragment(fragment)
@@ -61,7 +60,7 @@ open abstract class _NavigationActivity : AppCompatActivity(), FragmentNavMap, T
                 .commit()
     }
 
-    override fun addFragment(fragment: Fragment, tag: String, enter:Int, exit: Int, popEnter: Int, popExit: Int)
+    override fun addFragment(fragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
     {
         supportFragmentManager.beginTransaction()
                 .setPrimaryNavigationFragment(fragment)
@@ -72,7 +71,7 @@ open abstract class _NavigationActivity : AppCompatActivity(), FragmentNavMap, T
 
     }
 
-    override fun addFragment(fragment: Fragment, prevFragment: Fragment, tag: String, enter:Int, exit: Int, popEnter: Int, popExit: Int)
+    override fun addFragment(fragment: Fragment, prevFragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
     {
         supportFragmentManager.beginTransaction()
                 .setPrimaryNavigationFragment(fragment)
@@ -88,7 +87,7 @@ open abstract class _NavigationActivity : AppCompatActivity(), FragmentNavMap, T
     {
         vMenuCover.visibility = View.VISIBLE
         supportFragmentManager.beginTransaction()
-//                .setCustomAnimations(R.anim.slide_out_bottom, 0, 0, 0)
+                //                .setCustomAnimations(R.anim.slide_out_bottom, 0, 0, 0)
                 .setCustomAnimations(R.anim.fab_slide_in_from_right, 0, 0, 0) // todo make slide out bottom animation
                 .add(flMenuContainer.id, fragment, tag)
                 .addToBackStack(tag)
@@ -117,7 +116,7 @@ open abstract class _NavigationActivity : AppCompatActivity(), FragmentNavMap, T
      *
      */
 
-    fun setViewTitle(title: String)
+    override fun setTitle(title: String)
     {
         toolbarTitle.text = null
 

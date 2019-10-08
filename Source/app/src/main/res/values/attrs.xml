@@ -4,4 +4,29 @@
     <attr name="background_color2" format="reference|color"/>
     <attr name="text_color" format="reference|color"/>
     <attr name="text_color2" format="reference|color"/>
+    <attr name="accent1" format="reference|color"/>
+    <attr name="accent2" format="reference|color"/>
+
+
+
+
+    <declare-styleable name="EmptyState">
+        <attr name="mangaPrimaryText" />
+        <attr name="mangaSecondaryText" />
+        <attr name="mangaButtonText" />
+        <attr name="mangaButtonStyle" />
+        <attr name="mangaButtonVisible" format="boolean" />
+        <attr name="mangaLoading" />
+        <attr name="mangaDrawableImage" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="ProgressBar">
+        <attr name="mangaProgressBarStyle" />
+    </declare-styleable>
+
+    <attr name="mangaProgressBarStyle" format="flags">
+        <flag name="DarkBlue" value="0x00" />
+        <flag name="White" value="0x01" />
+    </attr>
+
 </resources>

@@ -40,7 +40,7 @@ public class RecyclerViewSpaceDecoration extends RecyclerView.ItemDecoration
             outRect.left = mSpacing;
             outRect.right = position % cols == cols - 1 ? mSpacing : 0;
             outRect.top = mSpacing;
-            outRect.bottom = position / cols == rows - 1 ? mSpacing : 0;
+            outRect.bottom = position / cols == rows ? mSpacing : 0;
         }
         else if (layoutManager instanceof LinearLayoutManager)
         {

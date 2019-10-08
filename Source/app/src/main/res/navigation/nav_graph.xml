@@ -21,7 +21,7 @@
     </activity>
     <activity
         android:id="@+id/MActivity"
-        android:name="com.amgregoire.mangafeed.v2.ui.MActivity"
+        android:name="com.amgregoire.mangafeed.v2.ui.main.MActivity"
         android:label="MActivity" >
         <action
             android:id="@+id/action_MActivity_to_MFragment"
@@ -34,6 +34,6 @@
         tools:layout="@layout/activity_navigation" />
     <fragment
         android:id="@+id/MFragment"
-        android:name="com.amgregoire.mangafeed.v2.ui.MFragment"
+        android:name="com.amgregoire.mangafeed.v2.ui.main.MFragment"
         android:label="MFragment" />
 </navigation>

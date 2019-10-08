@@ -3,15 +3,10 @@ package com.amgregoire.mangafeed.UI.Activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.navigation.findNavController
-import com.amgregoire.mangafeed.Common.WebSources.FunManga
 import com.amgregoire.mangafeed.MangaFeed
-import com.amgregoire.mangafeed.UI.Mappers.IHome
-import com.amgregoire.mangafeed.Utils.MangaFeedRest
 import com.amgregoire.mangafeed.Utils.NetworkService
 import com.amgregoire.mangafeed.v2.service.CloudflareService
-import com.amgregoire.mangafeed.v2.ui.MActivity
-import kotlinx.android.synthetic.main.activity_m.*
+import com.amgregoire.mangafeed.v2.ui.main.MActivity
 
 class StartupScreen : Activity()
 {

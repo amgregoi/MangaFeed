@@ -23,5 +23,4 @@ interface ToolbarMap
      * R.menu.<insert menu>
     </insert> */
     fun setOptionsMenu(menuId: Int?)
-
 }

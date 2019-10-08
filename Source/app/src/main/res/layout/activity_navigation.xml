@@ -9,21 +9,25 @@
     tools:context=".UI.Activities.NavigationActivity">
 
     <FrameLayout
-        android:background="@color/colorPrimaryDark"
         android:id="@+id/frameLayoutMasterContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="?attr/background_color">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <include layout="@layout/widget_toolbar" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
+                <FrameLayout
+                    android:id="@+id/frameLayoutNavContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@id/navigation" />
 
                 <android.support.design.widget.BottomNavigationView
                     android:id="@+id/navigation"
@@ -31,16 +35,10 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:elevation="2dp"
-                    android:theme="@style/MangaFeed.Widget.BottomNav"
+                    android:background="?attr/background_color"
                     app:itemIconTint="@drawable/nav_selector"
                     app:itemTextColor="@drawable/nav_selector"
                     app:menu="@menu/navigation" />
-
-                <FrameLayout
-                    android:id="@+id/frameLayoutNavContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_above="@id/navigation" />
 
                 <android.support.design.widget.CoordinatorLayout
                     android:id="@+id/coordinatorLayoutSnack"
@@ -49,6 +47,14 @@
                     android:layout_alignParentBottom="true"
                     android:layout_marginBottom="56dp" />
             </RelativeLayout>
+
+            <include layout="@layout/widget_toolbar" />
         </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="This is the text color"
+            android:textColor="?attr/text_color" />
     </FrameLayout>
 </RelativeLayout>

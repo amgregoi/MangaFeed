@@ -5,12 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:layout_alignParentTop="true"
-    android:background="@color/manga_white"
+    android:background="?attr/background_color"
     android:elevation="2dp"
     android:minHeight="?attr/actionBarSize"
     app:layout_constraintTop_toTopOf="parent"
     app:title=""
     app:titleTextColor="@color/manga_black">
+
+    <ImageView
+        android:id="@+id/toolbarLogo"
+        android:layout_width="140dp"
+        android:layout_height="30dp"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/toolbarTitle"
@@ -20,14 +28,9 @@
         android:fontFamily="sans-serif"
         android:lineSpacingExtra="12sp"
         android:text="@string/app_name"
-        android:visibility="gone" />
-
-    <ImageView
-        android:id="@+id/toolbarLogo"
-        android:layout_width="140dp"
-        android:layout_height="30dp"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:visibility="gone" />
+        android:textColor="?attr/accent1"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="visible" />
 
 </android.support.v7.widget.Toolbar>

@@ -19,25 +19,49 @@
         <item name="background_color2">@color/manga_light_charcoal</item>
         <item name="text_color">@color/manga_white</item>
         <item name="text_color2">@color/manga_white_alpha50</item>
+        <item name="accent1">@color/manga_white</item>
+        <item name="accent2">@color/manga_white_alpha50</item>
     </style>
 
     <style name="AppTheme.Light" parent="AppTheme">
         <item name="background_color">@color/manga_off_white</item>
+        <item name="background_color2">@color/manga_white_alpha50</item>
         <item name="text_color">@color/manga_charcoal</item>
         <item name="text_color2">@color/manga_light_charcoal</item>
+        <item name="accent1">@color/colorPrimaryDark</item>
+        <item name="accent2">@color/colorPrimaryLight</item>
     </style>
 
+    <!-- deprecated -->
     <style name="MangaFeed.Widget.ViewPager" parent="android:Widget">
-        <item name="android:background">?attr/background_color</item>
-    </style>
-
-    <style name="MangaFeed.Widget.BottomNav" parent="android:Widget">
         <item name="android:background">?attr/background_color2</item>
     </style>
 
     <style name="MangaFeed.Widget.PopupMenu.OverflowMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
         <item name="android:overlapAnchor">false</item>
         <item name="android:dropDownVerticalOffset">4.0dip</item>
+    </style>
+
+
+
+
+
+
+
+
+    <style name="Manga.Widget.TextView.SubText" parent="AppTheme">
+        <item name="android:textColor">?attr/text_color2</item>
+        <item name="android:lineSpacingExtra">3sp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="Manga.Widget.TextView.Header" parent="AppTheme">
+        <item name="android:textColor">?attr/text_color</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif</item>
     </style>
 
 </resources>

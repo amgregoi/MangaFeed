@@ -1,9 +1,11 @@
-package com.amgregoire.mangafeed.v2.ui
+package com.amgregoire.mangafeed.v2.ui.main
 
 import android.os.Bundle
-import android.view.View
 import com.amgregoire.mangafeed.R
 import kotlinx.android.synthetic.main.widget_toolbar_2.*
+import android.content.res.Resources
+import com.amgregoire.mangafeed.v2.ui._NavigationActivity
+
 
 class MActivity : _NavigationActivity()
 {
@@ -22,9 +24,13 @@ class MActivity : _NavigationActivity()
         } ?: run { toolbar.navigationIcon = null }
     }
 
-    override fun setTitle(title: String)
+    override fun getTheme(): Resources.Theme
     {
-        toolbarTitle.visibility = View.VISIBLE
-        toolbarTitle.text = title
+        val theme = super.getTheme()
+
+        if (false)  theme.applyStyle(R.style.AppTheme_Dark, true)
+        else theme.applyStyle(R.style.AppTheme_Light, true)
+
+        return theme
     }
 }
