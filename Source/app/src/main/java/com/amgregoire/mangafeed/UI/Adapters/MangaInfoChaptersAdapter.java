@@ -64,6 +64,32 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         mManga = null;
     }
 
+    public MangaInfoChaptersAdapter(Manga manga)
+    {
+        mManga = manga;
+        mChapterData = new ArrayList<>();
+        mDownloadList = new ArrayList<>();
+    }
+
+    public MangaInfoChaptersAdapter(List<Chapter> data)
+    {
+        mChapterData = new ArrayList<>(data);
+        mDownloadList = new ArrayList<>();
+        mManga = null;
+    }
+
+    public void setManga(Manga manga)
+    {
+        mManga = manga;
+        notifyItemChanged(0);
+    }
+
+    public void setChapters(List<Chapter> chapters)
+    {
+        mChapterData = new ArrayList<>(chapters);
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemViewType(int position)
     {

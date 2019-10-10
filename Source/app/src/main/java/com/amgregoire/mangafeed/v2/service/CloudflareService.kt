@@ -33,7 +33,6 @@ class CloudflareService
 
     fun getCookies(url: String, userAgent: String, cookies: (List<String>) -> Unit)
     {
-
         val cookiePrefs = MangaFeed.app.cookiePreferences
         val oldCookies = cookiePrefs.cookies
 

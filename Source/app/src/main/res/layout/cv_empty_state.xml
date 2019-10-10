@@ -36,7 +36,7 @@
         android:id="@+id/clEmptyState"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/guidelineRight"
         app:layout_constraintStart_toStartOf="@id/guidelineLeft"
@@ -45,11 +45,12 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scaleX=".7"
-            android:scaleY=".7"
-            android:src="@drawable/img_noactivity"
+            android:scaleX="1"
+            android:scaleY="1"
+            android:adjustViewBounds="true"
+            android:src="@drawable/empty"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

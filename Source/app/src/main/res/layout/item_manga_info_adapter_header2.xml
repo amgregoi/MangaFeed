@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/relativeLayoutMangaInfoHeaderContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/background_color">
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelineLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".05" />
+
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelineRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".95" />
+
+    <ImageView
+        android:id="@+id/ivMangaInfoBackground"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="?attr/background_color"
+        android:scaleType="fitXY"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:alpha=".9"
+        android:background="?attr/background_color"
+        app:layout_constraintStart_toStartOf="@id/ivMangaInfoBackground"
+        app:layout_constraintEnd_toEndOf="@id/ivMangaInfoBackground"
+        app:layout_constraintBottom_toBottomOf="@id/ivMangaInfoBackground"
+        app:layout_constraintTop_toTopOf="@id/ivMangaInfoBackground" />
+
+    <ImageView
+        android:id="@+id/ivMangaInfo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="center"
+        android:src="@drawable/manga_loading_image"
+        app:layout_constraintStart_toStartOf="@id/ivMangaInfoBackground"
+        app:layout_constraintEnd_toEndOf="@id/ivMangaInfoBackground"
+        app:layout_constraintBottom_toBottomOf="@id/ivMangaInfoBackground"
+        app:layout_constraintTop_toTopOf="@id/ivMangaInfoBackground" />
+
+    <TextView
+        android:layout_marginTop="15dp"
+        android:id="@+id/tvMangaTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dp"
+        android:text="@string/placeholder"
+        android:textAlignment="gravity"
+        android:textColor="?attr/text_color"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/ivMangaInfo"
+        app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tvSummaryLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/manga_info_label_summary"
+        android:textColor="?attr/text_color"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+        app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+        app:layout_constraintTop_toBottomOf="@id/tvMangaTitle" />
+
+    <TextView
+        android:id="@+id/tvDescription"
+        android:layout_width="0dp"
+        android:text="@string/placeholder_med"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:textColor="?attr/text_color2"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+        app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+        app:layout_constraintTop_toBottomOf="@id/tvSummaryLabel" />
+
+    <TextView
+        android:id="@+id/tvAuthorLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_weight="4"
+        android:text="@string/manga_info_label_author"
+        android:textColor="?attr/text_color"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+        app:layout_constraintTop_toBottomOf="@id/tvDescription" />
+
+    <TextView
+        android:id="@+id/tvAuthor"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:text="@string/placeholder"
+        android:textAlignment="gravity"
+        android:textColor="?attr/text_color2"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        app:layout_constraintStart_toEndOf="@id/tvAuthorLabel"
+        app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+        app:layout_constraintTop_toTopOf="@id/tvAuthorLabel" />
+
+    <TextView
+        android:id="@+id/tvArtistLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_weight="4"
+        android:text="@string/manga_info_label_artist"
+        android:textColor="?attr/text_color"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+        app:layout_constraintTop_toBottomOf="@id/tvAuthor" />
+
+    <TextView
+        android:id="@+id/tvArtist"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:text="@string/placeholder"
+        android:textAlignment="gravity"
+        android:textColor="?attr/text_color2"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        app:layout_constraintStart_toEndOf="@id/tvAlternateLabel"
+        app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+        app:layout_constraintTop_toTopOf="@id/tvArtistLabel" />
+
+    <TextView
+        android:id="@+id/tvGenreLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_weight="4"
+        android:text="@string/manga_info_label_genres"
+        android:textColor="?attr/text_color"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+        app:layout_constraintTop_toBottomOf="@id/tvArtist" />
+
+    <TextView
+        android:id="@+id/tvGenre"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:text="@string/placeholder"
+        android:textAlignment="gravity"
+        android:textColor="?attr/text_color2"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        app:layout_constraintStart_toEndOf="@id/tvAlternateLabel"
+        app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+        app:layout_constraintTop_toTopOf="@id/tvGenreLabel" />
+
+    <TextView
+        android:id="@+id/tvAlternateLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_weight="4"
+        android:text="@string/manga_info_label_alternates"
+        android:textColor="?attr/text_color"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+        app:layout_constraintTop_toBottomOf="@id/tvGenre" />
+
+    <TextView
+        android:id="@+id/tvAlternate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:text="@string/placeholder"
+        android:textAlignment="gravity"
+        android:textColor="?attr/text_color2"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        app:layout_constraintStart_toEndOf="@id/tvAlternateLabel"
+        app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+        app:layout_constraintTop_toTopOf="@id/tvAlternateLabel" />
+
+    <TextView
+        android:id="@+id/tvStatusLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_weight="4"
+        android:text="@string/manga_info_label_status"
+        android:textColor="?attr/text_color"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+        app:layout_constraintTop_toBottomOf="@id/tvAlternate" />
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:text="@string/placeholder"
+        android:textAlignment="gravity"
+        android:textColor="?attr/text_color2"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        app:layout_constraintStart_toEndOf="@id/tvAlternateLabel"
+        app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+        app:layout_constraintTop_toTopOf="@id/tvStatusLabel" />
+
+
+</android.support.constraint.ConstraintLayout>

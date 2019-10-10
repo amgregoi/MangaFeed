@@ -35,20 +35,16 @@ interface FragmentNavMap
 
     fun popBackStack(tag: String, popInclusive: Boolean)
 
-    //    fun replaceFragment(fragment: Fragment, tag: String) = replaceFragment(fragment, tag, )
+    fun replaceFragment(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 
-    fun replaceFragment(fragment: Fragment, tag: String, enter: Int = R.anim.fab_slide_in_from_right, exit: Int = R.anim.fab_slide_out_to_left, popEnter: Int = R.anim.fab_slide_in_from_left, popExit: Int = R.anim.fab_slide_out_to_right)
+    fun addFragment(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 
-    //    fun addFragment(fragment: Fragment, tag: String)
-
-    fun addFragment(fragment: Fragment, tag: String, enter: Int = R.anim.fab_slide_in_from_right, exit: Int = R.anim.fab_slide_out_to_left, popEnter: Int = R.anim.fab_slide_in_from_left, popExit: Int = R.anim.fab_slide_out_to_right)
-
-    fun addFragment(fragment: Fragment, prevFragment: Fragment, tag: String, enter: Int = R.anim.fab_slide_in_from_right, exit: Int = R.anim.fab_slide_out_to_left, popEnter: Int = R.anim.fab_slide_in_from_left, popExit: Int = R.anim.fab_slide_out_to_right)
+    fun addFragment(fragment: Fragment, prevFragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 }
 
-open abstract class _NavigationActivity : AppCompatActivity(), FragmentNavMap, ToolbarMap, StatusBarMap
+abstract class _NavigationActivity : AppCompatActivity(), FragmentNavMap, ToolbarMap, StatusBarMap
 {
-    protected var mMenuId = 0
+    private var mMenuId = 0
 
     override fun replaceFragment(fragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
     {
@@ -68,7 +64,6 @@ open abstract class _NavigationActivity : AppCompatActivity(), FragmentNavMap, T
                 .add(flContainer.id, fragment, tag)
                 .addToBackStack(tag)
                 .commit()
-
     }
 
     override fun addFragment(fragment: Fragment, prevFragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
@@ -118,9 +113,8 @@ open abstract class _NavigationActivity : AppCompatActivity(), FragmentNavMap, T
 
     override fun setTitle(title: String)
     {
-        toolbarTitle.text = null
+        toolbar.setTitle(null)
 
-        showToolbarElevation()
         toolbarLogo.visibility = View.GONE
         toolbarTitle.text = title
         toolbarTitle.visibility = View.VISIBLE

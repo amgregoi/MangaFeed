@@ -11,19 +11,25 @@ import com.amgregoire.mangafeed.Common.RecyclerViewSpaceDecoration
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.Models.Manga
 import com.amgregoire.mangafeed.R
-import com.amgregoire.mangafeed.UI.Adapters.SearchRecyclerAdapter
 import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
-import com.amgregoire.mangafeed.v2.ui.AppViewModelFactory
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
-import com.amgregoire.mangafeed.v2.ui.catalog.vm.RecentViewModel
+import com.amgregoire.mangafeed.v2.ui.FragmentNavMap
+import com.amgregoire.mangafeed.v2.ui.catalog.vm.CatalogViewModel
+import com.amgregoire.mangafeed.v2.ui.info.MangaInfoFragment
 import kotlinx.android.synthetic.main.fragment_catalog.view.*
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlin.properties.Delegates
 
 class RecentFragment : BaseFragment()
 {
-    private val recentViewModel by lazy {
-        ViewModelProviders.of(this, AppViewModelFactory(MangaFeed.app)).get(RecentViewModel::class.java)
+    private val catalogViewModel by lazy {
+        ViewModelProviders.of(this).get(CatalogViewModel::class.java)
+    }
+
+    private var state by Delegates.observable<State>(State.Loading) { _, _, state ->
+        state.render()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
@@ -36,47 +42,78 @@ class RecentFragment : BaseFragment()
     {
         super.onStart()
 
-        self.swipeManga.setDistanceToTriggerSync(1250)
+        state = State.Loading
+        self.swipeManga.isEnabled = true
+        self.swipeManga.setDistanceToTriggerSync(1200)
+
+        catalogViewModel.recent.observe(this, Observer { mangaList ->
+            mangaList ?: return@Observer
+
+            state =
+                    if (mangaList.isEmpty()) State.Failed(Error(getString(R.string.all_no_manga_message)))
+                    else State.Complete(mangaList)
+        })
+
         self.swipeManga.setOnRefreshListener {
             self.swipeManga.isRefreshing = false
-            self.emptyStateRecent.showLoader()
-            recentViewModel.retrieveRecentList()
+            state = State.Loading
         }
-
-        recentViewModel.state.observe(this, Observer { state ->
-            when (state)
-            {
-                is RecentViewModel.State.Complete -> uiScope.launch { renderComplete(state.mangaList) }
-                is RecentViewModel.State.Failed -> uiScope.launch { renderFailed(state.error, state.canRefresh) }
-                else -> uiScope.launch { renderLoading() }
-            }
-        })
     }
 
+    /**************************************************************************************
+     *
+     * Implementation
+     *
+     *************************************************************************************/
     private fun renderComplete(mangas: List<Manga>)
     {
         if (self.rvManga.adapter == null) context?.let {
             self.rvManga.addItemDecoration(RecyclerViewSpaceDecoration(ScreenUtil.dpToPx(it, 10)))
         }
 
-        self.rvManga.layoutManager = GridLayoutManager(context, 3)
-        self.rvManga.adapter = SearchRecyclerAdapter(mangas)
         self.rvManga.itemAnimator?.changeDuration = 0
+        self.rvManga.layoutManager = GridLayoutManager(context, 3)
+        self.rvManga.adapter = MangaAdapter(
+                data = ArrayList(mangas),
+                source = MangaFeed.app.currentSource,
+                itemSelected = { manga ->
+                    val parent = activity ?: return@MangaAdapter
+                    val fragment = MangaInfoFragment.newInstance(manga._id, false)
+                    (parent as FragmentNavMap).replaceFragment(fragment, MangaInfoFragment.TAG)
+                }
+        )
         self.emptyStateRecent.hide()
     }
 
     private fun renderLoading()
     {
         self.emptyStateRecent.showLoader()
+        catalogViewModel.retrieveRecentList()
     }
 
-    private fun renderFailed(error: Error, canRefresh: Boolean)
+    private fun renderFailed(error: Error)
     {
-        if (canRefresh) self.emptyStateRecent.showButton()
-        else self.emptyStateRecent.hideButton()
-
         self.emptyStateRecent.hideLoader(true)
         self.emptyStateRecent.setSecondaryText(error.message!!)
+    }
+
+    /**************************************************************************************
+     *
+     *
+     *
+     *************************************************************************************/
+    sealed class State
+    {
+        object Loading : State()
+        data class Complete(val mangaList: List<Manga>) : State()
+        data class Failed(val error: Error) : State()
+    }
+
+    private fun State.render(): Job = when (this)
+    {
+        is State.Loading -> uiScope.launch { renderLoading() }
+        is State.Complete -> uiScope.launch { renderComplete(mangaList) }
+        is State.Failed -> uiScope.launch { renderFailed(error) }
     }
 
     companion object

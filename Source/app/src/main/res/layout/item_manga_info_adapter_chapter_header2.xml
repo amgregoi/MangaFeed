@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/linearLayoutMangaInfoChapterRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/background_color"
+    android:orientation="horizontal">
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelineLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".05" />
+
+    <TextView
+        android:id="@+id/tvChapterHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:paddingBottom="20dp"
+        android:text="Chapters"
+        android:textColor="?attr/text_color"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guidelineLeft" />
+
+</android.support.constraint.ConstraintLayout>

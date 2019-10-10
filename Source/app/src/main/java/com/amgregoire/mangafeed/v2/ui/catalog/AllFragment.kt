@@ -22,7 +22,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
-class LibraryFragment : BaseFragment()
+class AllFragment : BaseFragment()
 {
     private val catalogViewModel by lazy {
         ViewModelProviders.of(this).get(CatalogViewModel::class.java)
@@ -45,7 +45,7 @@ class LibraryFragment : BaseFragment()
         state = State.Loading
         self.swipeManga.isEnabled = false
 
-        catalogViewModel.library.observe(this, Observer { mangaList ->
+        catalogViewModel.all.observe(this, Observer { mangaList ->
             mangaList ?: return@Observer
 
             state =
@@ -111,6 +111,6 @@ class LibraryFragment : BaseFragment()
 
     companion object
     {
-        fun newInstance() = LibraryFragment()
+        fun newInstance() = AllFragment()
     }
 }

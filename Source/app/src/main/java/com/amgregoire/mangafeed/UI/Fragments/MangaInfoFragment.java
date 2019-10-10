@@ -28,6 +28,7 @@ import com.amgregoire.mangafeed.UI.Mappers.IManga;
 import com.amgregoire.mangafeed.UI.Presenters.MangaInfoPres;
 import com.amgregoire.mangafeed.Utils.DownloadManager;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
+import com.amgregoire.mangafeed.v2.ui.BaseFragment;
 import com.l4digital.fastscroll.FastScrollRecyclerView;
 
 import butterknife.BindColor;
@@ -39,7 +40,7 @@ import butterknife.ButterKnife;
  * Created by Andy Gregoire on 3/12/2018.
  */
 
-public class MangaInfoFragment extends BackHandledFragment implements IManga.MangaMap
+public class MangaInfoFragment extends BaseFragment implements IManga.MangaMap
 {
     public final static String TAG = MangaInfoFragment.class.getSimpleName();
     public final static String MANGA_KEY = TAG + "MANGA";
@@ -251,24 +252,6 @@ public class MangaInfoFragment extends BackHandledFragment implements IManga.Man
     {
         mSwipeLayout.setRefreshing(false);
         mSwipeLayout.setEnabled(false);
-    }
-
-    @Override
-    public String getTagText()
-    {
-        return TAG;
-    }
-
-    @Override
-    public boolean onBackPressed()
-    {
-        if (mPresenter.isDownload())
-        {
-            onDownloadCancel();
-            return false;
-        }
-
-        return true;
     }
 
     /***

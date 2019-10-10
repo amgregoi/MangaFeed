@@ -384,13 +384,13 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     //Filter TYPE READING, COMPLETE, AND ON_HOLD
                     else if (mLastFilter == MangaEnums.FilterStatus.FOLLOWING)
                     {
-                        if (lManga.getFollowingValue() > 0)
+                        if (lManga.getFollowing() > 0)
                         {
                             lFilteredList.add(lBaseData.get(iIndex));
                         }
                     }
                     //Filter Type SPECIFIC
-                    else if (lManga.getFollowingValue() == mLastFilter.getValue())
+                    else if (lManga.getFollowing() == mLastFilter.getValue())
                     {
                         lFilteredList.add(lBaseData.get(iIndex));
                     }

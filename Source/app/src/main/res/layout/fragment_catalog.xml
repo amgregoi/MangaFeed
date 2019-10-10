@@ -16,7 +16,8 @@
             android:elevation="1dp"
             android:visibility="visible"
             app:mangaLoading="true"
-            app:mangaButtonVisible="true"
+            app:mangaDrawableImage="@drawable/empty"
+            app:mangaButtonVisible="false"
             app:mangaPrimaryText="No Manga"
             app:mangaSecondaryText="There are no manga to display" />
 

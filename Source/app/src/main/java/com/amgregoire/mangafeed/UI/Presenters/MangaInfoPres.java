@@ -206,8 +206,7 @@ public class MangaInfoPres implements IManga.MangaPres
         try
         {
             Chapter lChapter = null;
-            ArrayList<Chapter> lNewChapterList = new ArrayList<>(MangaFeed.Companion.getApp()
-                                                                          .getCurrentChapters());
+            ArrayList<Chapter> lNewChapterList = new ArrayList<>(MangaFeed.Companion.getApp().getCurrentChapters());
 
             for (Chapter iChapter : lNewChapterList)
             {

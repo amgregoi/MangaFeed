@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
-import com.amgregoire.mangafeed.v2.ui.catalog.HomeViewPagerAdapter2
+import com.amgregoire.mangafeed.v2.ui.catalog.adapter.HomeViewPagerAdapter2
 import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
 import kotlinx.android.synthetic.main.fragment_home.view.*
 
@@ -55,7 +55,7 @@ class HomeFragment2 : BaseFragment()
         val tabLayout = self.tabLayoutHome
         tabLayout.addTab(tabLayout.newTab().setText("Recent"))
         tabLayout.addTab(tabLayout.newTab().setText("Library"))
-        tabLayout.addTab(tabLayout.newTab().setText("Catalog"))
+        tabLayout.addTab(tabLayout.newTab().setText("All"))
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener
         {
             override fun onTabSelected(tab: TabLayout.Tab)

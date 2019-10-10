@@ -67,10 +67,6 @@ class Manga(
     val isFollowing: Boolean
         get() = following > 0
 
-    val followingValue: Int
-        get() = following
-
-
     constructor(
             title: String,
             url: String,

@@ -48,4 +48,10 @@ class MFragment : BaseFragment()
         (parent as ToolbarMap).setTitle(SharedPrefs.getSavedSource())
         (parent as ToolbarMap).setOptionsMenu(R.menu.menu_toolbar_home)
     }
+
+    companion object
+    {
+        val TAG:String = "MFragment"
+        fun newInstance() = MFragment()
+    }
 }

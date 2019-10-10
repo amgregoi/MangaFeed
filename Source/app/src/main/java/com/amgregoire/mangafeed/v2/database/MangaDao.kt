@@ -33,7 +33,7 @@ interface MangaDao
     fun countUsers(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg users: Manga)
+    fun insertAll(vararg manga: Manga)
 
     @Delete
     fun delete(user: Manga)

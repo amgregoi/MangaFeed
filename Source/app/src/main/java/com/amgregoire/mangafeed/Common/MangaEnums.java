@@ -2,11 +2,12 @@ package com.amgregoire.mangafeed.Common;
 
 
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceBase;
+import com.amgregoire.mangafeed.Common.WebSources.FunManga;
 import com.amgregoire.mangafeed.Common.WebSources.MangaEden;
 import com.amgregoire.mangafeed.Common.WebSources.MangaHere;
-import com.amgregoire.mangafeed.Common.WebSources.FunManga;
 import com.amgregoire.mangafeed.Common.WebSources.ReadLight;
 import com.amgregoire.mangafeed.Common.WebSources.Wuxia;
+import com.amgregoire.mangafeed.R;
 
 public class MangaEnums
 {
@@ -37,51 +38,6 @@ public class MangaEnums
             return mValue;
         }
 
-    }
-
-
-    /***
-     * This enum is for the various loading status'
-     */
-    public enum LoadingStatus
-    {
-        COMPLETE,
-
-        LOADING,
-
-        ERROR,
-
-        REFRESH;
-
-        public static LoadingStatus getLoadingStatus(int aStatus)
-        {
-            switch (aStatus)
-            {
-                case 0:
-                    return LOADING;
-                case 1:
-                    return COMPLETE;
-                case 2:
-                    return REFRESH;
-                default:
-                    return ERROR;
-            }
-        }
-
-        public static int getLoadingStatus(LoadingStatus aStatus)
-        {
-            switch (aStatus)
-            {
-                case LOADING:
-                    return 0;
-                case COMPLETE:
-                    return 1;
-                case REFRESH:
-                    return 2;
-                default:
-                    return 3;
-            }
-        }
     }
 
     public enum SourceType
@@ -124,7 +80,22 @@ public class MangaEnums
      */
     public enum FollowType
     {
-        Follow, Reading, Completed, On_Hold, Plan_to_Read;
+        Unfollow(0, R.string.manga_info_header_fab_follow, R.drawable.ic_heart_outline_white_24dp),
+        Reading(1, R.string.manga_info_header_fab_reading, R.drawable.ic_heart_white_24dp),
+        Completed(2, R.string.manga_info_header_fab_complete, R.drawable.ic_heart_white_24dp),
+        On_Hold(3, R.string.manga_info_header_fab_on_hold, R.drawable.ic_heart_white_24dp),
+        Plan_to_Read(4, R.string.manga_info_header_fab_plan_to_read, R.drawable.ic_heart_white_24dp);
+
+        public int value;
+        public int stringRes;
+        public int drawableRes;
+
+        FollowType(int value, int stringRes, int drawableRes)
+        {
+            this.value = value;
+            this.stringRes = stringRes;
+            this.drawableRes = drawableRes;
+        }
 
         @Override
         public String toString()
