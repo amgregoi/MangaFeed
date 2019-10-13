@@ -1,35 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/clParent"
+    android:id="@+id/flParent"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/widget_toolbar_2" />
-
-    <FrameLayout
-        android:id="@+id/flContainer"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="?attr/background_color2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        android:layout_height="match_parent">
 
-    <View
-        android:id="@+id/vMenuCover"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="#50000000"
-        android:clickable="true"
-        android:focusable="true"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/clParent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <FrameLayout
-        android:id="@+id/flMenuContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent" />
+            <include layout="@layout/widget_toolbar_2" />
 
-</android.support.constraint.ConstraintLayout>
+            <FrameLayout
+                android:id="@+id/flContainer"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="?attr/background_color2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        </android.support.constraint.ConstraintLayout>
+
+        <!--    android:background="#50000000"-->
+
+        <View
+            android:id="@+id/vMenuCover"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/flMenuContainer"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/flMenuContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+</FrameLayout>

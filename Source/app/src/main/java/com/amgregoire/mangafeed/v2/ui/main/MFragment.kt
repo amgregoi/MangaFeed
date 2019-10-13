@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.SharedPrefs
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
-import com.amgregoire.mangafeed.v2.ui.main.NavAdapter
 import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
 import kotlinx.android.synthetic.main.fragment_m.view.*
 
@@ -29,6 +28,9 @@ class MFragment : BaseFragment()
     override fun onStart()
     {
         super.onStart()
+
+        if (self.vpNavigation.adapter != null) return
+
         self.vpNavigation.adapter = NavAdapter(childFragmentManager)
         self.vpNavigation.offscreenPageLimit = 2
         self.bottomNav.setOnNavigationItemSelectedListener { item ->
@@ -51,7 +53,7 @@ class MFragment : BaseFragment()
 
     companion object
     {
-        val TAG:String = "MFragment"
+        val TAG: String = "MFragment"
         fun newInstance() = MFragment()
     }
 }

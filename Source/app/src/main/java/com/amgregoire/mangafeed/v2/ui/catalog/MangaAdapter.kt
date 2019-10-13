@@ -87,6 +87,7 @@ class MangaAdapter(
     {
         data = ArrayList(mangaList)
         filteredData = ArrayList(mangaList)
+        filter.filter(filter.queryFilter)
         notifyDataSetChanged()
     }
 
@@ -156,7 +157,6 @@ class MangaAdapter(
     {
         filter.filterByStatus(filterType)
     }
-
 
     inner class MangaViewHolder(view: View) : RecyclerView.ViewHolder(view)
     {

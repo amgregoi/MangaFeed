@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipeManga"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <!--    app:fastScrollEnabled="true"-->
@@ -14,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:elevation="1dp"
-            android:visibility="visible"
+            android:visibility="gone"
             app:mangaLoading="true"
             app:mangaDrawableImage="@drawable/empty"
             app:mangaButtonVisible="false"
@@ -25,5 +26,7 @@
             android:id="@+id/rvManga"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </RelativeLayout>
+
+        <include layout="@layout/content_bottom_filter" />
+    </android.support.design.widget.CoordinatorLayout>
 </android.support.v4.widget.SwipeRefreshLayout>

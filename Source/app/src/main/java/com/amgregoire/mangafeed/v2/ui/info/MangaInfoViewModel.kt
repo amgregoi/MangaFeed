@@ -74,6 +74,7 @@ class MangaInfoViewModel(val app: Application, var baseManga: Manga) : AndroidVi
                                         baseManga = newManga
                                         mangaInfo.value = MangaInfo(baseManga, chapters)
                                         state.value = State.Complete
+                                        MangaFeed.app.updateManga(newManga)
                                     },
                                     { throwable ->
                                         mangaInfo.value = MangaInfo(baseManga, chapters)

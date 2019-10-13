@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/background_color"
+    android:clickable="true"
+    android:fitsSystemWindows="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    app:statusBarBackground="@android:color/transparent">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.amgregoire.mangafeed.UI.Widgets.NoScrollViewPager
+            android:id="@+id/vpReader"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="?attr/background_color" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/topContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#80222222"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <include layout="@layout/widget_toolbar_reader" />
+
+            <RelativeLayout
+                android:id="@+id/relativeLayoutChapterHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="2dp"
+                android:padding="5dp"
+                app:layout_constraintTop_toBottomOf="@id/toolbar"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <ImageButton
+                    android:id="@+id/imageViewReaderRefresh"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:background="?attr/selectableItemBackground"
+                    android:paddingEnd="10dp"
+                    android:src="@drawable/ic_refresh_white_24dp" />
+
+                <ImageButton
+                    android:id="@+id/imageViewReaderScreenOrientationToggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@id/imageViewReaderRefresh"
+                    android:background="?attr/selectableItemBackground"
+                    android:paddingEnd="10dp"
+                    android:src="@drawable/ic_refresh_white_24dp"
+                    android:visibility="gone" />
+
+                <!--TODO.. get a new icon -->
+                <ImageButton
+                    android:id="@+id/imageViewReaderVerticalScrollToggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@id/imageViewReaderScreenOrientationToggle"
+                    android:background="?attr/selectableItemBackground"
+                    android:paddingEnd="10dp"
+                    android:src="@drawable/ic_refresh_white_24dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvChapterTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_toStartOf="@id/imageViewReaderVerticalScrollToggle"
+                    android:ellipsize="middle"
+                    android:singleLine="true"
+                    android:text="Loading Chapter.."
+                    android:textColor="@color/manga_white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+        </android.support.constraint.ConstraintLayout>
+
+        <RelativeLayout
+            android:id="@+id/bottomContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="#80222222"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/fabPrevChapter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:src="@drawable/sharp_fast_rewind_white_24"
+                    app:fab_colorNormal="@color/colorAccent"
+                    app:fab_colorPressed="@color/colorAccent"
+                    app:fab_colorRipple="@color/colorAccent"
+                    app:fab_size="normal" />
+
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/fabPrevPage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@id/fabPrevChapter"
+                    android:src="@drawable/sharp_keyboard_arrow_left_white_24"
+                    app:fab_colorNormal="@color/colorAccent"
+                    app:fab_colorPressed="@color/colorAccent"
+                    app:fab_colorRipple="@color/colorAccent"
+                    app:fab_size="mini" />
+
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/fabNextChapter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/sharp_fast_forward_white_24"
+                    app:fab_colorNormal="@color/colorAccent"
+                    app:fab_colorPressed="@color/colorAccent"
+                    app:fab_colorRipple="@color/colorAccent"
+                    app:fab_size="normal" />
+
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/fabNextPage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="10dp"
+                    android:layout_toStartOf="@id/fabNextChapter"
+                    android:src="@drawable/sharp_keyboard_arrow_right_white_24"
+                    app:fab_colorNormal="@color/colorAccent"
+                    app:fab_colorPressed="@color/colorAccent"
+                    app:fab_colorRipple="@color/colorAccent"
+                    app:fab_size="mini" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayoutReaderPageCountContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true">
+
+                    <TextView
+                        android:id="@+id/tvCurrentPage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="0"
+                        android:textColor="?attr/text_color"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:fontFamily="sans-serif-black"
+                        android:text="|"
+                        android:textColor="?attr/text_color"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/tvPageCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="0"
+                        android:textColor="?attr/text_color"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+    </android.support.constraint.ConstraintLayout>
+</android.support.design.widget.CoordinatorLayout>

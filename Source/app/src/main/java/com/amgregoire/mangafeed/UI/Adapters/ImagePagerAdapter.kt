@@ -46,7 +46,6 @@ class ImagePagerAdapter(
 
     init
     {
-        MangaLogger.logError("ImagePagerAdapter", "${data}")
         isManga = listener == null // GestureViewPager.UserGestureListener only used with Novels
     }
 
@@ -71,6 +70,18 @@ class ImagePagerAdapter(
         val mImage = `object`.findViewById<GestureImageView>(R.id.gestureImageViewReaderChapter)
         mImageViews.remove(position)
         Glide.with(parent).clear(mImage)
+    }
+
+    fun canIncrement(currentPosition: Int): Boolean
+    {
+        if (currentPosition >= data.size - 1) return false
+        return true
+    }
+
+    fun canDecrement(currentPosition: Int): Boolean
+    {
+        if (currentPosition <= 0) return false
+        return true
     }
 
     private fun instantiateNovel(container: ViewGroup, position: Int): View
@@ -103,7 +114,7 @@ class ImagePagerAdapter(
         val lView = LayoutInflater.from(context).inflate(R.layout.item_reader_image_adapter, container, false)
         val mImage = lView.findViewById<GestureImageView>(R.id.gestureImageViewReaderChapter)
         val url = data.getOrNull(position) ?: return lView
-        if(url.isEmpty()) return lView
+        if (url.isEmpty()) return lView
 
         mImage.visibility = View.VISIBLE
 

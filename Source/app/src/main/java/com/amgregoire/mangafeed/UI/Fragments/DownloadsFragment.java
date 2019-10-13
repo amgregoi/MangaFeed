@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Mappers.IDownloads;
 import com.amgregoire.mangafeed.UI.Presenters.DownloadsPres;
+import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,6 +63,16 @@ public class DownloadsFragment extends Fragment implements IDownloads.DownloadsM
         mViewPager.setAdapter(adapter);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
         mViewPager.setOffscreenPageLimit(2);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser)
+    {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser)
+        {
+            ((ToolbarMap)getActivity()).setOptionsMenu(R.menu.menu_empty);
+        }
     }
 
     /***

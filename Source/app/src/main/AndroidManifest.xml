@@ -19,9 +19,9 @@
 
         <activity
             android:name=".UI.Activities.StartupScreen"
-            android:windowSoftInputMode="adjustPan"
-            android:theme="@style/Splash">
-        <intent-filter>
+            android:theme="@style/Splash"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -29,13 +29,12 @@
 
         <activity
             android:name=".UI.Activities.NavigationActivity"
-            android:windowSoftInputMode="adjustPan">
-        </activity>
+            android:windowSoftInputMode="adjustPan"></activity>
 
         <activity
             android:name=".v2.ui.main.MActivity"
-            android:windowSoftInputMode="adjustPan">
-        </activity>
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan"></activity>
 
         <receiver
             android:name=".Common.WifiBroadcastReceiver"

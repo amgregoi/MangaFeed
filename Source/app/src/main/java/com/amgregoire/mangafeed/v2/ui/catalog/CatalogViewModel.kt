@@ -1,13 +1,14 @@
-package com.amgregoire.mangafeed.v2.ui.catalog.vm
+package com.amgregoire.mangafeed.v2.ui.catalog
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.Models.Manga
 import com.amgregoire.mangafeed.Utils.MangaDB
+import com.amgregoire.mangafeed.v2.ui.Logger
 import io.reactivex.disposables.CompositeDisposable
 
-class CatalogViewModel() : ViewModel()
+class CatalogViewModel : ViewModel()
 {
     private val subscribers = CompositeDisposable()
 
@@ -15,11 +16,22 @@ class CatalogViewModel() : ViewModel()
     val library = MutableLiveData<List<Manga>>()
     val all = MutableLiveData<List<Manga>>()
 
+    val queryFilter = MutableLiveData<String>()
+
     init
     {
         retrieveRecentList()
         retrieveLibrary()
         retrieveAll()
+    }
+
+    fun setQuery(query:String)
+    {
+        val prevQuery = queryFilter.value ?: ""
+        if(prevQuery.length > 1 && query.isEmpty()) return
+
+        Logger.error("Setting filter=$query")
+        queryFilter.value = query
     }
 
     private fun retrieveAll()

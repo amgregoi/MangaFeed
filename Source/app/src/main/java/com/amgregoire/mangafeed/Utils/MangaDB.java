@@ -184,9 +184,10 @@ public class MangaDB extends SQLiteOpenHelper
      *
      * @param manga the object to the added, or updated.
      */
-    public void putManga(Manga manga)
+    public Manga putManga(Manga manga)
     {
         database.mangaDao().insertAll(manga);
+        return getManga(manga.getLink());
     }
 
     /***

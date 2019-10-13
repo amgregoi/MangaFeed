@@ -37,14 +37,16 @@ interface FragmentNavMap
 
     fun replaceFragment(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 
+    fun replaceFragmentParent(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
+
     fun addFragment(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 
     fun addFragment(fragment: Fragment, prevFragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 }
 
-abstract class _NavigationActivity : AppCompatActivity(), FragmentNavMap, ToolbarMap, StatusBarMap
+abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, ToolbarMap, StatusBarMap
 {
-    private var mMenuId = 0
+    protected var mMenuId = 0
 
     override fun replaceFragment(fragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
     {
@@ -52,6 +54,16 @@ abstract class _NavigationActivity : AppCompatActivity(), FragmentNavMap, Toolba
                 .setPrimaryNavigationFragment(fragment)
                 .setCustomAnimations(enter, exit, popEnter, popExit)
                 .replace(flContainer.id, fragment, tag)
+                .addToBackStack(tag)
+                .commit()
+    }
+
+    override fun replaceFragmentParent(fragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
+    {
+        supportFragmentManager.beginTransaction()
+                .setPrimaryNavigationFragment(fragment)
+                .setCustomAnimations(enter, exit, popEnter, popExit)
+                .replace(flParent.id, fragment, tag)
                 .addToBackStack(tag)
                 .commit()
     }

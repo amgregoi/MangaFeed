@@ -18,6 +18,7 @@ import com.amgregoire.mangafeed.UI.Mappers.IAccount;
 import com.amgregoire.mangafeed.UI.Presenters.AccountPres;
 import com.amgregoire.mangafeed.Utils.LoginManager;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
+import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -93,6 +94,16 @@ public class AccountFragment extends Fragment implements IAccount.AccountMap
     public void onAttemptLogin()
     {
         LoginManager.interact(getContext());
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser)
+    {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser)
+        {
+            ((ToolbarMap)getActivity()).setOptionsMenu(R.menu.menu_toolbar_account);
+        }
     }
 
     @Override

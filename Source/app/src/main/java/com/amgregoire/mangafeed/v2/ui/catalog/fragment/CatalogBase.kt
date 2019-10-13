@@ -1,8 +1,9 @@
-package com.amgregoire.mangafeed.v2.ui.catalog
+package com.amgregoire.mangafeed.v2.ui.catalog.fragment
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.os.Parcelable
 import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -11,24 +12,31 @@ import com.amgregoire.mangafeed.Common.RecyclerViewSpaceDecoration
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.Models.Manga
 import com.amgregoire.mangafeed.R
+import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.FragmentNavMap
-import com.amgregoire.mangafeed.v2.ui.catalog.vm.CatalogViewModel
+import com.amgregoire.mangafeed.v2.ui.Logger
+import com.amgregoire.mangafeed.v2.ui.catalog.CatalogViewModel
+import com.amgregoire.mangafeed.v2.ui.catalog.MangaAdapter
 import com.amgregoire.mangafeed.v2.ui.info.MangaInfoFragment
 import kotlinx.android.synthetic.main.fragment_catalog.view.*
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
-class LibraryFragment : BaseFragment()
+abstract class CatalogBase : BaseFragment()
 {
-    private val catalogViewModel by lazy {
-        ViewModelProviders.of(this).get(CatalogViewModel::class.java)
+    private var rvSavedState: Parcelable? = null
+
+    protected val catalogViewModel by lazy {
+        val parent = activity ?: return@lazy null
+        ViewModelProviders.of(parent).get(CatalogViewModel::class.java)
     }
 
-    private var state by Delegates.observable<State>(State.Loading) { _, _, state ->
+    protected var state by Delegates.observable<State>(State.Loading) { _, _, state ->
         state.render()
     }
 
@@ -41,16 +49,17 @@ class LibraryFragment : BaseFragment()
     override fun onStart()
     {
         super.onStart()
+        ioScope.launch {
+            MangaFeed.app.mangaChannel.consumeEach {
+                Logger.error("CatalogBase newManga=${it} ")
+                uiScope.launch { (self.rvManga.adapter as? MangaAdapter)?.updateItem(it) }
+            }
+        }
 
-        state = State.Loading
-        self.swipeManga.isEnabled = false
-
-        catalogViewModel.library.observe(this, Observer { mangaList ->
-            mangaList ?: return@Observer
-
-            state =
-                    if (mangaList.isEmpty()) State.Failed(Error(getString(R.string.all_no_manga_message)))
-                    else State.Complete(mangaList)
+        val parent = activity ?: return
+        catalogViewModel?.queryFilter?.observe(parent, Observer { query ->
+            query ?: return@Observer
+            (self.rvManga.adapter as? MangaAdapter)?.performTextFilter(query)
         })
     }
 
@@ -71,11 +80,17 @@ class LibraryFragment : BaseFragment()
                 data = ArrayList(mangas),
                 source = MangaFeed.app.currentSource,
                 itemSelected = { manga ->
+                    rvSavedState = self.rvManga.layoutManager?.onSaveInstanceState()
                     val parent = activity ?: return@MangaAdapter
                     val fragment = MangaInfoFragment.newInstance(manga._id, false)
                     (parent as FragmentNavMap).replaceFragment(fragment, MangaInfoFragment.TAG)
                 }
         )
+
+        // Restores the state of recyclerview if a saved state exists
+        rvSavedState?.let { self.rvManga.layoutManager?.onRestoreInstanceState(it) }
+
+
         self.emptyStateRecent.hide()
     }
 
@@ -107,10 +122,5 @@ class LibraryFragment : BaseFragment()
         is State.Loading -> uiScope.launch { renderLoading() }
         is State.Complete -> uiScope.launch { renderComplete(mangaList) }
         is State.Failed -> uiScope.launch { renderFailed(error) }
-    }
-
-    companion object
-    {
-        fun newInstance() = LibraryFragment()
     }
 }

@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
-import com.amgregoire.mangafeed.v2.ui.catalog.adapter.HomeViewPagerAdapter2
 import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
 import kotlinx.android.synthetic.main.fragment_home.view.*
 
@@ -37,13 +36,14 @@ class HomeFragment2 : BaseFragment()
     {
         val parent = activity ?: return
         (parent as ToolbarMap).hideToolbarElevation()
+        (parent as ToolbarMap).setOptionsMenu(R.menu.menu_toolbar_home)
     }
 
     private fun setupViewPager()
     {
-        self.viewPagerHome.adapter = HomeViewPagerAdapter2(childFragmentManager, 3)
+        self.viewPagerHome.adapter = CatalogViewPagerAdapter(childFragmentManager, 3)
         self.viewPagerHome.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(self.tabLayoutHome))
-        self.viewPagerHome.offscreenPageLimit = 2
+        self.viewPagerHome.offscreenPageLimit = 3
     }
 
     /***

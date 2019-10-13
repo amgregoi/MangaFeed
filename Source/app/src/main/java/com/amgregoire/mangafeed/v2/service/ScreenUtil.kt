@@ -1,5 +1,6 @@
 package com.amgregoire.mangafeed.v2.service
 
+import android.R
 import android.content.Context
 import android.content.res.Resources
 import android.util.DisplayMetrics
@@ -71,5 +72,25 @@ object ScreenUtil
         }
 
         return result
+    }
+
+    fun getNavigationBarHeight(resources: Resources): Int
+    {
+        var lResult = 0
+        val lResourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+        if (lResourceId > 0)
+        {
+            lResult = resources.getDimensionPixelSize(lResourceId)
+        }
+
+        return lResult
+    }
+
+    fun getToolbarHeight(context: Context): Int
+    {
+        val styleAttr = context.theme.obtainStyledAttributes(intArrayOf(R.attr.actionBarSize))
+        val toolbarHeight = styleAttr.getDimension(0, 0f).toInt()
+        styleAttr.recycle()
+        return toolbarHeight
     }
 }

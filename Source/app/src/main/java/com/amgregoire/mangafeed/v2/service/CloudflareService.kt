@@ -23,7 +23,7 @@ class CloudflareService
         val oldCookies = cookiePrefs.cookies
         if (oldCookies != null && cookiePrefs.expiresAt > Date().time)
         {
-            MangaLogger.logError("CloudflareService", "Using old cookies")
+//            MangaLogger.logError("CloudflareService", "Using old cookies")
             cookies.invoke(oldCookies.toList())
             return
         }

@@ -139,9 +139,8 @@ public class FunManga extends SourceManga
                     }
                     else
                     {
-                        lManga = new Manga(lMangaTitle, lMangaUrl, SourceKey);
-                        lMangaList.add(lManga);
-                        MangaDB.getInstance().putManga(lManga);
+                        Manga newManga = MangaDB.getInstance().putManga(new Manga(lMangaTitle, lMangaUrl, SourceKey));
+                        lMangaList.add(newManga);
 
                         updateMangaObservable(new RequestWrapper(lManga))
                                 .subscribe

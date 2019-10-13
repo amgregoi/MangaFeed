@@ -35,7 +35,6 @@ import com.amgregoire.mangafeed.UI.Services.ToolbarTimerService;
 import com.amgregoire.mangafeed.UI.Widgets.NoScrollViewPager;
 import com.amgregoire.mangafeed.Utils.BusEvents.ReaderPageChangeEvent;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
-import com.bumptech.glide.Glide;
 import com.github.clans.fab.FloatingActionButton;
 
 import butterknife.BindView;
@@ -315,7 +314,7 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
     {
         if (chPosition == mViewPager.getCurrentItem())
         {
-            mToolBarService.startToolBarTimer();
+            mToolBarService.startTimer();
         }
     }
 

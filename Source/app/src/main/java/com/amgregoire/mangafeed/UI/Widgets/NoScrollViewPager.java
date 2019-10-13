@@ -37,21 +37,25 @@ public class NoScrollViewPager extends ViewPager
         this.mPagingEnabled = aPagingEnabled;
     }
 
-    public void incrementCurrentItem()
+    public boolean incrementCurrentItem()
     {
         int lPosition = getCurrentItem();
         if (lPosition != getAdapter().getCount() - 1)
         {
             setCurrentItem(lPosition + 1, true);
+            return true;
         }
+        return false;
     }
 
-    public void decrementCurrentItem()
+    public boolean decrementCurrentItem()
     {
         int lPosition = getCurrentItem();
         if (lPosition != 0)
         {
             setCurrentItem(lPosition - 1, true);
+            return true;
         }
+        return false;
     }
 }

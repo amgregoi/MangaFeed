@@ -49,12 +49,12 @@ public class ToolbarTimerService extends Service
         mListener = aListener;
     }
 
-    Observable<Long> mTimer = Observable.timer(3, TimeUnit.SECONDS, Schedulers.io());
+    Observable<Long> mTimer = Observable.timer(6, TimeUnit.SECONDS, Schedulers.io());
     Observable<Long> mSystemUI = Observable.timer(6, TimeUnit.SECONDS, Schedulers.io());
     Disposable mTimerSub;
     Disposable mSystemUISub;
 
-    public void startToolBarTimer()
+    public void startTimer()
     {
         if (mTimerSub != null)
         {
@@ -85,6 +85,12 @@ public class ToolbarTimerService extends Service
             mTimerSub = null;
             restartSystemUiTimer();
         }
+    }
+
+    public void restartTimer()
+    {
+        stopTimer();
+        startTimer();
     }
 
     private void restartSystemUiTimer()

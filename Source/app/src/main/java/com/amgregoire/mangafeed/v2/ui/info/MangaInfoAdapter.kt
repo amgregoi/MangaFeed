@@ -28,7 +28,8 @@ import kotlinx.android.synthetic.main.item_manga_info_adapter_header2.view.*
 class MangaInfoAdapter(
         var manga: Manga,
         val source: SourceBase,
-        var chapters: List<Chapter> = listOf()
+        var chapters: List<Chapter> = listOf(),
+        val chapterSelected: (Manga, List<Chapter>, Chapter) -> Unit
 ) : RecyclerView.Adapter<MangaInfoAdapter.BaseViewHolder>()
 {
     private var data = arrayListOf<BaseData>()
@@ -149,6 +150,13 @@ class MangaInfoAdapter(
                 return
             }
 
+            if(image.isEmpty())
+            {
+                itemView.ivMangaInfoBackground.setBackgroundResource(R.color.colorAccent)
+                itemView.ivMangaInfoBackground.setImageResource(R.drawable.manga_error)
+                return
+            }
+
             val lOptions = RequestOptions()
             lOptions.fitCenter()
                     .placeholder(itemView.context.resources.getDrawable(R.drawable.manga_loading_image))
@@ -202,6 +210,10 @@ class MangaInfoAdapter(
 
             itemView.tvChapterTitle.text = chapter.chapterTitle
             itemView.tvChapterDate.text = chapter.chapterDate
+
+            itemView.clParent.setOnClickListener{
+                chapterSelected(manga, chapters, chapter)
+            }
         }
     }
 

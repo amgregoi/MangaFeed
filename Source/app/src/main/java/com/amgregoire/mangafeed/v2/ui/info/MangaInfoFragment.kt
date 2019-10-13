@@ -14,8 +14,11 @@ import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
+import com.amgregoire.mangafeed.v2.ui.FragmentNavMap
 import com.amgregoire.mangafeed.v2.ui.catalog.enum.FollowType
 import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
+import com.amgregoire.mangafeed.v2.ui.read.ReaderFragment
+import com.amgregoire.mangafeed.v2.ui.read.ReaderViewModel
 import kotlinx.android.synthetic.main.fragment_manga_info2.view.*
 
 
@@ -25,6 +28,10 @@ import kotlinx.android.synthetic.main.fragment_manga_info2.view.*
 
 class MangaInfoFragment : BaseFragment()
 {
+    private val readerViewModel: ReaderViewModel? by lazy {
+        val parent = activity ?: return@lazy null
+        ViewModelProviders.of(parent).get(ReaderViewModel::class.java)
+    }
 
     private val mangaInfoViewModel by lazy {
         val manga = MangaDB.getInstance().getManga(arguments!!.getInt(MANGA_KEY))
@@ -63,7 +70,17 @@ class MangaInfoFragment : BaseFragment()
             }
 
             self.rvMangaInfo.layoutManager = LinearLayoutManager(context)
-            self.rvMangaInfo.adapter = MangaInfoAdapter(mangaInfo.manga, MangaFeed.app.currentSource, mangaInfo.chapters)
+            self.rvMangaInfo.adapter = MangaInfoAdapter(
+                    manga = mangaInfo.manga,
+                    source = MangaFeed.app.currentSource,
+                    chapters = mangaInfo.chapters,
+                    chapterSelected = { manga, chapters, chapter ->
+                        val parent = activity ?: return@MangaInfoAdapter
+
+                        readerViewModel?.updateReaderInfo(manga, chapters, chapter)
+                        (parent as FragmentNavMap).replaceFragmentParent(ReaderFragment.newInstance(), ReaderFragment.TAG)
+                    }
+            )
         })
 
         mangaInfoViewModel.mangaInfoBottomNav.observe(this, Observer { bottomNavInfo ->

@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.R;
+import com.amgregoire.mangafeed.Utils.SharedPrefs;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -61,5 +62,19 @@ public class AccountFragmentSettings extends Fragment
     public void onRemoveDownloadedChapters()
     {
         Toast.makeText(getContext(), "NOT IMPLEMENTED", Toast.LENGTH_SHORT);
+    }
+
+    @OnClick(R.id.ll_light_theme)
+    public void onLightTheme()
+    {
+        SharedPrefs.setLayoutTheme(true);
+        getActivity().recreate();
+    }
+
+    @OnClick(R.id.ll_theme_dark)
+    public void onDarkTheme()
+    {
+        SharedPrefs.setLayoutTheme(false);
+        getActivity().recreate();
     }
 }

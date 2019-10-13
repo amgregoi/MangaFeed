@@ -20,8 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:elevation="10dp"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
@@ -30,8 +29,7 @@
                 android:text="General"
                 android:textColor="@color/colorAccent"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:id="@+id/contact_us"
@@ -39,33 +37,29 @@
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Contact Us"
                     android:textColor="@color/manga_white"
-                    android:textSize="16sp"
-                    />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Having a problem? Want to leave feedback?"
                     android:textColor="@color/manga_gray"
-                    android:textSize="14sp"
-                    />
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
-                android:background="@color/manga_white"
-                />
+                android:layout_marginBottom="8dp"
+                android:background="@color/manga_white" />
 
             <LinearLayout
                 android:id="@+id/force_update_sources"
@@ -73,34 +67,78 @@
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Force update sources"
                     android:textColor="@color/manga_white"
-                    android:textSize="16sp"
-                    />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Forces the application to retrieve any new manga from all sources."
                     android:textColor="@color/manga_gray"
-                    android:textSize="14sp"
-                    />
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_light_theme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Set Light theme"
+                    android:textColor="@color/manga_white"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sets app theme to light mode"
+                    android:textColor="@color/manga_gray"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_theme_dark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Set Dark theme"
+                    android:textColor="@color/manga_white"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sets app theme to dark mode"
+                    android:textColor="@color/manga_gray"
+                    android:textSize="14sp" />
 
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
-                android:background="@color/manga_white"
-                />
+                android:layout_marginBottom="8dp"
+                android:background="@color/manga_white" />
 
         </LinearLayout>
 
@@ -112,8 +150,7 @@
             android:layout_below="@id/general_group"
             android:layout_margin="8dp"
             android:elevation="10dp"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
@@ -122,8 +159,7 @@
                 android:text="Account"
                 android:textColor="@color/colorAccent"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:id="@+id/reset_followed_manga_pref"
@@ -131,34 +167,30 @@
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Clear Library"
                     android:textColor="@color/manga_white"
-                    android:textSize="16sp"
-                    />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Clear all followed manga from the followed list"
                     android:textColor="@color/manga_gray"
-                    android:textSize="14sp"
-                    />
+                    android:textSize="14sp" />
 
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
-                android:background="@color/manga_white"
-                />
+                android:layout_marginBottom="8dp"
+                android:background="@color/manga_white" />
 
             <LinearLayout
                 android:id="@+id/reset_cached_chapters"
@@ -166,34 +198,30 @@
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Clear cached chapters"
                     android:textColor="@color/manga_white"
-                    android:textSize="16sp"
-                    />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Clear all cached chapters from library"
                     android:textColor="@color/manga_gray"
-                    android:textSize="14sp"
-                    />
+                    android:textSize="14sp" />
 
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
-                android:background="@color/manga_white"
-                />
+                android:layout_marginBottom="8dp"
+                android:background="@color/manga_white" />
 
             <LinearLayout
                 android:id="@+id/reset_downloaded_chapters"
@@ -201,35 +229,30 @@
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Clear downloaded chapters"
                     android:textColor="@color/manga_white"
-                    android:textSize="16sp"
-                    />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Delete all downloaded chapters from device"
                     android:textColor="@color/manga_gray"
-                    android:textSize="14sp"
-                    />
+                    android:textSize="14sp" />
 
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
-                android:background="@color/manga_white"
-                />
-
+                android:layout_marginBottom="8dp"
+                android:background="@color/manga_white" />
 
 
         </LinearLayout>
@@ -241,8 +264,7 @@
             android:layout_below="@id/account_group"
             android:layout_margin="8dp"
             android:elevation="10dp"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
@@ -251,17 +273,15 @@
                 android:text="Admin"
                 android:textColor="@color/colorAccent"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
 
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
-                android:background="@color/manga_white"
-                />
+                android:layout_marginBottom="8dp"
+                android:background="@color/manga_white" />
 
         </LinearLayout>
     </RelativeLayout>

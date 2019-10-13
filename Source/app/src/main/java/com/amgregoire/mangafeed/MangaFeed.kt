@@ -9,6 +9,7 @@ import com.amgregoire.mangafeed.Common.WebSources.MangaEden
 import com.amgregoire.mangafeed.Common.WebSources.MangaHere
 import com.amgregoire.mangafeed.Common.WebSources.ReadLight
 import com.amgregoire.mangafeed.Models.Chapter
+import com.amgregoire.mangafeed.Models.Manga
 import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.Utils.MangaLogger
 import com.amgregoire.mangafeed.Utils.RxBus
@@ -29,6 +30,12 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consume
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.launch
 import java.util.*
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -215,6 +222,14 @@ class MangaFeed : Application()
                     )
             )
         }
+    }
+
+    @ExperimentalCoroutinesApi
+    val mangaChannel = BroadcastChannel<Manga>(10)
+
+    @ExperimentalCoroutinesApi
+    fun updateManga(manga: Manga) = ioScope.launch {
+        mangaChannel.send(manga)
     }
 
     companion object
