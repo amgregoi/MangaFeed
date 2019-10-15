@@ -100,7 +100,7 @@ public class MangaDB extends SQLiteOpenHelper
      */
     public static synchronized MangaDB getInstance()
     {
-        return MangaFeedKt.getAppComponent().getDataManager();
+        return MangaFeed.Companion.getApp().getAppComponent().getDataManager();
     }
 
     /***
@@ -198,7 +198,14 @@ public class MangaDB extends SQLiteOpenHelper
      */
     public Manga getManga(String link)
     {
+
         return database.mangaDao().findByUrl(link, MangaFeedKt.getCurrentSource().getSourceName());
+    }
+
+    public Manga getManga(String link, String source)
+    {
+
+        return database.mangaDao().findByUrl(link, source);
     }
 
     public Manga getManga(int id)
@@ -215,6 +222,12 @@ public class MangaDB extends SQLiteOpenHelper
     public boolean containsManga(String link)
     {
         return getManga(link) != null;
+    }
+
+    public boolean containsManga(Manga manga)
+    {
+        String url = Manga.Companion.mangaToFormattedUrl(manga);
+        return getManga(url, manga.getSource()) != null;
     }
 
 

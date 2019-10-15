@@ -29,6 +29,7 @@ android {
         }
 
         debug {
+            applicationIdSuffix ".debug"
             buildConfigField 'String', 'BASE_URL', '"http://manga.amgregoire.com/api/"'
         }
     }

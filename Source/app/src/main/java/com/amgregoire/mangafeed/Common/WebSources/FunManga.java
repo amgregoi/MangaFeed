@@ -9,6 +9,7 @@ import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
+import com.amgregoire.mangafeed.v2.ui.Logger;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -25,8 +26,8 @@ public class FunManga extends SourceManga
 
     private final String SourceKey = "FunManga";
     private final String mBaseUrl = "https://www.funmanga.com";
-    private final String mUpdatesUrl = "http://funmanga.com/latest-chapters";
-    private final String mCatalogUrl = "http://funmanga.com/manga-list/";
+    private final String mUpdatesUrl = "https://funmanga.com/latest-chapters";
+    private final String mCatalogUrl = "https://funmanga.com/manga-list/";
     private final String mGenres[] =
             {
                     "Joy",
@@ -139,8 +140,8 @@ public class FunManga extends SourceManga
                     }
                     else
                     {
-                        Manga newManga = MangaDB.getInstance().putManga(new Manga(lMangaTitle, lMangaUrl, SourceKey));
-                        lMangaList.add(newManga);
+                        lManga = MangaDB.getInstance().putManga(new Manga(lMangaTitle, lMangaUrl, SourceKey));
+                        lMangaList.add(lManga);
 
                         updateMangaObservable(new RequestWrapper(lManga))
                                 .subscribe
@@ -171,8 +172,6 @@ public class FunManga extends SourceManga
     @Override
     public Manga parseResponseToManga(final RequestWrapper request, final String responseBody)
     {
-        MangaLogger.logError("FunManga", request.getManga().getLink());
-
         Document lHtml = Jsoup.parse(responseBody);
 
         try
@@ -183,35 +182,43 @@ public class FunManga extends SourceManga
                                                .first();
             Elements lInfo = lHtml.body().select("dl.dl-horizontal").select("dd");
 
-            String lImage = lImageElement.attr("src");
-            String lDescription = lDescriptionElement.text();
+            String lImage = "";
+            if (lImageElement != null && lImageElement.hasAttr("src")) lImage = lImageElement.attr("src");
+
+
+            String lDescription = "";
+            if (lDescriptionElement != null) lDescription = lDescriptionElement.text();
             String lAlternate = null;
             String lAuthor = null;
             String lArtist = null;
             String lGenres = null;
             String lStatus = null;
 
-            for (int i = 0; i < lInfo.size(); i++)
+
+            if (lInfo != null)
             {
-                if (i == 0)
+                for (int i = 0; i < lInfo.size(); i++)
                 {
-                    lAlternate = lInfo.get(i).text();
-                }
-                else if (i == 5)
-                {
-                    lAuthor = lInfo.get(i).text();
-                }
-                else if (i == 4)
-                {
-                    lArtist = lInfo.get(i).text();
-                }
-                else if (i == 2)
-                {
-                    lGenres = lInfo.get(i).text();
-                }
-                else if (i == 1)
-                {
-                    lStatus = lInfo.get(i).text();
+                    if (i == 0)
+                    {
+                        lAlternate = lInfo.get(i).text();
+                    }
+                    else if (i == 5)
+                    {
+                        lAuthor = lInfo.get(i).text();
+                    }
+                    else if (i == 4)
+                    {
+                        lArtist = lInfo.get(i).text();
+                    }
+                    else if (i == 2)
+                    {
+                        lGenres = lInfo.get(i).text();
+                    }
+                    else if (i == 1)
+                    {
+                        lStatus = lInfo.get(i).text();
+                    }
                 }
             }
 
@@ -228,12 +235,12 @@ public class FunManga extends SourceManga
 
             MangaDB.getInstance().putManga(lManga);
 
-//            MangaFeed.Companion.getApp().rxBus().send(new UpdateMangaItemViewEvent(lManga));
             MangaLogger.logInfo(TAG, "Finished creating/updating manga (" + lManga.getTitle() + ")");
         }
         catch (Exception aException)
         {
             MangaLogger.logError(TAG, request.getManga().getLink(), aException.getMessage());
+            Logger.INSTANCE.error(aException, "");
         }
 
         return MangaDB.getInstance().getManga(request.getManga().getLink());
@@ -284,9 +291,9 @@ public class FunManga extends SourceManga
         while (lEndPoint != 'z')
         {
 
-            updateCatalogObservable(mCatalogUrl + lEndPoint).subscribe(o ->
+            updateCatalogObservable(mCatalogUrl + lEndPoint).subscribe(response ->
                     {
-                        String responseBody = (String) o;
+                        String responseBody = (String) response;
                         MangaDB lDatabase = MangaDB.getInstance();
                         Document lParsedDocument = Jsoup.parse(responseBody);
                         Elements lLinks = lParsedDocument.select("ul.manga-list.circle-list").select("a");
@@ -296,19 +303,21 @@ public class FunManga extends SourceManga
                             String name = link.text();
                             String url = link.attr("href") + "/";
 
-                            if (!lDatabase.containsManga(url))
+                            Manga newManga = new Manga(name, url, SourceKey);
+                            if (!lDatabase.containsManga(newManga))
                             {
-                                Manga lNewManga = new Manga(name, url, SourceKey);
-                                lDatabase.putManga(lNewManga);
+                                newManga = lDatabase.putManga(newManga);
+                                Logger.INSTANCE.info("Added new item -> " + newManga.getTitle());
                                 // update new entry info
+
                                 MangaFeed.Companion.getApp()
-                                         .getSourceByTag(TAG)
-                                         .updateMangaObservable(new RequestWrapper(lNewManga))
-                                         .subscribe(
-                                                 manga -> MangaLogger.logInfo(TAG, "Finished updating (" + TAG + ") " + manga.getTitle()),
-                                                 throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable
-                                                         .getMessage())
-                                         );
+                                                   .getSourceByTag(TAG)
+                                                   .updateMangaObservable(new RequestWrapper(newManga))
+                                                   .subscribe(
+                                                           manga -> Logger.INSTANCE.info("Finished updating (" + TAG + ") " + manga.getTitle()),
+                                                           throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable
+                                                                   .getMessage())
+                                                   );
                             }
                         }
                     },
@@ -323,6 +332,8 @@ public class FunManga extends SourceManga
                 lEndPoint++;
             }
         }
+
+
     }
 
     /***
@@ -346,7 +357,8 @@ public class FunManga extends SourceManga
             lChapterTitle = iChapterElement.select("span").first().text();
             lChapterDate = iChapterElement.select("span").get(1).text();
 
-            lChapterList.add(new Chapter(lChapterUrl, request.getManga().getTitle(), lChapterTitle, lChapterDate, lNumChapters, request.getManga().getLink(), SourceKey));
+            lChapterList.add(new Chapter(lChapterUrl, request.getManga().getTitle(), lChapterTitle, lChapterDate, lNumChapters, request.getManga()
+                                                                                                                                       .getLink(), SourceKey));
 
             lNumChapters--;
         }

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +13,8 @@ import android.widget.Toast;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
+import com.amgregoire.mangafeed.v2.ui.Logger;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -23,7 +24,7 @@ import butterknife.OnClick;
 
 public class AccountFragmentSettings extends Fragment
 {
-    public final static String  TAG = AccountFragmentSettings.class.getSimpleName();
+    public final static String TAG = AccountFragmentSettings.class.getSimpleName();
 
     public final static Fragment newInstance()
     {
@@ -75,6 +76,15 @@ public class AccountFragmentSettings extends Fragment
     public void onDarkTheme()
     {
         SharedPrefs.setLayoutTheme(false);
-        getActivity().recreate();
+
+        try
+        {
+            getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            getActivity().recreate();
+        }
+        catch (NullPointerException ex)
+        {
+            Logger.INSTANCE.error(ex, "");
+        }
     }
 }

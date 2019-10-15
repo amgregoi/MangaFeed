@@ -2,11 +2,14 @@ package com.amgregoire.mangafeed.v2.ui.catalog
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.support.constraint.ConstraintLayout
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
+import android.widget.ImageView
 import com.amgregoire.mangafeed.Common.MangaEnums
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceBase
 import com.amgregoire.mangafeed.Models.Manga
@@ -14,6 +17,8 @@ import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.NetworkService
 import com.amgregoire.mangafeed.v2.ScaleImageViewTarget
 import com.amgregoire.mangafeed.v2.service.CloudflareService
+import com.amgregoire.mangafeed.v2.service.ScreenUtil
+import com.amgregoire.mangafeed.v2.ui.Logger
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.Transformation
@@ -177,18 +182,31 @@ class MangaAdapter(
             itemView.cvParent.setOnClickListener {
                 itemSelected.invoke(filteredData[position])
             }
+
+            // Add margin to bottom elements
+            val params = itemView.cvParent.layoutParams as GridLayoutManager.LayoutParams
+
+            if (position / 3 == (data.size / 3)) params.bottomMargin = ScreenUtil.dpToPx(itemView.context, 40)
+            else  params.bottomMargin = 0
+
+            itemView.cvParent.layoutParams = params
+
         }
 
         private fun loadImage(manga: Manga)
         {
+            itemView.ivManga.scaleType = ImageView.ScaleType.CENTER
+
             val imageUrl = manga.image ?: run {
                 itemView.ivManga.setImageResource(R.drawable.manga_error)
+                Glide.with(itemView.context).clear(itemView.ivManga)
                 return
             }
 
             if(imageUrl.isEmpty())
             {
                 itemView.ivManga.setImageResource(R.drawable.manga_error)
+                Glide.with(itemView.context).clear(itemView.ivManga)
                 return
             }
 
@@ -196,8 +214,8 @@ class MangaAdapter(
             lOptions.fitCenter()
                     .placeholder(itemView.context.resources.getDrawable(R.drawable.manga_loading_image))
                     .error(itemView.context.resources.getDrawable(R.drawable.manga_error))
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.DATA)
+                    .skipMemoryCache(false)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
 
 
             val builder = LazyHeaders.Builder().addHeader("User-Agent", NetworkService.defaultUserAgent)

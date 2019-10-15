@@ -113,6 +113,7 @@ class NetworkService private constructor()
                 {
                     response.body?.let { body -> subscriber.onNext(body.string()) }
                     subscriber.onComplete()
+                    response.close()
                 }
                 catch (e: Throwable)
                 {

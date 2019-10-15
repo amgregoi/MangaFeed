@@ -8,9 +8,10 @@
     <color name="manga_white">#FFFFFFFF</color>
     <color name="manga_black">#FF000000</color>
     <color name="manga_off_white">#FFF5F5F5</color>
-    <color name="manga_white_alpha50">#80FFFFFF</color>
+<!--    <color name="manga_white_alpha50">#80FFFFFF</color>-->
+    <color name="manga_white_alpha50">#ededed</color>
     <color name="manga_charcoal">#FF222222</color>
-    <color name="manga_light_charcoal">#282828</color>
+    <color name="manga_light_charcoal">#3d3d3d</color>
     <color name="manga_red">#ffff3030</color>
     <color name="manga_yellow">#FFFFFC4C</color>
     <color name="manga_green">#FF2DED4D</color>

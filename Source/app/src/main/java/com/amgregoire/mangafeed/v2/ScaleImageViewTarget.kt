@@ -18,6 +18,7 @@ class ScaleImageViewTarget(val imageView: ImageView) : BaseTarget<Bitmap>()
     override fun onResourceReady(resource: Bitmap?, transition: Transition<in Bitmap>?)
     {
         if(resource == null){
+            imageView.scaleType = ScaleType.CENTER
             imageView.setImageResource(R.drawable.manga_error)
             return
         }
@@ -29,6 +30,12 @@ class ScaleImageViewTarget(val imageView: ImageView) : BaseTarget<Bitmap>()
     override fun getSize(cb: SizeReadyCallback?)
     {
         cb?.onSizeReady(SIZE_ORIGINAL, SIZE_ORIGINAL)
+    }
+
+    override fun onStop()
+    {
+        super.onStop()
+        imageView.scaleType = ScaleType.CENTER
     }
 
     override fun removeCallback(cb: SizeReadyCallback?) = Unit

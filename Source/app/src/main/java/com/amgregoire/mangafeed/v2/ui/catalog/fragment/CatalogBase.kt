@@ -12,6 +12,7 @@ import com.amgregoire.mangafeed.Common.RecyclerViewSpaceDecoration
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.Models.Manga
 import com.amgregoire.mangafeed.R
+import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
@@ -49,6 +50,9 @@ abstract class CatalogBase : BaseFragment()
     override fun onStart()
     {
         super.onStart()
+
+        state = State.Loading
+
         ioScope.launch {
             MangaFeed.app.mangaChannel.consumeEach {
                 Logger.error("CatalogBase newManga=${it} ")
@@ -80,6 +84,7 @@ abstract class CatalogBase : BaseFragment()
                 data = ArrayList(mangas),
                 source = MangaFeed.app.currentSource,
                 itemSelected = { manga ->
+                    catalogViewModel?.setLastItem(manga)
                     rvSavedState = self.rvManga.layoutManager?.onSaveInstanceState()
                     val parent = activity ?: return@MangaAdapter
                     val fragment = MangaInfoFragment.newInstance(manga._id, false)
@@ -92,6 +97,13 @@ abstract class CatalogBase : BaseFragment()
 
 
         self.emptyStateRecent.hide()
+
+        val parent = activity ?: return
+        catalogViewModel?.lastItem?.observe(parent, Observer { manga ->
+            manga ?: return@Observer
+            val updatedManga = MangaDB.getInstance().getManga(manga._id)
+            (self.rvManga.adapter as? MangaAdapter)?.updateItem(updatedManga)
+        })
     }
 
     private fun renderLoading()

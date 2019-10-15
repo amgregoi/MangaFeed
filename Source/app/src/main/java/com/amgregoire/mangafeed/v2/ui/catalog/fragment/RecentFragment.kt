@@ -11,9 +11,8 @@ class RecentFragment : CatalogBase()
     {
         super.onStart()
 
-        state = State.Loading
         self.swipeManga.isEnabled = true
-        self.swipeManga.setDistanceToTriggerSync(800)
+        self.swipeManga.setDistanceToTriggerSync(400)
 
         catalogViewModel?.recent?.observe(this, Observer { mangaList ->
             mangaList ?: return@Observer

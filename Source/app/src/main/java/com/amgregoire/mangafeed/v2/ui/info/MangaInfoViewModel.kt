@@ -11,9 +11,12 @@ import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.Models.Chapter
 import com.amgregoire.mangafeed.Models.Manga
 import com.amgregoire.mangafeed.R
+import com.amgregoire.mangafeed.Utils.MangaDB
+import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.v2.ui.Logger
 import com.amgregoire.mangafeed.v2.ui.catalog.enum.FollowType
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 
 class MangaInfoViewModelFactory(private var app: Application, var manga: Manga) : ViewModelProvider.Factory
 {
@@ -52,14 +55,19 @@ class MangaInfoViewModel(val app: Application, var baseManga: Manga) : AndroidVi
         else R.string.text_start
 
         mangaInfoBottomNav.value = MangaInfoBottomNav(followType.stringRes, followType.drawableRes, startText)
+
+        baseManga.updateFollowing(followType.value)
+        if (followType == FollowType.Unfollow) baseManga.recentChapter = null
+        MangaDB.getInstance().putManga(baseManga)
     }
 
     fun refresh()
     {
         state.value = State.Loading
-
-        fetchMangaInfoOnline()
-        fetchChapterListOnline()
+        ioScope.launch {
+            fetchMangaInfoOnline()
+            fetchChapterListOnline()
+        }
     }
 
     private fun fetchMangaInfoOnline()

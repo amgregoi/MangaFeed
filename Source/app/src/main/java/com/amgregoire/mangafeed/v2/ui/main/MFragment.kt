@@ -48,7 +48,6 @@ class MFragment : BaseFragment()
     {
         val parent = activity ?: return
         (parent as ToolbarMap).setTitle(SharedPrefs.getSavedSource())
-        (parent as ToolbarMap).setOptionsMenu(R.menu.menu_toolbar_home)
     }
 
     companion object

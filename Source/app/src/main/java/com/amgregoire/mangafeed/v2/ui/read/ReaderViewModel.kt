@@ -27,7 +27,7 @@ class ReaderViewModel : ViewModel()
     val uiState = MutableLiveData<ReaderUIState>()
     val readerInfo = MutableLiveData<ReaderInfo>()
     val chapterInfo = MutableLiveData<ChapterInfo>()
-
+    
     private val subscriptions = CompositeDisposable()
 
     fun updateReaderInfo(manga: Manga, chapters: List<Chapter>, chapter: Chapter)
@@ -72,7 +72,6 @@ class ReaderViewModel : ViewModel()
     {
         val info = readerInfo.value ?: return
         val position = info.chapters.indexOf(info.chapter)
-        //        updateCurrentChapterByPosition(position + 1)
 
         val newChapter = info.chapters.getOrNull(position + 1) ?: return
         updateReaderInfo(info.manga, info.chapters, newChapter)

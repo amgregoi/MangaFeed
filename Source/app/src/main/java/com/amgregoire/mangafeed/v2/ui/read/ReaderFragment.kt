@@ -8,22 +8,25 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.support.constraint.ConstraintLayout
 import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.AccelerateInterpolator
 import com.amgregoire.mangafeed.Common.MangaEnums
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.UI.Services.ToolbarTimerService
 import com.amgregoire.mangafeed.Utils.MangaLogger
+import com.amgregoire.mangafeed.v2.ResourceFactory
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.FragmentNavMap
 import kotlinx.android.synthetic.main.fragment_reader2.*
 import kotlinx.android.synthetic.main.fragment_reader2.view.*
-import kotlinx.android.synthetic.main.widget_toolbar_reader.view.*
+import kotlinx.android.synthetic.main.widget_toolbar_2.view.*
 
 /**
  * Created by Andy Gregoire on 3/21/2018.
@@ -37,8 +40,24 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
     }
 
     private var mToolBarService: ToolbarTimerService? = null
-    private var mConnection: ServiceConnection? = null
+    private val mConnection: ServiceConnection = object : ServiceConnection
+    {
+        override fun onServiceConnected(className: ComponentName, service: IBinder)
+        {
+            // We've bound to ToolbarTimerService, cast the IBinder and get ToolbarTimerService instance
+            val binder = service as ToolbarTimerService.LocalBinder
+            mToolBarService = binder.service
+            mToolBarService?.setToolbarListener(this@ReaderFragment)
+            delayedAction(2000) { mToolBarService?.startTimer() }
+        }
 
+        override fun onServiceDisconnected(aComponent: ComponentName)
+        {
+            MangaLogger.logInfo(TAG, aComponent.flattenToShortString() + " service disconnected.")
+        }
+    }
+
+    private var sysUiVis = 0
     /***
      * This function retrieves the height of the android onscreen bottom navigation bar.
      *
@@ -90,11 +109,20 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
         }
 
         setupListeners()
+
+        val parent = activity ?: return
+        val w = parent.window
+        sysUiVis = w.decorView.systemUiVisibility
+
+        w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+        w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
+
+        self.toolbar.layoutParams = (self.toolbar.layoutParams as ConstraintLayout.LayoutParams).apply { topMargin = ScreenUtil.getStatusBarHeight(resources) }
+        self.bottomContainer.setPadding(0, 0, 0, ScreenUtil.getNavigationBarHeight(resources))
     }
 
     private fun setupListeners()
     {
-
         fabNextPage.setOnClickListener {
             val chapter = readerViewModel?.getChapterByPosition(self.vpReader.currentItem) ?: return@setOnClickListener
             readerViewModel?.incrementPage(chapter)
@@ -124,6 +152,13 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
 
         val parent = activity ?: return
         parent.unbindService(mConnection)
+
+        parent.window.decorView.systemUiVisibility = sysUiVis
+
+        val w = parent.window
+        w.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+        //        w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
     }
 
     fun initViews()
@@ -136,27 +171,6 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
 
         setupViewPager()
         setupToolbarService()
-    }
-
-    /***
-     * This function hides the status bar, toolbar, and reader header/footers
-     *
-     */
-    override fun hideToolbar()
-    {
-        val parent = activity ?: return
-        self.topContainer.animate()
-                .translationY((-self.topContainer.height - ScreenUtil.getStatusBarHeight(parent.resources)).toFloat())
-                .setInterpolator(AccelerateInterpolator())
-                .start()
-
-        self.bottomContainer.animate()
-                .translationY((self.bottomContainer.height + ScreenUtil.getNavigationBarHeight(parent.resources)).toFloat())
-                .setInterpolator(AccelerateInterpolator())
-                .start()
-
-        parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-
     }
 
     override fun hideSystemUi()
@@ -230,23 +244,6 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
      */
     private fun setupToolbarService()
     {
-        mConnection = object : ServiceConnection
-        {
-            override fun onServiceConnected(className: ComponentName, service: IBinder)
-            {
-                // We've bound to ToolbarTimerService, cast the IBinder and get ToolbarTimerService instance
-                val binder = service as ToolbarTimerService.LocalBinder
-                mToolBarService = binder.service
-                mToolBarService?.setToolbarListener(this@ReaderFragment)
-                delayedAction(2000) { mToolBarService?.startTimer() }
-            }
-
-            override fun onServiceDisconnected(aComponent: ComponentName)
-            {
-                MangaLogger.logInfo(TAG, aComponent.flattenToShortString() + " service disconnected.")
-            }
-        }
-
         mToolBarService = ToolbarTimerService()
         mToolBarService?.setToolbarListener(this)
 
@@ -272,13 +269,33 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
                 .start()
 
         val parent = activity ?: return
-        parent.window.decorView.systemUiVisibility = 0
+        parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+    }
+
+    /***
+     * This function hides the status bar, toolbar, and reader header/footers
+     *
+     */
+    override fun hideToolbar()
+    {
+        val parent = activity ?: return
+        self.topContainer.animate()
+                .translationY((-self.topContainer.height - ScreenUtil.getStatusBarHeight(parent.resources)).toFloat())
+                .setInterpolator(AccelerateInterpolator())
+                .start()
+
+        self.bottomContainer.animate()
+                .translationY((self.bottomContainer.height + ScreenUtil.getNavigationBarHeight(parent.resources)).toFloat())
+                .setInterpolator(AccelerateInterpolator())
+                .start()
+
+        parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION  or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
     }
 
     private fun setupToolbar(title: String)
     {
         self.toolbar.title = title
-        self.toolbar.setNavigationIcon(R.drawable.navigation_back)
+        self.toolbar.setNavigationIcon(ResourceFactory.getNavigationIcon())
         self.toolbar.setNavigationOnClickListener {
             val parent = activity ?: return@setNavigationOnClickListener
             (parent as FragmentNavMap).popBackStack()
@@ -287,7 +304,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
 
     companion object
     {
-        val TAG = ReaderFragment::class.java.simpleName
+        val TAG: String = ReaderFragment::class.java.simpleName
         fun newInstance() = ReaderFragment()
     }
 }

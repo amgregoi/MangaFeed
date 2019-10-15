@@ -17,7 +17,7 @@ object Logger
      * @param aTag
      * @param message
      */
-    fun logInfo(message: String)
+    fun info(message: String)
     {
         val clazz = Thread.currentThread().stackTrace[3].className
         val method = Thread.currentThread().stackTrace[3].methodName

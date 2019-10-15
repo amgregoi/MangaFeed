@@ -11,7 +11,6 @@ class AllFragment : CatalogBase()
     {
         super.onStart()
 
-        state = State.Loading
         self.swipeManga.isEnabled = false
 
         catalogViewModel?.all?.observe(this, Observer { mangaList ->

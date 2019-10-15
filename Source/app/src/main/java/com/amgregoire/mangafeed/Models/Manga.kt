@@ -112,9 +112,17 @@ class Manga(
             {
                 lCompare = true
             }
+
+            if (_id == obj._id && _id != 0) lCompare = true
         }
 
         return lCompare
+    }
+
+    override fun hashCode(): Int
+    {
+        if (_id == 0) return this.hashCode()
+        return _id
     }
 
     /***
@@ -153,6 +161,9 @@ class Manga(
     {
         val TAG = "MANGA"
         var LinkRegex = "(http)*s*:\\/\\/www.[a-zA-Z]*.(com|net|org|cc)"
+
+        fun mangaToFormattedUrl(manga:Manga) = manga.link.replaceFirst(LinkRegex.toRegex(), "{${manga.source}}")
+        fun urlSourceToFormattedUrl(url:String, source: String) = url.replaceFirst(LinkRegex.toRegex(), "{${source}}")
 
         const val UNFOLLOW = 0
         const val FOLLOW_READING = 1

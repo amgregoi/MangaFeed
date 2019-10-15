@@ -45,46 +45,6 @@ class MActivity : BaseNavigationActivity()
         setSupportActionBar(toolbar)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean
-    {
-        return super.onCreateOptionsMenu(menu).also { setupSearchView(menu) }
-    }
-
-    private fun setupSearchView(menu: Menu)
-    {
-        menu.findItem(R.id.menuHomeSearch) ?: return
-
-        val lSearch = menu.findItem(R.id.menuHomeSearch).actionView as SearchView
-        val lTextArea = lSearch.findViewById<SearchView.SearchAutoComplete>(R.id.search_src_text)
-        lTextArea.setTextColor(resources.getColor(AttrService.getAttrColor(this, R.attr.text_color))) //or any color that you want
-        lSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener
-        {
-            override fun onQueryTextSubmit(s: String): Boolean
-            {
-                return false
-            }
-
-            override fun onQueryTextChange(query: String): Boolean
-            {
-                catalogViewModel.setQuery(query)
-                return true
-            }
-        })
-
-        lSearch.addOnAttachStateChangeListener(object : OnAttachStateChangeListener
-        {
-            override fun onViewDetachedFromWindow(arg0: View)
-            {
-            }
-
-            override fun onViewAttachedToWindow(arg0: View)
-            {
-                val query = catalogViewModel.queryFilter.value ?: ""
-                lSearch.setQuery(query, true)
-            }
-        })
-    }
-
     override fun setNavigationIcon(iconResource: Int?)
     {
         iconResource?.let {
@@ -110,11 +70,9 @@ class MActivity : BaseNavigationActivity()
 
         if (manager.backStackEntryCount > 0)
         {
-            val count = manager.backStackEntryCount
             if (manager.backStackEntryCount == 1)
             {
                 setNavigationIcon(0)
-                setOptionsMenu(R.menu.menu_toolbar_home)
                 hideToolbarElevation()
             }
             manager.primaryNavigationFragment?.let { fragment ->

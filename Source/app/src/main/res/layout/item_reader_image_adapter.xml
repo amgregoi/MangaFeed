@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?attr/background_color2">
 
     <com.amgregoire.mangafeed.UI.Widgets.GestureImageView
         android:id="@+id/gestureImageViewReaderChapter"
@@ -11,24 +12,25 @@
         android:visibility="gone" />
 
     <android.support.v4.widget.NestedScrollView
-        android:scrollbarSize="5dp"
-        android:scrollbarThumbVertical="@color/colorAccent"
-        android:scrollbars="vertical"
-        android:visibility="gone"
         android:id="@+id/scrollViewTextContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:scrollbarSize="5dp"
+        android:scrollbarThumbVertical="@color/colorAccent"
+        android:scrollbars="vertical"
+        android:visibility="gone">
 
         <com.amgregoire.mangafeed.UI.Widgets.GestureTextView
             android:id="@+id/gestureTextViewReaderChapter"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/manga_white"
-            android:textSize="17sp"
+            android:background="?attr/background_color2"
             android:fontFamily="sans-serif"
-            android:paddingEnd="15dp"
             android:paddingStart="15dp"
-            android:paddingTop="15dp" />
+            android:paddingTop="15dp"
+            android:paddingEnd="15dp"
+            android:textColor="?attr/text_color2"
+            android:textSize="17sp" />
     </android.support.v4.widget.NestedScrollView>
 </RelativeLayout>

@@ -265,9 +265,9 @@ public class Wuxia extends SourceNovel
                             lDescription.append(desc.text()).append("\n\n");
                         }
 
-                        if (!lDatabase.containsManga(lLink))
+                        Manga lNewManga = new Manga(lTitle, lLink, SourceKey);
+                        if (!lDatabase.containsManga(lNewManga))
                         {
-                            Manga lNewManga = new Manga(lTitle, lLink, SourceKey);
                             lNewManga.setImage(lImage);
                             lNewManga.setDescription(lDescription.toString());
 

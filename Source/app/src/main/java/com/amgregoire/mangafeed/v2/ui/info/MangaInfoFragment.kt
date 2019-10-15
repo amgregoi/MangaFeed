@@ -13,6 +13,8 @@ import android.view.ViewGroup
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.MangaDB
+import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.ResourceFactory
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.FragmentNavMap
 import com.amgregoire.mangafeed.v2.ui.catalog.enum.FollowType
@@ -20,6 +22,7 @@ import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
 import com.amgregoire.mangafeed.v2.ui.read.ReaderFragment
 import com.amgregoire.mangafeed.v2.ui.read.ReaderViewModel
 import kotlinx.android.synthetic.main.fragment_manga_info2.view.*
+import kotlinx.coroutines.launch
 
 
 /**
@@ -54,9 +57,9 @@ class MangaInfoFragment : BaseFragment()
         mangaInfoViewModel.state.observe(this, Observer { state ->
             when (state)
             {
-                is MangaInfoViewModel.State.Complete -> renderComplete()
-                is MangaInfoViewModel.State.Loading -> renderLoading()
-                is MangaInfoViewModel.State.Failed -> renderFailed()
+                is MangaInfoViewModel.State.Complete -> uiScope.launch { renderComplete() }
+                is MangaInfoViewModel.State.Loading -> uiScope.launch { renderLoading() }
+                is MangaInfoViewModel.State.Failed -> uiScope.launch { renderFailed() }
             }
         })
 
@@ -104,7 +107,7 @@ class MangaInfoFragment : BaseFragment()
     {
         val parent = activity ?: return
         (parent as ToolbarMap).setTitle(mangaInfoViewModel.baseManga.title)
-        (parent as ToolbarMap).setNavigationIcon(R.drawable.navigation_back) // TODO :: create new theme attr for navigation icon
+        (parent as ToolbarMap).setNavigationIcon(ResourceFactory.getNavigationIcon()) // TODO :: create new theme attr for navigation icon
         (parent as ToolbarMap).setOptionsMenu(R.menu.menu_empty)
     }
 

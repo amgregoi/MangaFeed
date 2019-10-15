@@ -16,6 +16,8 @@ class CatalogViewModel : ViewModel()
     val library = MutableLiveData<List<Manga>>()
     val all = MutableLiveData<List<Manga>>()
 
+    val lastItem = MutableLiveData<Manga>()
+
     val queryFilter = MutableLiveData<String>()
 
     init
@@ -69,11 +71,18 @@ class CatalogViewModel : ViewModel()
                         .cache()
                         .subscribe(
                                 { mangaList -> recent.value = mangaList },
-                                { recent.value = listOf() }
+                                {
+                                    Logger.error("Failed to retrieve recents list: $it")
+                                    recent.value = listOf()
+                                }
                         )
         )
     }
 
+    fun setLastItem(manga:Manga)
+    {
+        lastItem.value = manga
+    }
     override fun onCleared()
     {
         super.onCleared()

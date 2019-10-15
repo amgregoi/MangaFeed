@@ -86,8 +86,7 @@ class ImagePagerAdapter(
 
     private fun instantiateNovel(container: ViewGroup, position: Int): View
     {
-        val lView = LayoutInflater.from(context)
-                .inflate(R.layout.item_reader_image_adapter, container, false)
+        val lView = LayoutInflater.from(context).inflate(R.layout.item_reader_image_adapter, container, false)
         val mNovel = lView.findViewById<GestureTextView>(R.id.gestureTextViewReaderChapter)
         val mContainer = lView.findViewById<NestedScrollView>(R.id.scrollViewTextContainer)
         mNovel.setUserGesureListener(listener)
@@ -120,7 +119,7 @@ class ImagePagerAdapter(
 
         val lOptions = RequestOptions()
         lOptions.fitCenter()
-                .override(1024, 8192) //OpenGLRenderer max image size, if larger in X or Y it will scale the image
+                .override(1024, 8192)//8192) //OpenGLRenderer max image size, if larger in X or Y it will scale the image
                 .placeholder(context.resources.getDrawable(R.drawable.manga_loading_image))
                 .error(context.resources.getDrawable(R.drawable.manga_error))
                 .skipMemoryCache(true)
