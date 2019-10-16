@@ -14,4 +14,13 @@ enum class FollowType(var value: Int, var stringRes: Int, var drawableRes: Int)
     {
         return super.toString().replace("_", " ")
     }
+
+    companion object
+    {
+        fun getTypeFromValue(value: Int): FollowType
+        {
+            if (value >= values().size) return Unfollow
+            return values()[value]
+        }
+    }
 }

@@ -20,6 +20,8 @@ import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.UI.Services.ToolbarTimerService
 import com.amgregoire.mangafeed.Utils.MangaLogger
+import com.amgregoire.mangafeed.Utils.SharedPrefs
+import com.amgregoire.mangafeed.v2.NavigationType
 import com.amgregoire.mangafeed.v2.ResourceFactory
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
@@ -64,10 +66,17 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
      * @return
      */
 
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         self = inflater.inflate(R.layout.fragment_reader2, null)
         return self
+    }
+
+    override fun onPause()
+    {
+        super.onPause()
+        showToolbar()
     }
 
     override fun onStart()
@@ -115,7 +124,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
         sysUiVis = w.decorView.systemUiVisibility
 
         w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-        w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
+//        w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
 
         self.toolbar.layoutParams = (self.toolbar.layoutParams as ConstraintLayout.LayoutParams).apply { topMargin = ScreenUtil.getStatusBarHeight(resources) }
         self.bottomContainer.setPadding(0, 0, 0, ScreenUtil.getNavigationBarHeight(resources))
@@ -151,14 +160,13 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
         super.onDestroyView()
 
         val parent = activity ?: return
+        showToolbar()
         parent.unbindService(mConnection)
 
         parent.window.decorView.systemUiVisibility = sysUiVis
 
         val w = parent.window
         w.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-        //        w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
     }
 
     fun initViews()
@@ -270,6 +278,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
 
         val parent = activity ?: return
         parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        if(SharedPrefs.isLightTheme()) parent.window.decorView.systemUiVisibility = parent.window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
     }
 
     /***
@@ -290,12 +299,13 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
                 .start()
 
         parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION  or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        if(SharedPrefs.isLightTheme()) parent.window.decorView.systemUiVisibility = parent.window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
     }
 
     private fun setupToolbar(title: String)
     {
         self.toolbar.title = title
-        self.toolbar.setNavigationIcon(ResourceFactory.getNavigationIcon())
+        self.toolbar.setNavigationIcon(ResourceFactory.getNavigationIcon(NavigationType.Back))
         self.toolbar.setNavigationOnClickListener {
             val parent = activity ?: return@setNavigationOnClickListener
             (parent as FragmentNavMap).popBackStack()

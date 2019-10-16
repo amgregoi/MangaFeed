@@ -3,22 +3,17 @@ package com.amgregoire.mangafeed.v2.ui.main
 import android.arch.lifecycle.ViewModelProviders
 import android.content.res.Resources
 import android.os.Bundle
-import android.support.v7.widget.SearchView
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentSettings
 import com.amgregoire.mangafeed.Utils.SharedPrefs
-import com.amgregoire.mangafeed.v2.ui.AttrService
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.BaseNavigationActivity
 import com.amgregoire.mangafeed.v2.ui.Logger
 import com.amgregoire.mangafeed.v2.ui.catalog.CatalogViewModel
 import kotlinx.android.synthetic.main.activity_m.*
 import kotlinx.android.synthetic.main.widget_toolbar_2.*
-import android.view.View.OnAttachStateChangeListener
-import com.amgregoire.mangafeed.MangaFeed
 
 
 class MActivity : BaseNavigationActivity()
@@ -93,7 +88,7 @@ class MActivity : BaseNavigationActivity()
     {
         val theme = super.getTheme()
 
-        if (SharedPrefs.getLayoutTheme()) theme.applyStyle(R.style.AppTheme_Light, true)
+        if (SharedPrefs.isLightTheme()) theme.applyStyle(R.style.AppTheme_Light, true)
         else theme.applyStyle(R.style.AppTheme_Dark, true)
 
         return theme

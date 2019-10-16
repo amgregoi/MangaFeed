@@ -408,7 +408,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
          */
         private Drawable iconFactory(boolean checked)
         {
-            if (SharedPrefs.getLayoutTheme())
+            if (SharedPrefs.isLightTheme())
             {
                 if (checked)
                 {

@@ -21,10 +21,10 @@
         <item name="text_color2">@color/manga_white_alpha50</item>
         <item name="accent1">@color/manga_white</item>
         <item name="accent2">@color/manga_white_alpha50</item>
-        <item name="android:navigationBarColor">?attr/background_color</item>
         <!-- Consider new versioned Style sheets -->
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
-        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+        <item name="android:navigationBarColor">?attr/background_color</item>
     </style>
 
     <style name="AppTheme.Light" parent="AppTheme">
@@ -35,9 +35,9 @@
         <item name="text_color2">@color/manga_light_charcoal</item>
         <item name="accent1">@color/colorPrimaryDark</item>
         <item name="accent2">@color/colorPrimaryLight</item>
-<!--        <item name="android:navigationBarColor">?attr/background_color</item>-->
         <!-- Consider new versioned Style sheets -->
-        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+        <item name="android:navigationBarColor">?attr/background_color</item>
 
     </style>
 

@@ -11,7 +11,7 @@
         android:background="@color/colorPrimary"
         app:titleTextColor="@color/manga_white"
         android:layout_height="?attr/actionBarSize"
-        app:navigationIcon="@drawable/navigation_back"
+        app:navigationIcon="@drawable/nav_back_white"
         app:title="Completed"
         />
 

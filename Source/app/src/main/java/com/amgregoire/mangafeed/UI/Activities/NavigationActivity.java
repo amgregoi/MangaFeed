@@ -2,7 +2,6 @@ package com.amgregoire.mangafeed.UI.Activities;
 
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -41,26 +40,16 @@ import com.amgregoire.mangafeed.Utils.BusEvents.SearchQueryChangeEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.StatusFilterEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaInfoEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateSourceEvent;
-import com.amgregoire.mangafeed.Utils.DownloadManager;
 import com.amgregoire.mangafeed.Utils.DownloadScheduler;
 import com.amgregoire.mangafeed.Utils.LoginManager;
-import com.amgregoire.mangafeed.Utils.MangaFeedRest;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
-import com.amgregoire.mangafeed.Utils.SharedPrefs;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.common.util.SharedPreferencesUtils;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-import com.squareup.picasso.Picasso;
 
-
-import java.util.ArrayList;
 
 import butterknife.BindDrawable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 public class NavigationActivity extends AppCompatActivity implements WifiBroadcastReceiver.WifiResponseListener, BackHandledFragment.BackHandlerInterface
 {
@@ -72,7 +61,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
 
     @BindDrawable(R.drawable.ic_checkbox_blank_circle_outline_white_24dp) Drawable mDrawWhiteOutline;
     @BindDrawable(R.drawable.ic_check_circle_outline_white_24dp) Drawable mDrawWhiteChecked;
-    @BindDrawable(R.drawable.navigation_back) Drawable mDrawBack;
+    @BindDrawable(R.drawable.nav_back_white) Drawable mDrawBack;
 
     private BackHandledFragment selectedFragment;
     private WifiBroadcastReceiver mReceiver;

@@ -23,7 +23,6 @@ import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Activities.NavigationActivity;
 import com.amgregoire.mangafeed.UI.Adapters.MangaInfoChaptersAdapter;
-import com.amgregoire.mangafeed.UI.BackHandledFragment;
 import com.amgregoire.mangafeed.UI.Mappers.IManga;
 import com.amgregoire.mangafeed.UI.Presenters.MangaInfoPres;
 import com.amgregoire.mangafeed.Utils.DownloadManager;
@@ -122,7 +121,7 @@ public class MangaInfoFragment extends BaseFragment implements IManga.MangaMap
                 inflater.inflate(R.menu.menu_toolbar_downloads_manga_info, menu);
             }
 
-            mToolbar.setNavigationIcon(R.drawable.navigation_back);
+            mToolbar.setNavigationIcon(R.drawable.nav_back_white);
             mToolbar.setTitle(mPresenter.getTitle());
         }
         else

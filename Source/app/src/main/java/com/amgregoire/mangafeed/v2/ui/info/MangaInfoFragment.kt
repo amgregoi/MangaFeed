@@ -14,6 +14,7 @@ import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.NavigationType
 import com.amgregoire.mangafeed.v2.ResourceFactory
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.FragmentNavMap
@@ -72,6 +73,8 @@ class MangaInfoFragment : BaseFragment()
                 return@Observer
             }
 
+            mangaInfoViewModel.setFollowStatus(mangaInfo.manga.following)
+
             self.rvMangaInfo.layoutManager = LinearLayoutManager(context)
             self.rvMangaInfo.adapter = MangaInfoAdapter(
                     manga = mangaInfo.manga,
@@ -107,26 +110,23 @@ class MangaInfoFragment : BaseFragment()
     {
         val parent = activity ?: return
         (parent as ToolbarMap).setTitle(mangaInfoViewModel.baseManga.title)
-        (parent as ToolbarMap).setNavigationIcon(ResourceFactory.getNavigationIcon()) // TODO :: create new theme attr for navigation icon
+        (parent as ToolbarMap).setNavigationIcon(ResourceFactory.getNavigationIcon(NavigationType.Close))
         (parent as ToolbarMap).setOptionsMenu(R.menu.menu_empty)
     }
 
     private fun renderLoading()
     {
         self.emptyStateMangaInfo.showLoader()
-
     }
 
     private fun renderComplete()
     {
         self.emptyStateMangaInfo.hide()
-
     }
 
     private fun renderFailed()
     {
         self.emptyStateMangaInfo.hideLoader(true)
-
     }
 
     /***

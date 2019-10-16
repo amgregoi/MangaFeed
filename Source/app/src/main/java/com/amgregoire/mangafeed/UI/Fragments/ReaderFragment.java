@@ -210,7 +210,7 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
         if (getActivity() != null)
         {
             mToolbar.setTitle(mPresenter.getMangaTitle());
-            mToolbar.setNavigationIcon(R.drawable.navigation_back);
+            mToolbar.setNavigationIcon(R.drawable.nav_back_white);
             mToolbar.setNavigationOnClickListener(view -> getActivity().onBackPressed());
         }
     }

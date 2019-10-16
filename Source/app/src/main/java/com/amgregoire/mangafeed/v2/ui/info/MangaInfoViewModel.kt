@@ -61,6 +61,12 @@ class MangaInfoViewModel(val app: Application, var baseManga: Manga) : AndroidVi
         MangaDB.getInstance().putManga(baseManga)
     }
 
+    fun setFollowStatus(followType: Int)
+    {
+        val type = FollowType.getTypeFromValue(followType)
+        setFollowStatus(type)
+    }
+
     fun refresh()
     {
         state.value = State.Loading

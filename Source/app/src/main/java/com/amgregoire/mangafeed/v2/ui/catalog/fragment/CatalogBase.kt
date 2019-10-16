@@ -88,7 +88,7 @@ abstract class CatalogBase : BaseFragment()
                     rvSavedState = self.rvManga.layoutManager?.onSaveInstanceState()
                     val parent = activity ?: return@MangaAdapter
                     val fragment = MangaInfoFragment.newInstance(manga._id, false)
-                    (parent as FragmentNavMap).replaceFragment(fragment, MangaInfoFragment.TAG)
+                    (parent as FragmentNavMap).addFragment(fragment, MangaInfoFragment.TAG, R.anim.slide_out_bottom, R.anim.slide_out_to_left, R.anim.slide_in_from_left, R.anim.slide_in_bottom)
                 }
         )
 

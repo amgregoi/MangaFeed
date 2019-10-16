@@ -172,7 +172,7 @@ public class SharedPrefs
      * True = Light theme
      * False = Dark theme
      */
-    public static boolean getLayoutTheme()
+    public static boolean isLightTheme()
     {
         Context lContext = MangaFeed.Companion.getApp();
         return PreferenceManager.getDefaultSharedPreferences(lContext)
