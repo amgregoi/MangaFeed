@@ -1,10 +1,12 @@
 package com.amgregoire.mangafeed.UI.Adapters
 
-import android.content.Context
+import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentActivity
 import android.support.v4.view.PagerAdapter
 import android.support.v4.widget.NestedScrollView
 import android.text.Html
@@ -19,7 +21,11 @@ import com.amgregoire.mangafeed.UI.Widgets.GestureTextView
 import com.amgregoire.mangafeed.UI.Widgets.GestureViewPager
 import com.amgregoire.mangafeed.Utils.MangaLogger
 import com.amgregoire.mangafeed.Utils.NetworkService
+import com.amgregoire.mangafeed.ioScope
+import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.custom.EmptyState
 import com.amgregoire.mangafeed.v2.service.CloudflareService
+import com.amgregoire.mangafeed.v2.ui.read.ReaderViewModel
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -28,6 +34,8 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.BitmapImageViewTarget
 import com.bumptech.glide.request.transition.Transition
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
 /**
@@ -36,11 +44,16 @@ import java.io.ByteArrayOutputStream
 
 class ImagePagerAdapter(
         val parent: Fragment,
-        val context: Context,
+        val context: FragmentActivity,
         var data: List<String>,
         private val listener: GestureViewPager.UserGestureListener? = null
 ) : PagerAdapter()
 {
+
+    private val readerViewModel: ReaderViewModel by lazy {
+        ViewModelProviders.of(context).get(ReaderViewModel::class.java)
+    }
+
     private val mImageViews = SparseArray<View>()
     private var isManga: Boolean = false
 
@@ -64,24 +77,12 @@ class ImagePagerAdapter(
         return if (isManga) instantiateImage(container, position) else instantiateNovel(container, position)
     }
 
-    override fun destroyItem(container: ViewGroup, position: Int, `object`: Any)
+    override fun destroyItem(container: ViewGroup, position: Int, obj: Any)
     {
-        container.removeView(`object` as RelativeLayout)
-        val mImage = `object`.findViewById<GestureImageView>(R.id.gestureImageViewReaderChapter)
+        container.removeView(obj as RelativeLayout)
+        val mImage = obj.findViewById<GestureImageView>(R.id.gestureImageViewReaderChapter)
         mImageViews.remove(position)
         Glide.with(parent).clear(mImage)
-    }
-
-    fun canIncrement(currentPosition: Int): Boolean
-    {
-        if (currentPosition >= data.size - 1) return false
-        return true
-    }
-
-    fun canDecrement(currentPosition: Int): Boolean
-    {
-        if (currentPosition <= 0) return false
-        return true
     }
 
     private fun instantiateNovel(container: ViewGroup, position: Int): View
@@ -111,16 +112,29 @@ class ImagePagerAdapter(
     private fun instantiateImage(container: ViewGroup, position: Int): View
     {
         val lView = LayoutInflater.from(context).inflate(R.layout.item_reader_image_adapter, container, false)
-        val mImage = lView.findViewById<GestureImageView>(R.id.gestureImageViewReaderChapter)
+        val image = lView.findViewById<GestureImageView>(R.id.gestureImageViewReaderChapter)
+        val emptyState = lView.findViewById<EmptyState>(R.id.emptyStateReaderItem)
         val url = data.getOrNull(position) ?: return lView
         if (url.isEmpty()) return lView
 
-        mImage.visibility = View.VISIBLE
+        emptyState.setButtonClickListener(View.OnClickListener {
+            readerViewModel.setUiStateBlock()
+            setupImage(image, emptyState, url, position)
+        })
+
+        setupImage(image, emptyState, url, position)
+
+        container.addView(lView)
+        mImageViews.put(position, lView)
+        return lView
+    }
+
+    private fun setupImage(image: GestureImageView, emptyState: EmptyState, url: String, position: Int)
+    {
+        image.visibility = View.VISIBLE
 
         val lOptions = RequestOptions()
-        lOptions.placeholder(context.resources.getDrawable(R.drawable.manga_loading_image))
-                .error(context.resources.getDrawable(R.drawable.manga_error))
-                .skipMemoryCache(true)
+        lOptions.skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
 
 
@@ -137,7 +151,7 @@ class ImagePagerAdapter(
                 .load(glideUrl)
                 .apply(lOptions)
                 .transition(GenericTransitionOptions<Any>().transition(android.R.anim.fade_in))
-                .into(object : BitmapImageViewTarget(mImage)
+                .into(object : BitmapImageViewTarget(image)
                 {
                     override fun onResourceReady(resource: Bitmap, glideAnimation: Transition<in Bitmap>?)
                     {
@@ -148,25 +162,29 @@ class ImagePagerAdapter(
                         resource.compress(Bitmap.CompressFormat.JPEG, 50, stream)
                         val byteArray = stream.toByteArray();
                         val compressedBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-                        mImage.setImageBitmap(compressedBitmap)
+                        image.setImageBitmap(compressedBitmap)
 
-                        mImage.initializeView()
+                        image.initializeView()
                         try
                         {
-                            mImage.tag = "$TAG:$position"
+                            image.tag = "$TAG:$position"
                         }
                         catch (aException: Exception)
                         {
                             MangaLogger.logError(TAG, "instantiateItem()", aException.toString())
                         }
 
-                        mImage.startFling(0f, 100000f) //large fling to initialize the image to the top for long pages
+                        image.startFling(0f, 100000f) //large fling to initialize the image to the top for long pages
+                        emptyState.hide()
+                    }
+
+                    override fun onLoadFailed(errorDrawable: Drawable?)
+                    {
+                        super.onLoadFailed(errorDrawable)
+
+                        emptyState.show()
                     }
                 })
-
-        container.addView(lView)
-        mImageViews.put(position, lView)
-        return lView
     }
 
     companion object

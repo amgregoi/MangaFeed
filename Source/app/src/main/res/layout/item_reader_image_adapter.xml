@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/background_color2">
+
+    <com.amgregoire.mangafeed.v2.custom.EmptyState
+        android:id="@+id/emptyStateReaderItem"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        app:mangaLoading="true"
+        android:layout_marginBottom="100dp"
+        app:mangaDrawableImage="@drawable/manga_error"
+        app:mangaPrimaryText="Oops"
+        app:mangaButtonVisible="true"
+        app:mangaButtonText="Refresh"
+        app:mangaSecondaryText="Something went wrong loading this page, trying refreshing or try again later." />
 
     <com.amgregoire.mangafeed.UI.Widgets.GestureImageView
         android:id="@+id/gestureImageViewReaderChapter"

@@ -75,7 +75,7 @@ abstract class CatalogBase : BaseFragment()
     private fun renderComplete(mangas: List<Manga>)
     {
         if (self.rvManga.adapter == null) context?.let {
-            self.rvManga.addItemDecoration(RecyclerViewSpaceDecoration(ScreenUtil.dpToPx(it, 10)))
+            self.rvManga.addItemDecoration(RecyclerViewSpaceDecoration(ScreenUtil.dpToPx(it, 5)))
         }
 
         self.rvManga.itemAnimator?.changeDuration = 0
@@ -118,6 +118,7 @@ abstract class CatalogBase : BaseFragment()
 
     private fun renderLoading()
     {
+        self.emptyStateRecent.visibility = View.VISIBLE
         self.emptyStateRecent.showLoader()
     }
 

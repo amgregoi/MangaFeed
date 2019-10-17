@@ -14,7 +14,6 @@ import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.NetworkService
 import com.amgregoire.mangafeed.v2.ScaleImageViewTarget
 import com.amgregoire.mangafeed.v2.service.CloudflareService
-import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.Glide
@@ -180,8 +179,11 @@ class MangaAdapter(
             // Add margin to bottom elements
             val params = itemView.cvParent.layoutParams as GridLayoutManager.LayoutParams
 
-            if (position / 3 == (data.size / 3)) params.bottomMargin = ScreenUtil.dpToPx(itemView.context, 40)
-            else  params.bottomMargin = 0
+
+            var rows = data.size / 3
+            if (data.size % 3 == 0) rows--
+            if (position >= rows * 3) params.bottomMargin = ScreenUtil.dpToPx(itemView.context, 40)
+            else params.bottomMargin = 0
 
             itemView.cvParent.layoutParams = params
 
@@ -197,7 +199,7 @@ class MangaAdapter(
                 return
             }
 
-            if(imageUrl.isEmpty())
+            if (imageUrl.isEmpty())
             {
                 itemView.ivManga.setImageResource(R.drawable.manga_error)
                 Glide.with(itemView.context).clear(itemView.ivManga)
@@ -237,7 +239,8 @@ class MangaAdapter(
             Manga.FOLLOW_COMPLETE -> R.color.manga_green
             Manga.FOLLOW_ON_HOLD -> R.color.manga_red
             Manga.FOLLOW_PLAN_TO_READ -> R.color.manga_gray
-            else -> {
+            else ->
+            {
                 val attrs = intArrayOf(R.attr.background_color)
                 val ta = itemView.context.obtainStyledAttributes(attrs)
                 val color = ta.getResourceId(0, android.R.color.black)

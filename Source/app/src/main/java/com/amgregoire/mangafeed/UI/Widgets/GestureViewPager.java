@@ -64,12 +64,12 @@ public class GestureViewPager extends ViewPager implements GestureDetector.OnGes
             fetchGestureImageViewByTag();
             mGestureDetector.onTouchEvent(aEvent);
 
+            //ACTION_DOWN workaround for checkSwipe()
+            if (aEvent.getAction() == MotionEvent.ACTION_DOWN)
+                mHorizontalSwipeX = aEvent.getX();
+
             if (mGestureImageView != null)
             {
-                //ACTION_DOWN workaround for checkSwipe()
-                if (aEvent.getAction() == MotionEvent.ACTION_DOWN)
-                    mHorizontalSwipeX = aEvent.getX();
-
                 if (!mGestureImageView.canScrollParent(mVertical))
                 {
                     return false;
@@ -127,13 +127,16 @@ public class GestureViewPager extends ViewPager implements GestureDetector.OnGes
                 mHorizontalSwipeX = ev.getX();
                 break;
             case MotionEvent.ACTION_UP:
-                if (mHorizontalSwipeX < ev.getX())
+                if (mHorizontalSwipeX > 0)
                 {
-                    return eSwipeDirection.LEFT;
-                }
-                else
-                {
-                    return eSwipeDirection.RIGHT;
+                    if (mHorizontalSwipeX < ev.getX())
+                    {
+                        return eSwipeDirection.LEFT;
+                    }
+                    else
+                    {
+                        return eSwipeDirection.RIGHT;
+                    }
                 }
         }
 

@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import com.amgregoire.mangafeed.R
+import com.amgregoire.mangafeed.Utils.SharedPrefs
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.cv_empty_state.view.*
 
@@ -48,6 +49,9 @@ class EmptyState @JvmOverloads constructor(context: Context, attrs: AttributeSet
         else hideLoader(true)
 
         if (attributes.hasValue(R.styleable.EmptyState_mangaButtonText)) buttonAction.text = (attributes.getText(R.styleable.EmptyState_mangaButtonText).toString())
+
+        if(SharedPrefs.isLightTheme()) progressBarLoading.setProgressBarStyle(ProgressBar.ProgressBarStyle.DarkBlue)
+        else progressBarLoading.setProgressBarStyle(ProgressBar.ProgressBarStyle.White)
 
         attributes.recycle()
     }

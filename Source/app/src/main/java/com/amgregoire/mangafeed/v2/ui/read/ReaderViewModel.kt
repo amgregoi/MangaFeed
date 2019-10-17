@@ -21,6 +21,7 @@ sealed class ReaderUIState
 {
     object SHOW : ReaderUIState()
     object HIDE : ReaderUIState()
+    object BLOCK : ReaderUIState()
 }
 
 class ReaderViewModel : ViewModel()
@@ -95,9 +96,15 @@ class ReaderViewModel : ViewModel()
     fun toggleUiState()
     {
         val state = uiState.value ?: ReaderUIState.SHOW
+
         uiState.value =
-                if (state == ReaderUIState.SHOW) ReaderUIState.HIDE
-                else ReaderUIState.SHOW
+                if (state == ReaderUIState.HIDE) ReaderUIState.SHOW
+                else ReaderUIState.HIDE
+    }
+
+    fun setUiStateBlock()
+    {
+        uiState.value = ReaderUIState.BLOCK
     }
 
     fun updateChapterInfo(chapter: Chapter?, title: String? = null, currentPage: Int? = null, totalPages: Int? = null)

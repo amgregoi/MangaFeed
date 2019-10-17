@@ -14,7 +14,6 @@ import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Mappers.IReader;
-import com.amgregoire.mangafeed.UI.Presenters.ReaderPresChapter;
 import com.amgregoire.mangafeed.UI.Widgets.GestureViewPager;
 import com.amgregoire.mangafeed.Utils.BusEvents.ReaderChapterChangeEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.ReaderSingleTapEvent;
@@ -58,8 +57,8 @@ public class ReaderFragmentChapter extends Fragment implements IReader.ReaderMap
         View lView = inflater.inflate(R.layout.item_fragment_reader_chapter, null);
         ButterKnife.bind(this, lView);
 
-        mPresenter = new ReaderPresChapter(this);
-        mPresenter.init(getArguments());
+//        mPresenter = new ReaderPresChapter(this);
+//        mPresenter.init(getArguments());
 
         return lView;
     }
@@ -68,14 +67,14 @@ public class ReaderFragmentChapter extends Fragment implements IReader.ReaderMap
     public void onResume()
     {
         super.onResume();
-        mPresenter.onResume();
+//        mPresenter.onResume();
     }
 
     @Override
     public void onPause()
     {
         super.onPause();
-        mPresenter.onPause();
+//        mPresenter.onPause();
     }
 
     @Override
