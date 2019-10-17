@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.support.constraint.ConstraintLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
+import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.View
@@ -37,6 +38,8 @@ interface FragmentNavMap
 
     fun replaceFragment(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 
+    fun replaceFragment(fragment: Fragment, tag: String, transaction: FragmentTransaction, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
+
     fun replaceFragmentParent(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 
     fun addFragment(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
@@ -51,6 +54,16 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
     override fun replaceFragment(fragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
     {
         supportFragmentManager.beginTransaction()
+                .setPrimaryNavigationFragment(fragment)
+                .setCustomAnimations(enter, exit, popEnter, popExit)
+                .replace(flContainer.id, fragment, tag)
+                .addToBackStack(tag)
+                .commit()
+    }
+
+    override fun replaceFragment(fragment: Fragment, tag: String, transaction: FragmentTransaction, enter: Int, exit: Int, popEnter: Int, popExit: Int)
+    {
+        transaction
                 .setPrimaryNavigationFragment(fragment)
                 .setCustomAnimations(enter, exit, popEnter, popExit)
                 .replace(flContainer.id, fragment, tag)

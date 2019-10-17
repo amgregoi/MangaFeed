@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.support.constraint.ConstraintLayout
 import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
 import android.view.View
@@ -59,24 +58,28 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
         }
     }
 
-    private var sysUiVis = 0
-    /***
-     * This function retrieves the height of the android onscreen bottom navigation bar.
-     *
-     * @return
-     */
-
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         self = inflater.inflate(R.layout.fragment_reader2, null)
         return self
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+        showToolbar()
+        enterAndExitSystemUI()
+        setupToolbarService()
+    }
+
     override fun onPause()
     {
         super.onPause()
         showToolbar()
+        enterAndExitSystemUI()
+
+        val parent = activity ?: return
+        parent.unbindService(mConnection)
     }
 
     override fun onStart()
@@ -93,9 +96,14 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
                 setupToolbar(info.manga.title)
                 self.vpReader.offscreenPageLimit = 1
                 if (self.vpReader.adapter == null) self.vpReader.adapter = ChapterPagerAdapter(childFragmentManager, info.chapters, info.manga.isFollowing, info.manga)
-                self.vpReader.currentItem = readerVm.getCurrentPosition()
-
                 if (MangaFeed.app.currentSourceType == MangaEnums.SourceType.NOVEL) self.vpReader.setPagingEnabled(true)
+
+                val position = readerVm.getCurrentPosition()
+
+                if (self.vpReader.currentItem == position) return@Observer
+
+                self.vpReader.currentItem = position
+
             })
 
             readerVm.chapterInfo.observe(parent, Observer { info ->
@@ -118,16 +126,6 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
         }
 
         setupListeners()
-
-        val parent = activity ?: return
-        val w = parent.window
-        sysUiVis = w.decorView.systemUiVisibility
-
-        w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-//        w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
-
-        self.toolbar.layoutParams = (self.toolbar.layoutParams as ConstraintLayout.LayoutParams).apply { topMargin = ScreenUtil.getStatusBarHeight(resources) }
-        self.bottomContainer.setPadding(0, 0, 0, ScreenUtil.getNavigationBarHeight(resources))
     }
 
     private fun setupListeners()
@@ -155,20 +153,6 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
         }
     }
 
-    override fun onDestroyView()
-    {
-        super.onDestroyView()
-
-        val parent = activity ?: return
-        showToolbar()
-        parent.unbindService(mConnection)
-
-        parent.window.decorView.systemUiVisibility = sysUiVis
-
-        val w = parent.window
-        w.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-    }
-
     fun initViews()
     {
         if (MangaFeed.app.currentSourceType == MangaEnums.SourceType.NOVEL)
@@ -178,30 +162,27 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
         }
 
         setupViewPager()
-        setupToolbarService()
     }
 
     override fun hideSystemUi()
     {
         val parent = activity ?: return
-        if (parent.window.decorView.systemUiVisibility == 0)
-        {
-            parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        }
+        parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        if (SharedPrefs.isLightTheme()) parent.window.decorView.systemUiVisibility = parent.window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
     }
 
-    fun onSingleTap()
+    private fun showSystemUi()
     {
         val parent = activity ?: return
+        parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        if (SharedPrefs.isLightTheme()) parent.window.decorView.systemUiVisibility = parent.window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+    }
 
-        if (parent.window.decorView.systemUiVisibility == 0) hideToolbar()
-        else
-        {
-            showToolbar()
-            mToolBarService?.startTimer()
-        }
-
-        mToolBarService?.startTimer()
+    private fun enterAndExitSystemUI()
+    {
+        val parent = activity ?: return
+        parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        if (SharedPrefs.isLightTheme()) parent.window.decorView.systemUiVisibility = parent.window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
     }
 
     /***********************************************************
@@ -276,9 +257,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
                 .setInterpolator(AccelerateInterpolator())
                 .start()
 
-        val parent = activity ?: return
-        parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        if(SharedPrefs.isLightTheme()) parent.window.decorView.systemUiVisibility = parent.window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        showSystemUi()
     }
 
     /***
@@ -298,8 +277,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
                 .setInterpolator(AccelerateInterpolator())
                 .start()
 
-        parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION  or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        if(SharedPrefs.isLightTheme()) parent.window.decorView.systemUiVisibility = parent.window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        hideSystemUi()
     }
 
     private fun setupToolbar(title: String)

@@ -266,7 +266,7 @@ public class MangaDB extends SQLiteOpenHelper
      */
     public Chapter getChapter(Chapter chapter)
     {
-        return database.chapterDao().findById(chapter.get_id());
+        return getChapter(chapter.getUrl());
     }
 
 

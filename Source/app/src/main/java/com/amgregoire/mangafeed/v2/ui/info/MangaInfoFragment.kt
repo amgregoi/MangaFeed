@@ -16,6 +16,7 @@ import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.NavigationType
 import com.amgregoire.mangafeed.v2.ResourceFactory
+import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.FragmentNavMap
 import com.amgregoire.mangafeed.v2.ui.catalog.enum.FollowType
@@ -82,8 +83,7 @@ class MangaInfoFragment : BaseFragment()
                     chapters = mangaInfo.chapters,
                     chapterSelected = { manga, chapters, chapter ->
                         val parent = activity ?: return@MangaInfoAdapter
-
-                        readerViewModel?.updateReaderInfo(manga, chapters, chapter)
+                        readerViewModel?.updateReaderInfo(manga, chapters, chapter, true)
                         (parent as FragmentNavMap).replaceFragmentParent(ReaderFragment.newInstance(), ReaderFragment.TAG)
                     }
             )
@@ -109,7 +109,7 @@ class MangaInfoFragment : BaseFragment()
     override fun updateParentSettings()
     {
         val parent = activity ?: return
-        (parent as ToolbarMap).setTitle(mangaInfoViewModel.baseManga.title)
+        (parent as ToolbarMap).setTitle(mangaInfoViewModel.manga.title)
         (parent as ToolbarMap).setNavigationIcon(ResourceFactory.getNavigationIcon(NavigationType.Close))
         (parent as ToolbarMap).setOptionsMenu(R.menu.menu_empty)
     }

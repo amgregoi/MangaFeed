@@ -10,8 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.amgregoire.mangafeed.R
-import com.amgregoire.mangafeed.v2.ui.AttrService
+import com.amgregoire.mangafeed.v2.service.AttrService
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
+import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.catalog.CatalogViewModel
 import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
 import kotlinx.android.synthetic.main.content_bottom_filter.view.*
@@ -33,6 +34,8 @@ class HomeFragment2 : BaseFragment()
     override fun onStart()
     {
         super.onStart()
+        Logger.error("$TAG - ON START")
+
         updateParentSettings()
         setupViewPager()
         setupTabLayout()
@@ -72,6 +75,9 @@ class HomeFragment2 : BaseFragment()
 
     private fun setupViewPager()
     {
+        if(self.viewPagerHome.adapter != null) return
+
+        Logger.error("$TAG - Setting adapter thing")
         self.viewPagerHome.adapter = CatalogViewPagerAdapter(childFragmentManager, 3)
         self.viewPagerHome.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(self.tabLayoutHome))
         self.viewPagerHome.offscreenPageLimit = 3

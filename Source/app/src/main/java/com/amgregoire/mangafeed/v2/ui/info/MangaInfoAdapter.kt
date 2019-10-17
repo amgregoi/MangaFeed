@@ -9,6 +9,7 @@ import com.amgregoire.mangafeed.Models.Chapter
 import com.amgregoire.mangafeed.Models.Manga
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.UI.Adapters.MangaInfoChaptersAdapter
+import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.Utils.NetworkService
 import com.amgregoire.mangafeed.v2.service.CloudflareService
 import com.bumptech.glide.GenericTransitionOptions
@@ -210,6 +211,10 @@ class MangaInfoAdapter(
 
             itemView.tvChapterTitle.text = chapter.chapterTitle
             itemView.tvChapterDate.text = chapter.chapterDate
+
+            val hasRead = MangaDB.getInstance().getChapter(chapter) != null
+            if(hasRead) itemView.ivReadIndicator.visibility = View.VISIBLE
+            else itemView.ivReadIndicator.visibility = View.GONE
 
             itemView.clParent.setOnClickListener{
                 chapterSelected(manga, chapters, chapter)

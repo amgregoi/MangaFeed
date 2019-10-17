@@ -1,43 +1,57 @@
 package com.amgregoire.mangafeed.v2.ui.main
 
-import android.arch.lifecycle.ViewModelProviders
 import android.content.res.Resources
 import android.os.Bundle
+import android.transition.Fade
+import android.transition.Slide
+import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
+import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentSettings
+import com.amgregoire.mangafeed.Utils.NetworkService
 import com.amgregoire.mangafeed.Utils.SharedPrefs
+import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.service.CloudflareService
+import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.BaseNavigationActivity
-import com.amgregoire.mangafeed.v2.ui.Logger
-import com.amgregoire.mangafeed.v2.ui.catalog.CatalogViewModel
 import kotlinx.android.synthetic.main.activity_m.*
 import kotlinx.android.synthetic.main.widget_toolbar_2.*
+import kotlinx.coroutines.launch
 
 
 class MActivity : BaseNavigationActivity()
 {
-    private val catalogViewModel by lazy {
-        ViewModelProviders.of(this).get(CatalogViewModel::class.java)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
 
-        setupView()
+        val source = MangaFeed.app.currentSource
+        if (source.requiresCloudFlare())
+        {
+            CloudflareService().getCookies(source.baseUrl, NetworkService.defaultUserAgent) {
+                uiScope.launch { setupView() }
+            }
+        }
+        else setupView()
+
     }
 
-    fun setupView()
+    private fun setupView()
     {
         setContentView(R.layout.activity_m)
+        setSupportActionBar(toolbar)
 
+        val fragment = MFragment.newInstance()
+        fragment.enterTransition = Fade(Fade.MODE_IN)
         supportFragmentManager.beginTransaction()
-                .add(flContainer.id, MFragment.newInstance(), MFragment.TAG)
+                .setPrimaryNavigationFragment(fragment)
+                .add(flContainer.id, fragment, MFragment.TAG)
                 .commit()
 
-        setSupportActionBar(toolbar)
+        setupBackStackListener()
     }
 
     override fun setNavigationIcon(iconResource: Int?)
@@ -82,6 +96,14 @@ class MActivity : BaseNavigationActivity()
         }
 
         super.onBackPressed()
+    }
+
+    private fun setupBackStackListener()
+    {
+        supportFragmentManager.addOnBackStackChangedListener {
+            val fragment = supportFragmentManager.primaryNavigationFragment ?: return@addOnBackStackChangedListener
+            (fragment as BaseFragment).updateParentSettings()
+        }
     }
 
     override fun getTheme(): Resources.Theme

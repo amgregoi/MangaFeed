@@ -13,7 +13,7 @@ import android.widget.Toast;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
-import com.amgregoire.mangafeed.v2.ui.Logger;
+import com.amgregoire.mangafeed.v2.service.Logger;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;

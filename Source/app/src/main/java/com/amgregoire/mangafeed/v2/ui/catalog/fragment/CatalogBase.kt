@@ -18,7 +18,7 @@ import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.FragmentNavMap
-import com.amgregoire.mangafeed.v2.ui.Logger
+import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.catalog.CatalogViewModel
 import com.amgregoire.mangafeed.v2.ui.catalog.MangaAdapter
 import com.amgregoire.mangafeed.v2.ui.info.MangaInfoFragment
@@ -28,10 +28,10 @@ import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
+
 abstract class CatalogBase : BaseFragment()
 {
     private var rvSavedState: Parcelable? = null
-
     protected val catalogViewModel by lazy {
         val parent = activity ?: return@lazy null
         ViewModelProviders.of(parent).get(CatalogViewModel::class.java)
@@ -84,16 +84,20 @@ abstract class CatalogBase : BaseFragment()
                 data = ArrayList(mangas),
                 source = MangaFeed.app.currentSource,
                 itemSelected = { manga ->
-                    catalogViewModel?.setLastItem(manga)
-                    rvSavedState = self.rvManga.layoutManager?.onSaveInstanceState()
-                    val parent = activity ?: return@MangaAdapter
-                    val fragment = MangaInfoFragment.newInstance(manga._id, false)
-                    (parent as FragmentNavMap).addFragment(fragment, MangaInfoFragment.TAG, R.anim.slide_out_bottom, R.anim.slide_out_to_left, R.anim.slide_in_from_left, R.anim.slide_in_bottom)
+
+                    if (catalogViewModel?.isLastItemComplete == true)
+                    {
+                        catalogViewModel?.setLastItem(manga)
+                        rvSavedState = self.rvManga.layoutManager?.onSaveInstanceState()
+                        val parent = activity ?: return@MangaAdapter
+                        val fragment = MangaInfoFragment.newInstance(manga._id, false)
+                        (parent as FragmentNavMap).addFragment(fragment, MangaInfoFragment.TAG, R.anim.slide_out_bottom, R.anim.slide_out_to_left, R.anim.slide_in_from_left, R.anim.slide_in_bottom)
+                    }
                 }
         )
 
         // Restores the state of recyclerview if a saved state exists
-        rvSavedState?.let { self.rvManga.layoutManager?.onRestoreInstanceState(it) }
+        rvSavedState?.let { self.rvManga.layoutManager?.onRestoreInstanceState(it) }.also { rvSavedState = null }
 
 
         self.emptyStateRecent.hide()
@@ -104,6 +108,12 @@ abstract class CatalogBase : BaseFragment()
             val updatedManga = MangaDB.getInstance().getManga(manga._id)
             (self.rvManga.adapter as? MangaAdapter)?.updateItem(updatedManga)
         })
+    }
+
+    override fun onPause()
+    {
+        super.onPause()
+        rvSavedState = self.rvManga.layoutManager?.onSaveInstanceState()
     }
 
     private fun renderLoading()

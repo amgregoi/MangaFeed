@@ -7,14 +7,15 @@ import com.amgregoire.mangafeed.Common.RequestWrapper
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.Models.Chapter
 import com.amgregoire.mangafeed.Models.Manga
-import com.amgregoire.mangafeed.v2.ui.Logger
+import com.amgregoire.mangafeed.Utils.MangaDB
+import com.amgregoire.mangafeed.v2.service.Logger
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 
-data class ReaderInfo(var manga: Manga, var chapters: List<Chapter>, var chapter: Chapter)
-data class ChapterInfo(var title: String, var currentPage: Int = 0, var totalPages: Int = 0)
+data class ReaderInfo(var manga: Manga, var chapter: Chapter, var chapters: List<Chapter>)
+data class ChapterInfo(var chapter: Chapter, var title: String, var currentPage: Int = 0, var totalPages: Int = 0)
 
 sealed class ReaderUIState
 {
@@ -27,12 +28,24 @@ class ReaderViewModel : ViewModel()
     val uiState = MutableLiveData<ReaderUIState>()
     val readerInfo = MutableLiveData<ReaderInfo>()
     val chapterInfo = MutableLiveData<ChapterInfo>()
-    
+
     private val subscriptions = CompositeDisposable()
 
-    fun updateReaderInfo(manga: Manga, chapters: List<Chapter>, chapter: Chapter)
+    // Note: should only be called from manga info fragment to initialize reader view model data
+    // TODO :: account for reversed list throughout vm (currently only account for ascending order due to ui
+    fun updateReaderInfo(manga: Manga, chapters: List<Chapter>, chapter: Chapter, isDataReversed: Boolean)
     {
-        readerInfo.value = ReaderInfo(manga, chapters, chapter)
+        if (isDataReversed) readerInfo.value = ReaderInfo(manga, chapter, chapters.reversed())
+        else readerInfo.value = ReaderInfo(manga, chapter, chapters)
+
+        if (manga.isFollowing) MangaDB.getInstance().putChapter(chapter)
+    }
+
+    private fun updateReaderInfo(manga: Manga, chapters: List<Chapter>, chapter: Chapter)
+    {
+        readerInfo.value = ReaderInfo(manga, chapter, chapters)
+
+        if (manga.isFollowing) MangaDB.getInstance().putChapter(chapter)
     }
 
     fun updateCurrentChapterByPosition(position: Int)
@@ -53,27 +66,28 @@ class ReaderViewModel : ViewModel()
 
     /***
      * Note chapters are ordered in descending order, incrementing is going down the list (-1)
+     * TODO :: account for normal and reversed chapter lists
      */
     fun incrementChapter()
     {
         val info = readerInfo.value ?: return
         val position = info.chapters.indexOf(info.chapter)
-        //        updateCurrentChapterByPosition(position - 1)
+        val newChapter = info.chapters.getOrNull(position + 1) ?: return
 
-        val newChapter = info.chapters.getOrNull(position - 1) ?: return
         updateReaderInfo(info.manga, info.chapters, newChapter)
         updateChapterInfo(newChapter, newChapter.chapterTitle, 0, newChapter.totalPages)
     }
 
     /***
      * Note chapters are ordered in descending order, incrementing is going up the list (+1)
+     * TODO :: account for normal and reversed chapter lists
      */
     fun decrementChapter()
     {
         val info = readerInfo.value ?: return
         val position = info.chapters.indexOf(info.chapter)
+        val newChapter = info.chapters.getOrNull(position - 1) ?: return
 
-        val newChapter = info.chapters.getOrNull(position + 1) ?: return
         updateReaderInfo(info.manga, info.chapters, newChapter)
         updateChapterInfo(newChapter, newChapter.chapterTitle, 0, newChapter.totalPages)
     }
@@ -94,7 +108,7 @@ class ReaderViewModel : ViewModel()
 
         if (chapter.url != info.chapter.url) return
 
-        val current = (chapterInfo.value ?: ChapterInfo(""))
+        val current = (chapterInfo.value ?: ChapterInfo(chapter, ""))
                 .apply {
                     title?.let { this.title = title }
                     currentPage?.let { this.currentPage = currentPage }

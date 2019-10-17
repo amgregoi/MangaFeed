@@ -29,6 +29,16 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent=".6" />
 
+    <ImageView
+        android:id="@+id/ivReadIndicator"
+        android:src="@drawable/circle_orange"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tvChapterTitle"
+        android:layout_width="10dp"
+        android:layout_height="10dp"/>
     <TextView
         android:id="@+id/tvChapterTitle"
         android:layout_width="0dp"

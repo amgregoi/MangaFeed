@@ -9,7 +9,7 @@ import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
-import com.amgregoire.mangafeed.v2.ui.Logger;
+import com.amgregoire.mangafeed.v2.service.Logger;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

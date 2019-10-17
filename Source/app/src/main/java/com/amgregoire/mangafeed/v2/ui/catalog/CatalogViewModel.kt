@@ -5,8 +5,12 @@ import android.arch.lifecycle.ViewModel
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.Models.Manga
 import com.amgregoire.mangafeed.Utils.MangaDB
-import com.amgregoire.mangafeed.v2.ui.Logger
+import com.amgregoire.mangafeed.ioScope
+import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.service.Logger
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class CatalogViewModel : ViewModel()
 {
@@ -17,8 +21,9 @@ class CatalogViewModel : ViewModel()
     val all = MutableLiveData<List<Manga>>()
 
     val lastItem = MutableLiveData<Manga>()
-
     val queryFilter = MutableLiveData<String>()
+
+    var isLastItemComplete = true
 
     init
     {
@@ -27,17 +32,14 @@ class CatalogViewModel : ViewModel()
         retrieveAll()
     }
 
-    fun setQuery(query:String)
-    {
+    fun setQuery(query: String) = ioScope.launch {
         val prevQuery = queryFilter.value ?: ""
-        if(prevQuery.length > 1 && query.isEmpty()) return
+        if (prevQuery.length > 1 && query.isEmpty()) return@launch
 
-        Logger.error("Setting filter=$query")
-        queryFilter.value = query
+        uiScope.launch { queryFilter.value = query }
     }
 
-    private fun retrieveAll()
-    {
+    private fun retrieveAll() = ioScope.launch {
         val database = MangaDB.getInstance() // Dagger injection?
         subscribers.add(
                 database.catalogList
@@ -50,8 +52,7 @@ class CatalogViewModel : ViewModel()
     }
 
 
-    private fun retrieveLibrary()
-    {
+    private fun retrieveLibrary() = ioScope.launch {
         val database = MangaDB.getInstance() // Dagger injection?
         subscribers.add(
                 database.libraryList
@@ -63,8 +64,7 @@ class CatalogViewModel : ViewModel()
         )
     }
 
-    fun retrieveRecentList()
-    {
+    fun retrieveRecentList() = ioScope.launch {
         val source = MangaFeed.app.currentSource
         subscribers.add(
                 source.recentMangaObservable
@@ -79,10 +79,15 @@ class CatalogViewModel : ViewModel()
         )
     }
 
-    fun setLastItem(manga:Manga)
-    {
-        lastItem.value = manga
+    fun setLastItem(manga: Manga) = ioScope.launch {
+        isLastItemComplete = false
+
+        uiScope.launch { lastItem.value = manga }
+
+        delay(750)
+        isLastItemComplete = true
     }
+
     override fun onCleared()
     {
         super.onCleared()

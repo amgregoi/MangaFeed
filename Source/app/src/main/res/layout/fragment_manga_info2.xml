@@ -42,7 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:elevation="5dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:mangaLoading="true"
         app:mangaButtonVisible="true"
         app:mangaPrimaryText="Oops"

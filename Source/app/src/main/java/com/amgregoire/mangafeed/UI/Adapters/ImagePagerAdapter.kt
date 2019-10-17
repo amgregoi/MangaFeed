@@ -2,7 +2,7 @@ package com.amgregoire.mangafeed.UI.Adapters
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.support.v4.app.Fragment
 import android.support.v4.view.PagerAdapter
@@ -13,7 +13,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
-
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.UI.Widgets.GestureImageView
 import com.amgregoire.mangafeed.UI.Widgets.GestureTextView
@@ -29,6 +28,7 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.BitmapImageViewTarget
 import com.bumptech.glide.request.transition.Transition
+import java.io.ByteArrayOutputStream
 
 /**
  * Created by Andy Gregoire on 3/21/2018.
@@ -118,9 +118,7 @@ class ImagePagerAdapter(
         mImage.visibility = View.VISIBLE
 
         val lOptions = RequestOptions()
-        lOptions.fitCenter()
-                .override(1024, 8192)//8192) //OpenGLRenderer max image size, if larger in X or Y it will scale the image
-                .placeholder(context.resources.getDrawable(R.drawable.manga_loading_image))
+        lOptions.placeholder(context.resources.getDrawable(R.drawable.manga_loading_image))
                 .error(context.resources.getDrawable(R.drawable.manga_error))
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
@@ -144,6 +142,14 @@ class ImagePagerAdapter(
                     override fun onResourceReady(resource: Bitmap, glideAnimation: Transition<in Bitmap>?)
                     {
                         super.onResourceReady(resource, glideAnimation)
+
+                        // Compress incoming image, relieves memory usage + phone slowing down with large images
+                        val stream = ByteArrayOutputStream()
+                        resource.compress(Bitmap.CompressFormat.JPEG, 50, stream)
+                        val byteArray = stream.toByteArray();
+                        val compressedBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+                        mImage.setImageBitmap(compressedBitmap)
+
                         mImage.initializeView()
                         try
                         {
@@ -156,12 +162,8 @@ class ImagePagerAdapter(
 
                         mImage.startFling(0f, 100000f) //large fling to initialize the image to the top for long pages
                     }
-
-                    override fun onLoadFailed(errorDrawable: Drawable?)
-                    {
-                        super.onLoadFailed(errorDrawable)
-                    }
                 })
+
         container.addView(lView)
         mImageViews.put(position, lView)
         return lView

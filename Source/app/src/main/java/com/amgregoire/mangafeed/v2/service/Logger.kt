@@ -1,4 +1,4 @@
-package com.amgregoire.mangafeed.v2.ui
+package com.amgregoire.mangafeed.v2.service
 
 import android.util.Log
 
@@ -19,8 +19,8 @@ object Logger
      */
     fun info(message: String)
     {
-        val clazz = Thread.currentThread().stackTrace[3].className
-        val method = Thread.currentThread().stackTrace[3].methodName
+        val clazz = Thread.currentThread().stackTrace[4].className
+        val method = Thread.currentThread().stackTrace[4].methodName
         val lMessage = "INFO >> " + MessageFormat.format("{0}.class >> {1}() > {2}", clazz, method, message)
         Log.i(mApplication, lMessage)
     }
@@ -32,8 +32,8 @@ object Logger
      */
     fun debug(message: String)
     {
-        val method = Thread.currentThread().stackTrace[3].methodName
-        val clazz = Thread.currentThread().stackTrace[3].className
+        val method = Thread.currentThread().stackTrace[4].methodName
+        val clazz = Thread.currentThread().stackTrace[4].className
         val lMessage = "DEBUG >> " + MessageFormat.format("{0}.class >> {1}() > {2}", clazz, method, message)
         Log.i(mApplication, lMessage)
     }
@@ -42,8 +42,8 @@ object Logger
 
     fun error(error: String, extra: String = "")
     {
-        val method = Thread.currentThread().stackTrace[3].methodName
-        val clazz = Thread.currentThread().stackTrace[3].className
+        val method = Thread.currentThread().stackTrace[4].methodName
+        val clazz = Thread.currentThread().stackTrace[4].className
         val lMessage =
                 if (extra.isEmpty()) "ERROR >> " + MessageFormat.format("{0}.class >> {1}() > {3}", clazz, method, extra, error)
                 else "ERROR >> " + MessageFormat.format("{0}.class >> {1}() > {2} > {3}", clazz, method, extra, error)

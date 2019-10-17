@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.app.SharedElementCallback
 import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
 import android.view.View
@@ -13,8 +14,10 @@ import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.UI.Adapters.ImagePagerAdapter
 import com.amgregoire.mangafeed.UI.Widgets.GestureViewPager
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
-import com.amgregoire.mangafeed.v2.ui.Logger
+import com.amgregoire.mangafeed.v2.service.Logger
+import kotlinx.android.synthetic.main.fragment_reader2.view.*
 import kotlinx.android.synthetic.main.item_fragment_reader_chapter.view.*
+
 
 /**
  * Created by Andy Gregoire on 3/21/2018.
@@ -40,14 +43,16 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener
 
         val parent = activity ?: return
 
+        val chapter = readerViewModel?.getChapterByPosition(arguments!![POSITION_KEY] as Int) ?: return
+
         readerViewModel?.chapterInfo?.observe(parent, Observer { info ->
             info ?: return@Observer
+            if(info.chapter.url != chapter.url) return@Observer
+
             self.viewPagerReaderChapter.currentItem = info.currentPage
         })
 
-        val chapter = readerViewModel?.getChapterByPosition(arguments!![POSITION_KEY] as Int) ?: return
-
-        if(self.viewPagerReaderChapter.adapter == null)
+        if (self.viewPagerReaderChapter.adapter == null)
         {
             Logger.error("Getting contents for: ${chapter.chapterTitle}")
             readerViewModel?.getChapterContents(chapter = chapter, chapterContent = { contents, chapter, isManga ->
@@ -60,6 +65,25 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener
                 self.viewPagerReaderChapter.offscreenPageLimit = 6
             })
         }
+
+        setEnterSharedElementCallback(
+                object : SharedElementCallback()
+                {
+                    override fun onMapSharedElements(names: List<String>, sharedElements: MutableMap<String, View>)
+                    {
+                        // Locate the image view at the primary fragment (the ImageFragment
+                        // that is currently visible). To locate the fragment, call
+                        // instantiateItem with the selection position.
+                        // At this stage, the method will simply return the fragment at the
+                        // position and will not create a new one.
+                        val POSITION = 0 // TODO :: Get position from somewhere else
+                        val currentFragment = self.vpReader.adapter?.instantiateItem(self.vpReader, POSITION) as Fragment
+                        val view = currentFragment.view ?: return
+
+                        // Map the first shared element name to the child ImageView.
+                        sharedElements[names[0]] = view.findViewById(R.id.gestureImageViewReaderChapter)
+                    }
+                })
 
         initViews()
     }

@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:elevation="1dp"
-            android:visibility="visible"
+            android:visibility="gone"
             app:mangaLoading="true"
             app:mangaDrawableImage="@drawable/empty"
             app:mangaButtonVisible="false"

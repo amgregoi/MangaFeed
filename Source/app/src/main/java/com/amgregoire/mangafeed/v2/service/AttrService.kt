@@ -1,4 +1,4 @@
-package com.amgregoire.mangafeed.v2.ui
+package com.amgregoire.mangafeed.v2.service
 
 import android.content.Context
 import com.amgregoire.mangafeed.R

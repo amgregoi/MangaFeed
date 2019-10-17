@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.SharedPrefs
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
+import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
 import kotlinx.android.synthetic.main.fragment_m.view.*
 
@@ -23,6 +24,7 @@ class MFragment : BaseFragment()
     {
         super.onResume()
         updateParentSettings()
+        Logger.error("$TAG - ON RESUME")
     }
 
     override fun onStart()
@@ -30,6 +32,7 @@ class MFragment : BaseFragment()
         super.onStart()
 
         if (self.vpNavigation.adapter != null) return
+        Logger.error("$TAG - (RE)setting adapter")
 
         self.vpNavigation.adapter = NavAdapter(childFragmentManager)
         self.vpNavigation.offscreenPageLimit = 2
