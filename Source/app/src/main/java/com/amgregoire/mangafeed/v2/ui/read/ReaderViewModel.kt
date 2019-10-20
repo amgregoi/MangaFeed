@@ -39,14 +39,26 @@ class ReaderViewModel : ViewModel()
         if (isDataReversed) readerInfo.value = ReaderInfo(manga, chapter, chapters.reversed())
         else readerInfo.value = ReaderInfo(manga, chapter, chapters)
 
-        if (manga.isFollowing) MangaDB.getInstance().putChapter(chapter)
+        if (manga.isFollowing)
+        {
+            MangaDB.getInstance().putChapter(chapter)
+
+            manga.recentChapter = chapter.url
+            MangaDB.getInstance().putManga(manga)
+        }
     }
 
     private fun updateReaderInfo(manga: Manga, chapters: List<Chapter>, chapter: Chapter)
     {
         readerInfo.value = ReaderInfo(manga, chapter, chapters)
 
-        if (manga.isFollowing) MangaDB.getInstance().putChapter(chapter)
+        if (manga.isFollowing)
+        {
+            MangaDB.getInstance().putChapter(chapter)
+
+            manga.recentChapter = chapter.url
+            MangaDB.getInstance().putManga(manga)
+        }
     }
 
     fun updateCurrentChapterByPosition(position: Int)

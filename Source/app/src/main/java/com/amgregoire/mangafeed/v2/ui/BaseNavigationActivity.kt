@@ -138,11 +138,22 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
 
     override fun setTitle(title: String)
     {
+        if (toolbar == null) return
         toolbar.setTitle(null)
 
         toolbarLogo.visibility = View.GONE
+        toolbarSpinner.visibility = View.GONE
         toolbarTitle.text = title
         toolbarTitle.visibility = View.VISIBLE
+    }
+
+    override fun showSpinner()
+    {
+        toolbar.setTitle(null)
+
+        toolbarTitle.visibility = View.GONE
+        toolbarLogo.visibility = View.GONE
+        toolbarSpinner.visibility = View.VISIBLE
     }
 
     fun showToolBarLogo()
@@ -154,6 +165,7 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
 
     fun setNavigationIcon(drawableId: Int)
     {
+        if (toolbar == null) return
         if (drawableId == 0)
         {
             toolbar.navigationIcon = null
@@ -166,31 +178,37 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
 
     override fun setToolbarColor(color: Int)
     {
+        if (toolbar == null) return
         toolbar.setBackgroundColor(getResources().getColor(color))
     }
 
     override fun hideToolbar()
     {
+        if (toolbar == null) return
         toolbar.visibility = View.GONE
     }
 
     override fun showToolbar()
     {
+        if (toolbar == null) return
         toolbar.visibility = View.VISIBLE
     }
 
     override fun setToolbarVisibility(visibility: Int)
     {
+        if (toolbar == null) return
         toolbar!!.visibility = visibility
     }
 
     override fun showToolbarElevation()
     {
+        if (toolbar == null) return
         toolbar.elevation = ScreenUtil.convertDpToPixel(4f, this)
     }
 
     override fun hideToolbarElevation()
     {
+        if (toolbar == null) return
         toolbar.elevation = 0f
     }
 

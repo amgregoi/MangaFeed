@@ -43,6 +43,11 @@ class ProgressBar @JvmOverloads constructor(context: Context, attrs: AttributeSe
         visibility = View.VISIBLE
     }
 
+    fun isHidden():Boolean
+    {
+        return visibility != View.VISIBLE
+    }
+
     fun startSpin()
     {
         show()

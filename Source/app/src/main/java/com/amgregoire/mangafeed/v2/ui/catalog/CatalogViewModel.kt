@@ -2,6 +2,7 @@ package com.amgregoire.mangafeed.v2.ui.catalog
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import com.amgregoire.mangafeed.Common.WebSources.Base.SourceBase
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.Models.Manga
 import com.amgregoire.mangafeed.Utils.MangaDB
@@ -23,6 +24,8 @@ class CatalogViewModel : ViewModel()
     val lastItem = MutableLiveData<Manga>()
     val queryFilter = MutableLiveData<String>()
 
+    val source = MutableLiveData<SourceBase>()
+
     var isLastItemComplete = true
 
     init
@@ -30,6 +33,17 @@ class CatalogViewModel : ViewModel()
         retrieveRecentList()
         retrieveLibrary()
         retrieveAll()
+    }
+
+    fun setSource(source: SourceBase)
+    {
+        this.source.value = source
+
+        ioScope.launch {
+            retrieveRecentList()
+            retrieveLibrary()
+            retrieveAll()
+        }
     }
 
     fun setQuery(query: String) = ioScope.launch {

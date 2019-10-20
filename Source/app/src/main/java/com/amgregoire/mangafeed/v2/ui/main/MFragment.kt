@@ -50,7 +50,7 @@ class MFragment : BaseFragment()
     override fun updateParentSettings()
     {
         val parent = activity ?: return
-        (parent as ToolbarMap).setTitle(SharedPrefs.getSavedSource())
+        (parent as ToolbarMap).showSpinner()
     }
 
     companion object

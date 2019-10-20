@@ -282,8 +282,7 @@ public class SharedPrefs
     public static Date getLastCatalogUpdate()
     {
         Context lContext = MangaFeed.Companion.getApp();
-        return new Date(PreferenceManager.getDefaultSharedPreferences(lContext)
-                                         .getLong(lContext.getString(R.string.PREF_LAST_CATALOG_UPDATE), 0));
+        return new Date(PreferenceManager.getDefaultSharedPreferences(lContext).getLong(lContext.getString(R.string.PREF_LAST_CATALOG_UPDATE), 0));
     }
 
     /***

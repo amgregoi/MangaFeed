@@ -73,6 +73,23 @@ public class MangaEnums
         {
             return lSource.getBaseUrl();
         }
+
+        @Override
+        public String toString()
+        {
+            return lSource.getSourceName();
+        }
+
+        public static int getPosition(String sourceName)
+        {
+            Source[] array = values();
+            for(int i =0; i< array.length; i++)
+            {
+                if(array[i].lSource.getSourceName().equalsIgnoreCase(sourceName)) return i;
+            }
+
+            return 0;
+        }
     }
 
     /***

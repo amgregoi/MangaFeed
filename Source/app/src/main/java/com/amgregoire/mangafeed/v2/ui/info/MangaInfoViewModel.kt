@@ -46,7 +46,7 @@ class MangaInfoViewModel(val app: Application, var manga: Manga) : AndroidViewMo
     }
 
     fun setFollowStatus(followType: FollowType) = ioScope.launch {
-        val startText = if (manga.recentChapter != null) R.string.text_continue
+        val startText = if (!manga.recentChapter.isNullOrEmpty()) R.string.text_continue
         else R.string.text_start
 
         uiScope.launch { mangaInfoBottomNav.value = MangaInfoBottomNav(followType.stringRes, followType.drawableRes, startText) }

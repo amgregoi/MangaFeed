@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.support.constraint.ConstraintLayout
 import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
 import android.view.View
@@ -33,6 +34,13 @@ import kotlinx.android.synthetic.main.widget_toolbar_2.view.*
  * Created by Andy Gregoire on 3/21/2018.
  */
 
+/***
+ *
+ * TODO ::
+ * Because fitsSystemWindows=false
+ * we need to add margin/padding to top and bottom views of reader again
+ *
+ */
 class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
 {
     private val readerViewModel: ReaderViewModel? by lazy {
@@ -70,6 +78,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
         showToolbar()
         enterAndExitSystemUI()
         setupToolbarService()
+
     }
 
     override fun onPause()
@@ -80,6 +89,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
 
         val parent = activity ?: return
         parent.unbindService(mConnection)
+        parent.window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
     }
 
     override fun onStart()
@@ -167,22 +177,47 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
     override fun hideSystemUi()
     {
         val parent = activity ?: return
-        parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        if (SharedPrefs.isLightTheme()) parent.window.decorView.systemUiVisibility = parent.window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+
+        if (SharedPrefs.isLightTheme()) parent.window.decorView.systemUiVisibility = parent.window.decorView.systemUiVisibility or
+                View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or
+                View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
     }
 
     private fun showSystemUi()
     {
         val parent = activity ?: return
-        parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-        if (SharedPrefs.isLightTheme()) parent.window.decorView.systemUiVisibility = parent.window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+
+        if (SharedPrefs.isLightTheme()) parent.window.decorView.systemUiVisibility = parent.window.decorView.systemUiVisibility or
+                View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or
+                View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
     }
 
     private fun enterAndExitSystemUI()
     {
         val parent = activity ?: return
-        parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        if (SharedPrefs.isLightTheme()) parent.window.decorView.systemUiVisibility = parent.window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+
+        if (SharedPrefs.isLightTheme()) parent.window.decorView.systemUiVisibility = parent.window.decorView.systemUiVisibility or
+                View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or
+                View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+
+        parent.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+
+        self.bottomContainer.setPadding(0, 0, 0, ScreenUtil.getNavigationBarHeight(resources))
+        self.topContainer.setPadding(0, ScreenUtil.getStatusBarHeight(resources), 0, 0)
+        //                val params = (self.topContainer.layoutParams as ConstraintLayout.LayoutParams).apply { topMargin = ScreenUtil.getStatusBarHeight(resources) }
+        //                self.topContainer.layoutParams = params
+
     }
 
     /***********************************************************
@@ -221,6 +256,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
             override fun onPageSelected(position: Int)
             {
                 showToolbar()
+                mToolBarService?.startTimer()
                 readerViewModel?.updateCurrentChapterByPosition(position)
             }
         })

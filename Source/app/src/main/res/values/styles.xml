@@ -67,4 +67,16 @@
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
+    <style name="Homebase.Widget.Button.Blue" parent="@style/Widget.AppCompat.Button">
+        <item name="android:enabled">true</item>
+        <item name="android:background">@drawable/button_solid</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:lineSpacingExtra">1sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">?attr/text_color</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+
 </resources>

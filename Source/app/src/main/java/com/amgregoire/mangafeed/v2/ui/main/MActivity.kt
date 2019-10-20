@@ -1,5 +1,6 @@
 package com.amgregoire.mangafeed.v2.ui.main
 
+import android.arch.lifecycle.ViewModelProviders
 import android.content.res.Resources
 import android.os.Bundle
 import android.transition.Fade
@@ -7,6 +8,9 @@ import android.transition.Slide
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import com.amgregoire.mangafeed.Common.MangaEnums
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentSettings
@@ -17,6 +21,7 @@ import com.amgregoire.mangafeed.v2.service.CloudflareService
 import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.BaseNavigationActivity
+import com.amgregoire.mangafeed.v2.ui.catalog.CatalogViewModel
 import kotlinx.android.synthetic.main.activity_m.*
 import kotlinx.android.synthetic.main.widget_toolbar_2.*
 import kotlinx.coroutines.launch
@@ -24,6 +29,10 @@ import kotlinx.coroutines.launch
 
 class MActivity : BaseNavigationActivity()
 {
+    val catalogViewModel by lazy {
+        ViewModelProviders.of(this).get(CatalogViewModel::class.java)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -43,6 +52,8 @@ class MActivity : BaseNavigationActivity()
     {
         setContentView(R.layout.activity_m)
         setSupportActionBar(toolbar)
+
+        setupToolbarSpinner()
 
         val fragment = MFragment.newInstance()
         fragment.enterTransition = Fade(Fade.MODE_IN)
@@ -104,6 +115,25 @@ class MActivity : BaseNavigationActivity()
             val fragment = supportFragmentManager.primaryNavigationFragment ?: return@addOnBackStackChangedListener
             (fragment as BaseFragment).updateParentSettings()
         }
+    }
+
+    private fun setupToolbarSpinner()
+    {
+        toolbarSpinner.adapter = ArrayAdapter(this, R.layout.item_source_spinner, MangaEnums.Source.values())
+        toolbarSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
+            {
+                val newSource = MangaEnums.Source.values()[position]
+                SharedPrefs.setSavedSource(newSource.name)
+                catalogViewModel.setSource(newSource.source)
+                Logger.error("${newSource} selected")
+            }
+        }
+
+        val position = MangaEnums.Source.getPosition(MangaFeed.app.currentSource.sourceName)
+        toolbarSpinner.setSelection(position)
     }
 
     override fun getTheme(): Resources.Theme

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/constraintParent"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:background="?attr/background_color2">
+
+    <View
+        android:id="@+id/viewButton"
+        style="@style/Homebase.Widget.Button.Blue"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:text="@string/placeholder"
+        android:textAlignment="center"
+        android:clickable="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewButtonText"
+        style="@style/Homebase.Widget.Button.Blue"
+        android:layout_width="wrap_content"
+        android:clickable="false"
+        android:layout_height="match_parent"
+        android:background="@null"
+        android:includeFontPadding="false"
+        android:text="@string/placeholder"
+        android:textColor="?attr/text_color"
+        app:layout_constraintBottom_toBottomOf="@id/viewButton"
+        app:layout_constraintEnd_toEndOf="@id/viewButton"
+        app:layout_constraintStart_toStartOf="@id/viewButton"
+        app:layout_constraintTop_toTopOf="@id/viewButton"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <com.amgregoire.mangafeed.v2.custom.LoadingSpinner
+        android:id="@+id/progressBar"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:alpha="0"
+        android:clickable="false"
+        app:layout_constraintBottom_toBottomOf="@id/viewButton"
+        app:layout_constraintEnd_toEndOf="@id/viewButton"
+        app:layout_constraintStart_toStartOf="@id/viewButton"
+        app:layout_constraintTop_toTopOf="@id/viewButton" />
+
+</android.support.constraint.ConstraintLayout>

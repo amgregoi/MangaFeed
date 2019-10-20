@@ -62,6 +62,7 @@ public class GestureViewPager extends ViewPager implements GestureDetector.OnGes
         try
         {
             fetchGestureImageViewByTag();
+
             mGestureDetector.onTouchEvent(aEvent);
 
             //ACTION_DOWN workaround for checkSwipe()

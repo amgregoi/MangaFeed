@@ -5,11 +5,17 @@ import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.SharedPrefs
+import com.amgregoire.mangafeed.ioScope
+import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.service.Logger
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.cv_empty_state.view.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class EmptyState @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
     : ConstraintLayout(context, attrs, defStyleAttr)
@@ -50,9 +56,13 @@ class EmptyState @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
         if (attributes.hasValue(R.styleable.EmptyState_mangaButtonText)) buttonAction.text = (attributes.getText(R.styleable.EmptyState_mangaButtonText).toString())
 
-        if(SharedPrefs.isLightTheme()) progressBarLoading.setProgressBarStyle(ProgressBar.ProgressBarStyle.DarkBlue)
+        if (SharedPrefs.isLightTheme()) progressBarLoading.setProgressBarStyle(ProgressBar.ProgressBarStyle.DarkBlue)
         else progressBarLoading.setProgressBarStyle(ProgressBar.ProgressBarStyle.White)
 
+
+        buttonAction.setOnClickListener(OnClickListener {
+            Logger.error("############### Someone clicked on me")
+        })
         attributes.recycle()
     }
 
@@ -73,6 +83,18 @@ class EmptyState @JvmOverloads constructor(context: Context, attrs: AttributeSet
         }
 
         constraintParent.animate().setListener(listener).alpha(0f).duration = 500
+    }
+
+    fun setLoadTimeout(delayDurationMs: Long)
+    {
+        ioScope.launch {
+            delay(delayDurationMs)
+
+            if (!progressBarLoading.isHidden() && constraintParent.visibility == View.VISIBLE)
+            {
+                uiScope.launch { hideLoader(true) }
+            }
+        }
     }
 
     fun hideImmediate()
@@ -149,5 +171,11 @@ class EmptyState @JvmOverloads constructor(context: Context, attrs: AttributeSet
     {
         super.onDetachedFromWindow()
         compositeDisposable.dispose()
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean
+    {
+        Logger.error("This is a touch event")
+        return super.onTouchEvent(event)
     }
 }

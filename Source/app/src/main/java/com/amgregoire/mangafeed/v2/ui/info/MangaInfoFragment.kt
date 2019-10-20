@@ -16,7 +16,6 @@ import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.NavigationType
 import com.amgregoire.mangafeed.v2.ResourceFactory
-import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.FragmentNavMap
 import com.amgregoire.mangafeed.v2.ui.catalog.enum.FollowType
@@ -164,6 +163,16 @@ class MangaInfoFragment : BaseFragment()
                 R.id.menuMangaInfoBottomContinueReading ->
                 {
                     // Start Reading from latest chapter
+                    val parent = activity ?: return@setOnNavigationItemSelectedListener true
+
+                    val adapter = (self.rvMangaInfo.adapter as? MangaInfoAdapter) ?: return@setOnNavigationItemSelectedListener true
+                    val manga = adapter.manga
+                    val chapters = adapter.chapters
+                    val chapter = adapter.chapters.firstOrNull { chapter -> chapter.url == manga.recentChapter } ?: chapters[chapters.size-1]
+
+                    readerViewModel?.updateReaderInfo(manga, chapters, chapter, true)
+
+                    (parent as FragmentNavMap).replaceFragmentParent(ReaderFragment.newInstance(), ReaderFragment.TAG)
                     return@setOnNavigationItemSelectedListener true
                 }
                 else -> false

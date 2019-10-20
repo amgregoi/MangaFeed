@@ -101,6 +101,8 @@ public abstract class SourceBase
      */
     public void updateLocalCatalog() { }
 
+    public Observable<List<Manga>> updateLocalCatalogV2(){ return  null; }
+
     /***
      * This function retrieves a list of recent updates from the current source.
      *

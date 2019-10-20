@@ -7,6 +7,8 @@
 
     <com.amgregoire.mangafeed.v2.custom.EmptyState
         android:id="@+id/emptyStateReaderItem"
+        android:clickable="true"
+        android:focusable="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible"
@@ -23,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="center"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/scrollViewTextContainer"
@@ -47,4 +49,5 @@
             android:textColor="?attr/text_color2"
             android:textSize="17sp" />
     </android.support.v4.widget.NestedScrollView>
+
 </RelativeLayout>

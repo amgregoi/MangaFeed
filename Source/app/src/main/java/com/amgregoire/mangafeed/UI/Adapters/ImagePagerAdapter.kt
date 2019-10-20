@@ -21,10 +21,9 @@ import com.amgregoire.mangafeed.UI.Widgets.GestureTextView
 import com.amgregoire.mangafeed.UI.Widgets.GestureViewPager
 import com.amgregoire.mangafeed.Utils.MangaLogger
 import com.amgregoire.mangafeed.Utils.NetworkService
-import com.amgregoire.mangafeed.ioScope
-import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.custom.EmptyState
 import com.amgregoire.mangafeed.v2.service.CloudflareService
+import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.read.ReaderViewModel
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.Glide
@@ -34,8 +33,6 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.BitmapImageViewTarget
 import com.bumptech.glide.request.transition.Transition
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
 /**
@@ -122,7 +119,9 @@ class ImagePagerAdapter(
             setupImage(image, emptyState, url, position)
         })
 
-        setupImage(image, emptyState, url, position)
+//        setupImage(image, emptyState, url, position)
+
+        emptyState.setLoadTimeout(1500)
 
         container.addView(lView)
         mImageViews.put(position, lView)
@@ -131,8 +130,6 @@ class ImagePagerAdapter(
 
     private fun setupImage(image: GestureImageView, emptyState: EmptyState, url: String, position: Int)
     {
-        image.visibility = View.VISIBLE
-
         val lOptions = RequestOptions()
         lOptions.skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
@@ -159,7 +156,8 @@ class ImagePagerAdapter(
 
                         // Compress incoming image, relieves memory usage + phone slowing down with large images
                         val stream = ByteArrayOutputStream()
-                        resource.compress(Bitmap.CompressFormat.JPEG, 50, stream)
+                        // TODO :: turn compression rate into shared pref to be toggled in app
+                        resource.compress(Bitmap.CompressFormat.JPEG, 40, stream)
                         val byteArray = stream.toByteArray();
                         val compressedBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
                         image.setImageBitmap(compressedBitmap)
@@ -174,7 +172,9 @@ class ImagePagerAdapter(
                             MangaLogger.logError(TAG, "instantiateItem()", aException.toString())
                         }
 
+                        image.visibility = View.VISIBLE
                         image.startFling(0f, 100000f) //large fling to initialize the image to the top for long pages
+
                         emptyState.hide()
                     }
 

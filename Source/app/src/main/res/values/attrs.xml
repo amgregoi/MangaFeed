@@ -8,6 +8,18 @@
     <attr name="accent2" format="reference|color"/>
 
 
+    <declare-styleable name="MButton">
+        <attr name="mButtonStyle"/>
+        <attr name="mButtonText" format="string"/>
+        <attr name="mLoading" format="boolean"/>
+    </declare-styleable>
+
+
+    <declare-styleable name="ImageTextLineItem">
+        <attr name="mangaIconSrc" format="reference" />
+        <attr name="mangaText" format="string" />
+        <attr name="mangaTextSecondary" format="string" />
+    </declare-styleable>
 
 
     <declare-styleable name="EmptyState">
@@ -28,5 +40,18 @@
         <flag name="DarkBlue" value="0x00" />
         <flag name="White" value="0x01" />
     </attr>
+
+
+    <!--
+
+    Shared
+
+
+    -->
+    <attr name="mButtonStyle" format="flags">
+        <flag name="Border" value="0x01" />
+        <flag name="Solid" value="0x02" />
+    </attr>
+
 
 </resources>

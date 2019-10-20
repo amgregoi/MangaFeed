@@ -20,7 +20,7 @@ import android.widget.OverScroller;
 
 public class GestureImageView extends AppCompatImageView implements ScaleGestureDetector.OnScaleGestureListener
 {
-    public static final float MIN_SCALE = 0.90f;
+    public static final float MIN_SCALE = 1.00f;
     public static final float MED_SCALE = 2.00f;
     public static final float MAX_SCALE = 3.00f;
 

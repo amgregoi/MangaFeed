@@ -49,7 +49,7 @@ public class ToolbarTimerService extends Service
         mListener = aListener;
     }
 
-    Observable<Long> mTimer = Observable.timer(6, TimeUnit.SECONDS, Schedulers.io());
+    Observable<Long> mTimer = Observable.timer(3, TimeUnit.SECONDS, Schedulers.io());
     Observable<Long> mSystemUI = Observable.timer(6, TimeUnit.SECONDS, Schedulers.io());
     Disposable mTimerSub;
     Disposable mSystemUISub;

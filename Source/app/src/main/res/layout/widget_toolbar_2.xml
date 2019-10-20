@@ -7,10 +7,10 @@
     android:layout_alignParentTop="true"
     android:background="?attr/background_color"
     android:elevation="2dp"
+    app:layout_scrollFlags="scroll|enterAlways"
     android:minHeight="?attr/actionBarSize"
     app:layout_constraintTop_toTopOf="parent"
-    app:title=""
-    app:titleTextColor="@color/manga_black">
+    app:titleTextColor="?attr/background_color">
 
     <ImageView
         android:id="@+id/toolbarLogo"
@@ -28,6 +28,24 @@
         android:maxLines="1"
         android:ellipsize="end"
         android:maxLength="20"
+        android:fontFamily="sans-serif"
+        android:lineSpacingExtra="12sp"
+        android:textColor="?attr/accent1"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="visible" />
+
+    <Spinner
+        android:id="@+id/toolbarSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@android:color/transparent"
+        android:gravity="start"
+        android:backgroundTint="?attr/text_color"
+        android:overlapAnchor="false"
+        android:dropDownSelector="?attr/text_color"
+        android:dropDownWidth="match_parent"
         android:fontFamily="sans-serif"
         android:lineSpacingExtra="12sp"
         android:textColor="?attr/accent1"

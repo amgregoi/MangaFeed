@@ -5,7 +5,7 @@
     <dimen name="baseline_margin_unit_18dp">18dp</dimen>
     <dimen name="single_line_height_48dp">48dp</dimen>
     <dimen name="grid_item_img_height_144dp">144dp</dimen>
-
+    <dimen name="dp20">20dp</dimen>
 
 
 </resources>

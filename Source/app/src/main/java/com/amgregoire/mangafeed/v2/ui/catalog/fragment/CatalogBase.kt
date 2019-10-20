@@ -65,6 +65,10 @@ abstract class CatalogBase : BaseFragment()
             query ?: return@Observer
             (self.rvManga.adapter as? MangaAdapter)?.performTextFilter(query)
         })
+
+        catalogViewModel?.source?.observe(parent, Observer {
+            state = State.Loading
+        })
     }
 
     /**************************************************************************************

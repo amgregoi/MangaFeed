@@ -4,6 +4,8 @@ interface ToolbarMap
 {
     fun setTitle(title:String)
 
+    fun showSpinner()
+
     fun setNavigationIcon(iconResource:Int?)
 
     fun setToolbarColor(color: Int)

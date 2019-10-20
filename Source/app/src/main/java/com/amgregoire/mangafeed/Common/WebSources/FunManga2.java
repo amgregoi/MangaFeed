@@ -10,6 +10,7 @@ import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.v2.service.Logger;
+import com.google.gson.Gson;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,7 +20,12 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FunManga extends SourceManga
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
+public class FunManga2 extends SourceManga
 {
     public final static String TAG = FunManga.class.getSimpleName();
     public final static String URL = "https://www.funmanga.com";
@@ -286,6 +292,73 @@ public class FunManga extends SourceManga
     @Override
     public void updateLocalCatalog()
     {
+        List<Observable> pages = new ArrayList<>();
+        char lEndPoint = ' ';
+
+        while (lEndPoint != 'z')
+        {
+            pages.add(updateCatalogObservable(mCatalogUrl + lEndPoint));
+
+            if (lEndPoint == ' ')
+            {
+                lEndPoint = 'a';
+            }
+            else
+            {
+                lEndPoint++;
+            }
+        }
+
+        Single temp = Observable.fromIterable(pages)
+                                .subscribeOn(Schedulers.computation())
+                                .flatMap(obs -> obs.subscribeOn(Schedulers.computation()))
+                                .flatMap(response -> test((String) response))
+                                .toList();
+
+        temp.subscribe(o -> {
+            String x = new Gson().toJson(o);
+            Logger.INSTANCE.error(x, "");
+        }, new Consumer<Throwable>()
+        {
+            @Override
+            public void accept(Throwable throwable) throws Exception
+            {
+                Logger.INSTANCE.error(throwable, "oh no");
+            }
+        });
+    }
+
+
+    public List<Manga> test(String response)
+    {
+        Logger.INSTANCE.error("Starting local catalog", "");
+        ArrayList<Manga> result = new ArrayList<>();
+
+        String responseBody = (String) response;
+        MangaDB lDatabase = MangaDB.getInstance();
+        Document lParsedDocument = Jsoup.parse(responseBody);
+        Elements lLinks = lParsedDocument.select("ul.manga-list.circle-list").select("a");
+
+        for (Element link : lLinks)
+        {
+            String name = link.text();
+            String url = link.attr("href") + "/";
+
+            Manga newManga = new Manga(name, url, SourceKey);
+            if (!lDatabase.containsManga(newManga))
+            {
+                newManga = lDatabase.putManga(newManga);
+                Logger.INSTANCE.info("Added new item -> " + newManga.getTitle());
+                result.add(newManga);
+            }
+        }
+
+        return result;
+    }
+
+    //    @Override
+    public void updateLocalCatalog2()
+    {
         char lEndPoint = ' ';
 
         while (lEndPoint != 'z')
@@ -293,6 +366,7 @@ public class FunManga extends SourceManga
 
             updateCatalogObservable(mCatalogUrl + lEndPoint).subscribe(response ->
                     {
+                        Logger.INSTANCE.error("Starting local catalog", "");
                         String responseBody = (String) response;
                         MangaDB lDatabase = MangaDB.getInstance();
                         Document lParsedDocument = Jsoup.parse(responseBody);
