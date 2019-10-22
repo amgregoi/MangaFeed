@@ -1,5 +1,6 @@
 package com.amgregoire.mangafeed.UI.Adapters
 
+import android.annotation.SuppressLint
 import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -12,6 +13,7 @@ import android.support.v4.widget.NestedScrollView
 import android.text.Html
 import android.util.SparseArray
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
@@ -85,8 +87,8 @@ class ImagePagerAdapter(
     private fun instantiateNovel(container: ViewGroup, position: Int): View
     {
         val lView = LayoutInflater.from(context).inflate(R.layout.item_reader_image_adapter, container, false)
-        val mNovel = lView.findViewById<GestureTextView>(R.id.gestureTextViewReaderChapter)
-        val mContainer = lView.findViewById<NestedScrollView>(R.id.scrollViewTextContainer)
+        val mNovel:GestureTextView = lView.findViewById(R.id.gestureTextViewReaderChapter)
+        val mContainer:NestedScrollView = lView.findViewById(R.id.scrollViewTextContainer)
         mNovel.setUserGesureListener(listener)
 
         mNovel.visibility = View.VISIBLE
@@ -106,22 +108,27 @@ class ImagePagerAdapter(
         return lView
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun instantiateImage(container: ViewGroup, position: Int): View
     {
         val lView = LayoutInflater.from(context).inflate(R.layout.item_reader_image_adapter, container, false)
         val image = lView.findViewById<GestureImageView>(R.id.gestureImageViewReaderChapter)
         val emptyState = lView.findViewById<EmptyState>(R.id.emptyStateReaderItem)
+
         val url = data.getOrNull(position) ?: return lView
         if (url.isEmpty()) return lView
 
+        emptyState.tag = "$EMPTY_TAG:$position"
+
         emptyState.setButtonClickListener(View.OnClickListener {
+            emptyState.showLoader()
             readerViewModel.setUiStateBlock()
             setupImage(image, emptyState, url, position)
         })
 
-//        setupImage(image, emptyState, url, position)
+        setupImage(image, emptyState, url, position)
 
-        emptyState.setLoadTimeout(1500)
+        emptyState.setLoadTimeout(6000)
 
         container.addView(lView)
         mImageViews.put(position, lView)
@@ -163,14 +170,7 @@ class ImagePagerAdapter(
                         image.setImageBitmap(compressedBitmap)
 
                         image.initializeView()
-                        try
-                        {
-                            image.tag = "$TAG:$position"
-                        }
-                        catch (aException: Exception)
-                        {
-                            MangaLogger.logError(TAG, "instantiateItem()", aException.toString())
-                        }
+                        image.setTag("$IMAGE_TAG:$position")
 
                         image.visibility = View.VISIBLE
                         image.startFling(0f, 100000f) //large fling to initialize the image to the top for long pages
@@ -190,5 +190,7 @@ class ImagePagerAdapter(
     companion object
     {
         val TAG = ImagePagerAdapter::class.java.simpleName
+        val IMAGE_TAG = ImagePagerAdapter::class.java.simpleName + ":IMAGE"
+        val EMPTY_TAG = ImagePagerAdapter::class.java.simpleName + ":EMPTY"
     }
 }

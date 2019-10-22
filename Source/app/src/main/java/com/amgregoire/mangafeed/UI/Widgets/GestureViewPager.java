@@ -9,9 +9,12 @@ import android.view.View;
 
 import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.MangaFeed;
+import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Adapters.ImagePagerAdapter;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
+import com.amgregoire.mangafeed.v2.custom.EmptyState;
+import com.amgregoire.mangafeed.v2.service.Logger;
 
 public class GestureViewPager extends ViewPager implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener
 {
@@ -20,6 +23,7 @@ public class GestureViewPager extends ViewPager implements GestureDetector.OnGes
     private GestureImageView mGestureImageView;
     private GestureDetector mGestureDetector;
     private UserGestureListener mUserGestureListener;
+    private EmptyState mEmptyState;
 
     private boolean mVertical;
 
@@ -55,7 +59,7 @@ public class GestureViewPager extends ViewPager implements GestureDetector.OnGes
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent aEvent)
+    public boolean onInterceptTouchEvent(MotionEvent event)
     {
         //Try catch was added to handle androids viewpager bug that pops up sometimes.
         //super.onInterceptTouchEvent throws index out of bounds exception.
@@ -63,11 +67,13 @@ public class GestureViewPager extends ViewPager implements GestureDetector.OnGes
         {
             fetchGestureImageViewByTag();
 
-            mGestureDetector.onTouchEvent(aEvent);
+            mGestureDetector.onTouchEvent(event);
+
+            if (mEmptyState != null) mEmptyState.dispatchTouchEvent(event);
 
             //ACTION_DOWN workaround for checkSwipe()
-            if (aEvent.getAction() == MotionEvent.ACTION_DOWN)
-                mHorizontalSwipeX = aEvent.getX();
+            if (event.getAction() == MotionEvent.ACTION_DOWN)
+                mHorizontalSwipeX = event.getX();
 
             if (mGestureImageView != null)
             {
@@ -78,13 +84,13 @@ public class GestureViewPager extends ViewPager implements GestureDetector.OnGes
 
                 if (mVertical)
                 {
-                    boolean lResult = super.onInterceptTouchEvent(swapXY(aEvent));
-                    swapXY(aEvent); // return touch coordinates to original reference frame for any child views
+                    boolean lResult = super.onInterceptTouchEvent(swapXY(event));
+                    swapXY(event); // return touch coordinates to original reference frame for any child views
                     return lResult;
                 }
             }
 
-            return super.onInterceptTouchEvent(aEvent);
+            return super.onInterceptTouchEvent(event);
         }
         catch (Exception aException)
         {
@@ -146,7 +152,8 @@ public class GestureViewPager extends ViewPager implements GestureDetector.OnGes
 
     private void fetchGestureImageViewByTag()
     {
-        mGestureImageView = (GestureImageView) findViewWithTag(ImagePagerAdapter.Companion.getTAG() + ":" + getCurrentItem());
+        mEmptyState = findViewWithTag(ImagePagerAdapter.Companion.getEMPTY_TAG() + ":" + getCurrentItem());
+        mGestureImageView = findViewWithTag(ImagePagerAdapter.Companion.getIMAGE_TAG() + ":" + getCurrentItem());
     }
 
     /**
