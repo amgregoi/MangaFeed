@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.support.constraint.ConstraintLayout
 import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +22,7 @@ import com.amgregoire.mangafeed.Utils.MangaLogger
 import com.amgregoire.mangafeed.Utils.SharedPrefs
 import com.amgregoire.mangafeed.v2.NavigationType
 import com.amgregoire.mangafeed.v2.ResourceFactory
+import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.FragmentNavMap
@@ -57,7 +57,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
             val binder = service as ToolbarTimerService.LocalBinder
             mToolBarService = binder.service
             mToolBarService?.setToolbarListener(this@ReaderFragment)
-            delayedAction(2000) { mToolBarService?.startTimer() }
+            //            delayedAction(8000) { mToolBarService?.startTimer() }
         }
 
         override fun onServiceDisconnected(aComponent: ComponentName)
@@ -75,10 +75,9 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
     override fun onResume()
     {
         super.onResume()
+        setupToolbarService()
         showToolbar()
         enterAndExitSystemUI()
-        setupToolbarService()
-
     }
 
     override fun onPause()
@@ -128,10 +127,20 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
             readerVm.uiState.observe(parent, Observer { state ->
                 state ?: return@Observer
 
-                if (state is ReaderUIState.SHOW) showToolbar()
-                else hideToolbar()
-
-                mToolBarService?.startTimer()
+                when (state)
+                {
+                    is ReaderUIState.INIT -> showToolbar()
+                    is ReaderUIState.SHOW ->
+                    {
+                        showToolbar()
+                        mToolBarService?.startTimer()
+                    }
+                    else ->
+                    {
+                        Logger.error("Toggling UI State = $state")
+                        hideToolbar()
+                    }
+                }
             })
         }
 
@@ -215,9 +224,6 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
 
         self.bottomContainer.setPadding(0, 0, 0, ScreenUtil.getNavigationBarHeight(resources))
         self.topContainer.setPadding(0, ScreenUtil.getStatusBarHeight(resources), 0, 0)
-        //                val params = (self.topContainer.layoutParams as ConstraintLayout.LayoutParams).apply { topMargin = ScreenUtil.getStatusBarHeight(resources) }
-        //                self.topContainer.layoutParams = params
-
     }
 
     /***********************************************************
@@ -255,8 +261,9 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
             override fun onPageScrollStateChanged(state: Int) = Unit
             override fun onPageSelected(position: Int)
             {
-                showToolbar()
-                mToolBarService?.startTimer()
+                Logger.error("Chapter selected: $position")
+                //                showToolbar()
+                //                mToolBarService?.startTimer()
                 readerViewModel?.updateCurrentChapterByPosition(position)
             }
         })

@@ -83,7 +83,7 @@ class MangaInfoFragment : BaseFragment()
                     chapterSelected = { manga, chapters, chapter ->
                         val parent = activity ?: return@MangaInfoAdapter
                         readerViewModel?.updateReaderInfo(manga, chapters, chapter, true)
-                        (parent as FragmentNavMap).replaceFragmentParent(ReaderFragment.newInstance(), ReaderFragment.TAG)
+                        (parent as FragmentNavMap).addFragmentParent(ReaderFragment.newInstance(), this,ReaderFragment.TAG)
                     }
             )
         })
@@ -172,7 +172,7 @@ class MangaInfoFragment : BaseFragment()
 
                     readerViewModel?.updateReaderInfo(manga, chapters, chapter, true)
 
-                    (parent as FragmentNavMap).replaceFragmentParent(ReaderFragment.newInstance(), ReaderFragment.TAG)
+                    (parent as FragmentNavMap).addFragmentParent(ReaderFragment.newInstance(), this, ReaderFragment.TAG)
                     return@setOnNavigationItemSelectedListener true
                 }
                 else -> false

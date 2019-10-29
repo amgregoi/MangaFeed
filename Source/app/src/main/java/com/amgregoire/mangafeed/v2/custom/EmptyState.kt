@@ -172,10 +172,4 @@ class EmptyState @JvmOverloads constructor(context: Context, attrs: AttributeSet
         super.onDetachedFromWindow()
         compositeDisposable.dispose()
     }
-
-    override fun onTouchEvent(event: MotionEvent?): Boolean
-    {
-        Logger.error("This is a touch event")
-        return super.onTouchEvent(event)
-    }
 }

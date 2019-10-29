@@ -18,7 +18,7 @@ class FunMangaCookiePreferences(context: Context)
         private set
 
     fun setExpiresAt() = run {
-        expiresAt = Date().time + 43200000
+        expiresAt = Date().time + (10 * 60 * 1000).toLong() // 10 mins
     }
 
     fun clear()

@@ -4,12 +4,13 @@ import com.amgregoire.mangafeed.Common.WebSources.FunManga
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.Utils.MangaLogger
 import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.FunMangaCookiePreferences
 import com.amgregoire.mangafeed.v2.cloudflare.Cloudflare
 import kotlinx.coroutines.launch
 import java.net.HttpCookie
 import java.util.*
 
-class CloudflareService
+class CloudFlareService
 {
     fun getCFCookies(url: String, userAgent: String, cookies: (List<String>) -> Unit)
     {
@@ -20,24 +21,26 @@ class CloudflareService
         }
 
         val cookiePrefs = MangaFeed.app.cookiePreferences
-        val oldCookies = cookiePrefs.cookies
-        if (oldCookies != null && cookiePrefs.expiresAt > Date().time)
+        if (isValidCookie(cookiePrefs))
         {
-//            MangaLogger.logError("CloudflareService", "Using old cookies")
+            val oldCookies = cookiePrefs.cookies!!
             cookies.invoke(oldCookies.toList())
-            return
         }
-
-        cookies.invoke(listOf())
+        else
+        {
+            getCookies(url, userAgent) { newCookies ->
+                cookies.invoke(newCookies)
+            }
+        }
     }
 
     fun getCookies(url: String, userAgent: String, cookies: (List<String>) -> Unit)
     {
         val cookiePrefs = MangaFeed.app.cookiePreferences
-        val oldCookies = cookiePrefs.cookies
 
-        if (oldCookies != null && cookiePrefs.expiresAt > Date().time)
+        if (isValidCookie(cookiePrefs))
         {
+            val oldCookies = cookiePrefs.cookies!!
             uiScope.launch { cookies.invoke(oldCookies.toList()) }
             return
         }
@@ -48,13 +51,8 @@ class CloudflareService
             {
                 override fun onSuccess(httpCookieList: List<HttpCookie>)
                 {
-                    MangaLogger.logError("CloudflareService", "Retrieved new cookies", "${httpCookieList}")
-
-                    var cookieList = Cloudflare.List2Map(httpCookieList).map { (k, v) -> "$k=$v" }
-                    //cookieList = cookieList.plus("User-Agent=$userAgent")
-
-                    val cookiePrefs = MangaFeed.app.cookiePreferences
-
+                    Logger.debug("Retrieved new cookies = $httpCookieList")
+                    val cookieList = Cloudflare.List2Map(httpCookieList).map { (k, v) -> "$k=$v" }
                     cookiePrefs.cookies = cookieList.toMutableSet()
                     cookiePrefs.setExpiresAt()
 
@@ -64,11 +62,30 @@ class CloudflareService
                 override fun onFail()
                 {
                     MangaLogger.logError("CloudflareService", "Failed to retrieve new cookies")
-                    val cookiePrefs = MangaFeed.app.cookiePreferences
-                    cookiePrefs.clear()
-                    cookies.invoke(listOf())
+                    if (!isValidCookie(cookiePrefs))
+                    {
+                        cookiePrefs.clear()
+                        cookies.invoke(listOf())
+                    }
+                    else
+                    {
+                        val oldCookies = cookiePrefs.cookies!!
+                        uiScope.launch { cookies.invoke(oldCookies.toList()) }
+                    }
                 }
             })
         }
+    }
+
+    private fun isValidCookie(cookiePrefs: FunMangaCookiePreferences): Boolean
+    {
+        val oldCookies = cookiePrefs.cookies
+//        Logger.error("Cookie -> Expires=${cookiePrefs.expiresAt} -> current=${Date().time}")
+        if (oldCookies != null && cookiePrefs.expiresAt > Date().time)
+        {
+            return true
+        }
+
+        return false
     }
 }

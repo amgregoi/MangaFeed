@@ -4,8 +4,6 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.res.Resources
 import android.os.Bundle
 import android.transition.Fade
-import android.transition.Slide
-import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
@@ -17,7 +15,8 @@ import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentSettings
 import com.amgregoire.mangafeed.Utils.NetworkService
 import com.amgregoire.mangafeed.Utils.SharedPrefs
 import com.amgregoire.mangafeed.uiScope
-import com.amgregoire.mangafeed.v2.service.CloudflareService
+import com.amgregoire.mangafeed.v2.lastFragment
+import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.BaseNavigationActivity
@@ -33,6 +32,8 @@ class MActivity : BaseNavigationActivity()
         ViewModelProviders.of(this).get(CatalogViewModel::class.java)
     }
 
+    val mainFragment: MFragment by lazy { MFragment.newInstance() }
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -40,7 +41,7 @@ class MActivity : BaseNavigationActivity()
         val source = MangaFeed.app.currentSource
         if (source.requiresCloudFlare())
         {
-            CloudflareService().getCookies(source.baseUrl, NetworkService.defaultUserAgent) {
+            CloudFlareService().getCookies(source.baseUrl, NetworkService.defaultUserAgent) {
                 uiScope.launch { setupView() }
             }
         }
@@ -55,11 +56,10 @@ class MActivity : BaseNavigationActivity()
 
         setupToolbarSpinner()
 
-        val fragment = MFragment.newInstance()
-        fragment.enterTransition = Fade(Fade.MODE_IN)
+        mainFragment.enterTransition = Fade(Fade.MODE_IN)
         supportFragmentManager.beginTransaction()
-                .setPrimaryNavigationFragment(fragment)
-                .add(flContainer.id, fragment, MFragment.TAG)
+                .setPrimaryNavigationFragment(mainFragment)
+                .add(flContainer.id, mainFragment, MFragment.TAG)
                 .commit()
 
         setupBackStackListener()
@@ -93,9 +93,11 @@ class MActivity : BaseNavigationActivity()
             if (manager.backStackEntryCount == 1)
             {
                 setNavigationIcon(0)
+                showSpinner()
                 hideToolbarElevation()
             }
-            manager.primaryNavigationFragment?.let { fragment ->
+
+            manager.lastFragment()?.let { fragment ->
 
                 if (fragment is BaseFragment)
                 {
@@ -112,7 +114,7 @@ class MActivity : BaseNavigationActivity()
     private fun setupBackStackListener()
     {
         supportFragmentManager.addOnBackStackChangedListener {
-            val fragment = supportFragmentManager.primaryNavigationFragment ?: return@addOnBackStackChangedListener
+            val fragment = supportFragmentManager.lastFragment() ?: return@addOnBackStackChangedListener
             (fragment as BaseFragment).updateParentSettings()
         }
     }
@@ -120,7 +122,8 @@ class MActivity : BaseNavigationActivity()
     private fun setupToolbarSpinner()
     {
         toolbarSpinner.adapter = ArrayAdapter(this, R.layout.item_source_spinner, MangaEnums.Source.values())
-        toolbarSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
+        toolbarSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
+        {
             override fun onNothingSelected(parent: AdapterView<*>?) = Unit
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)

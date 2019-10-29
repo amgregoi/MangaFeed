@@ -53,6 +53,12 @@ class MFragment : BaseFragment()
         (parent as ToolbarMap).showSpinner()
     }
 
+    /**********************************************************************************
+     *
+     *
+     *
+     */
+
     companion object
     {
         val TAG: String = "MFragment"

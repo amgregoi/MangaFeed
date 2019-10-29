@@ -3,11 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
+    android:layout_height="wrap_content"
     android:layout_alignParentTop="true"
     android:background="?attr/background_color"
     android:elevation="2dp"
-    app:layout_scrollFlags="scroll|enterAlways"
     android:minHeight="?attr/actionBarSize"
     app:layout_constraintTop_toTopOf="parent"
     app:titleTextColor="?attr/background_color">

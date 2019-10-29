@@ -88,14 +88,16 @@ abstract class CatalogBase : BaseFragment()
                 data = ArrayList(mangas),
                 source = MangaFeed.app.currentSource,
                 itemSelected = { manga ->
+                    ioScope.launch {
+                        if (catalogViewModel?.isLastItemComplete == true)
+                        {
+                            catalogViewModel?.setLastItem(manga)
+                            rvSavedState = self.rvManga.layoutManager?.onSaveInstanceState()
 
-                    if (catalogViewModel?.isLastItemComplete == true)
-                    {
-                        catalogViewModel?.setLastItem(manga)
-                        rvSavedState = self.rvManga.layoutManager?.onSaveInstanceState()
-                        val parent = activity ?: return@MangaAdapter
-                        val fragment = MangaInfoFragment.newInstance(manga._id, false)
-                        (parent as FragmentNavMap).addFragment(fragment, MangaInfoFragment.TAG, R.anim.slide_out_bottom, R.anim.slide_out_to_left, R.anim.slide_in_from_left, R.anim.slide_in_bottom)
+                            val parent = activity ?: return@launch
+                            val fragment = MangaInfoFragment.newInstance(manga._id, false)
+                            (parent as FragmentNavMap).addFragment(fragment, MangaInfoFragment.TAG, R.anim.slide_out_bottom, R.anim.slide_out_to_left, R.anim.slide_in_from_left, R.anim.slide_in_bottom)
+                        }
                     }
                 }
         )

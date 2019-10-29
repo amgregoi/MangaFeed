@@ -3,34 +3,45 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/flParent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?attr/background_color2">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.constraint.ConstraintLayout
+        <android.support.design.widget.CoordinatorLayout
             android:id="@+id/clParent"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <include layout="@layout/widget_toolbar_2" />
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/toolbarLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="0dp"
+                android:stateListAnimator="@null"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <include layout="@layout/widget_toolbar_2" />
+
+            </android.support.design.widget.AppBarLayout>
 
             <FrameLayout
                 android:id="@+id/flContainer"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:background="?attr/background_color2"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar" />
-        </android.support.constraint.ConstraintLayout>
+                android:layout_height="match_parent"
+                android:layout_marginTop="?attr/actionBarSize"
+                app:layout_dodgeInsetEdges="none" />
 
-        <!--    android:background="#50000000"-->
+        </android.support.design.widget.CoordinatorLayout>
 
         <View
             android:id="@+id/vMenuCover"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             android:clickable="true"
             android:focusable="true"
             android:visibility="gone"
@@ -41,6 +52,7 @@
             android:id="@+id/flMenuContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
             app:layout_constraintBottom_toBottomOf="parent" />
     </android.support.constraint.ConstraintLayout>
 </FrameLayout>

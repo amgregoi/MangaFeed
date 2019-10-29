@@ -14,7 +14,7 @@ import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateSourceEvent;
 import com.amgregoire.mangafeed.Utils.NetworkService;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
-import com.amgregoire.mangafeed.v2.service.CloudflareService;
+import com.amgregoire.mangafeed.v2.service.CloudFlareService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +24,6 @@ import butterknife.BindDrawable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
@@ -134,7 +132,7 @@ public class SourceRecycleAdapter extends RecyclerView.Adapter<RecyclerView.View
         {
             if (mSource.getSource().requiresCloudFlare())
             {
-                new CloudflareService().getCookies(mSource.getBaseUrl(), NetworkService.defaultUserAgent, strings -> {
+                new CloudFlareService().getCookies(mSource.getBaseUrl(), NetworkService.defaultUserAgent, strings -> {
                     changeSource();
                     return null;
                 });

@@ -4,19 +4,22 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.app.SharedElementCallback
 import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.amgregoire.mangafeed.Models.Chapter
 import com.amgregoire.mangafeed.Models.Manga
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.UI.Adapters.ImagePagerAdapter
 import com.amgregoire.mangafeed.UI.Widgets.GestureViewPager
-import com.amgregoire.mangafeed.v2.ui.BaseFragment
+import com.amgregoire.mangafeed.ioScope
+import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.service.Logger
-import kotlinx.android.synthetic.main.fragment_reader2.view.*
+import com.amgregoire.mangafeed.v2.ui.BaseFragment
 import kotlinx.android.synthetic.main.item_fragment_reader_chapter.view.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 /**
@@ -45,45 +48,18 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener
 
         val chapter = readerViewModel?.getChapterByPosition(arguments!![POSITION_KEY] as Int) ?: return
 
+        self.emptyStateReader.setButtonClickListener(View.OnClickListener {
+            setup(chapter)
+        })
+
         readerViewModel?.chapterInfo?.observe(parent, Observer { info ->
             info ?: return@Observer
-            if(info.chapter.url != chapter.url) return@Observer
+            if (info.chapter.url != chapter.url) return@Observer
 
             self.viewPagerReaderChapter.currentItem = info.currentPage
         })
 
-        if (self.viewPagerReaderChapter.adapter == null)
-        {
-            Logger.error("Getting contents for: ${chapter.chapterTitle}")
-            readerViewModel?.getChapterContents(chapter = chapter, chapterContent = { contents, chapter, isManga ->
-
-                self.viewPagerReaderChapter.adapter =
-                        if (isManga) ImagePagerAdapter(this, parent, contents)
-                        else ImagePagerAdapter(this, parent, contents, this)
-
-                self.viewPagerReaderChapter.pageMargin = 128
-                self.viewPagerReaderChapter.offscreenPageLimit = 6
-            })
-        }
-
-        setEnterSharedElementCallback(
-                object : SharedElementCallback()
-                {
-                    override fun onMapSharedElements(names: List<String>, sharedElements: MutableMap<String, View>)
-                    {
-                        // Locate the image view at the primary fragment (the ImageFragment
-                        // that is currently visible). To locate the fragment, call
-                        // instantiateItem with the selection position.
-                        // At this stage, the method will simply return the fragment at the
-                        // position and will not create a new one.
-                        val POSITION = 0 // TODO :: Get position from somewhere else
-                        val currentFragment = self.vpReader.adapter?.instantiateItem(self.vpReader, POSITION) as Fragment
-                        val view = currentFragment.view ?: return
-
-                        // Map the first shared element name to the child ImageView.
-                        sharedElements[names[0]] = view.findViewById(R.id.gestureImageViewReaderChapter)
-                    }
-                })
+        setup(chapter)
 
         initViews()
     }
@@ -116,6 +92,49 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener
     override fun onRight()
     {
         readerViewModel?.incrementChapter()
+    }
+
+    private fun setup(chapter: Chapter)
+    {
+        val parent = activity ?: return
+
+        self.emptyStateReader.showLoader()
+
+        if (self.viewPagerReaderChapter.adapter == null)
+        {
+            Logger.error("Getting contents for: ${chapter.chapterTitle}")
+            readerViewModel?.getChapterContents(chapter = chapter, chapterContent = { contents, chapter, isManga ->
+
+                if (readerViewModel?.isCurrentChapter(chapter) == true) readerViewModel?.setUIStateShow()
+
+                if (contents.isNullOrEmpty())
+                {
+                    self.emptyStateReader.hideLoader(true)
+                    return@getChapterContents
+                }
+
+                self.viewPagerReaderChapter.adapter =
+                        if (isManga) ImagePagerAdapter(this, parent, contents)
+                        else ImagePagerAdapter(this, parent, contents, this)
+
+                self.viewPagerReaderChapter.pageMargin = 128
+                self.viewPagerReaderChapter.offscreenPageLimit = 6
+                self.emptyStateReader.hideImmediate()
+            })
+        }
+        else
+        {
+            self.emptyStateReader.hide()
+            return
+        }
+
+        ioScope.launch {
+            delay(8000)
+            if (self.viewPagerReaderChapter.adapter == null)
+            {
+                uiScope.launch { self.emptyStateReader.hideLoader(true) }
+            }
+        }
     }
 
     companion object

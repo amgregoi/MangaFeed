@@ -6,12 +6,23 @@
     android:background="?attr/background_color2"
     android:orientation="vertical">
 
+    <com.amgregoire.mangafeed.v2.custom.EmptyState
+        android:id="@+id/emptyStateMangaInfo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/background_color2"
+        android:visibility="visible"
+        app:mangaButtonVisible="true"
+        app:mangaLoading="true"
+        app:mangaPrimaryText="Oops"
+        app:mangaSecondaryText="There was a problem loading information for this manga" />
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshMangaInfo"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavMangaInfo">
+        app:layout_constraintBottom_toTopOf="@id/bottomNavMangaInfo"
+        app:layout_constraintTop_toTopOf="parent">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -36,17 +47,5 @@
         app:itemTextColor="@drawable/nav_selector"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/menu_manga_info_bottom" />
-
-    <com.amgregoire.mangafeed.v2.custom.EmptyState
-        android:id="@+id/emptyStateMangaInfo"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:elevation="5dp"
-        android:visibility="gone"
-        app:mangaLoading="true"
-        app:mangaButtonVisible="true"
-        app:mangaPrimaryText="Oops"
-        app:mangaSecondaryText="There was a problem loading information for this manga" />
-
 
 </android.support.constraint.ConstraintLayout>

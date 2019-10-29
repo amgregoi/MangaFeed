@@ -19,6 +19,7 @@ data class ChapterInfo(var chapter: Chapter, var title: String, var currentPage:
 
 sealed class ReaderUIState
 {
+    object INIT : ReaderUIState()
     object SHOW : ReaderUIState()
     object HIDE : ReaderUIState()
     object BLOCK : ReaderUIState()
@@ -107,7 +108,10 @@ class ReaderViewModel : ViewModel()
 
     fun toggleUiState()
     {
-        val state = uiState.value ?: ReaderUIState.SHOW
+        val state = uiState.value ?: run {
+            uiState.value = ReaderUIState.INIT
+            return
+        }
 
         uiState.value =
                 if (state == ReaderUIState.HIDE) ReaderUIState.SHOW
@@ -116,7 +120,12 @@ class ReaderViewModel : ViewModel()
 
     fun setUiStateBlock()
     {
-        uiState.value = ReaderUIState.BLOCK
+        //        uiState.value = ReaderUIState.BLOCK
+    }
+
+    fun setUIStateShow()
+    {
+        uiState.value = ReaderUIState.SHOW
     }
 
     fun updateChapterInfo(chapter: Chapter?, title: String? = null, currentPage: Int? = null, totalPages: Int? = null)
@@ -151,6 +160,12 @@ class ReaderViewModel : ViewModel()
         val current = chapterInfo.value ?: return
         if (reader.chapter.url != chapter.url) return
         if (current.currentPage > 0) updateChapterInfo(chapter, currentPage = current.currentPage - 1)
+    }
+
+    fun isCurrentChapter(chapter: Chapter): Boolean
+    {
+        val info = readerInfo.value ?: return false
+        return info.chapter.url == chapter.url
     }
 
     fun getChapterContents(chapter: Chapter, chapterContent: (List<String>, Chapter, Boolean) -> Unit)

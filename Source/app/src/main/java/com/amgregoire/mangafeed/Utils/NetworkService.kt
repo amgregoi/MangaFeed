@@ -1,7 +1,7 @@
 package com.amgregoire.mangafeed.Utils
 
 
-import com.amgregoire.mangafeed.v2.service.CloudflareService
+import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -39,7 +39,7 @@ class NetworkService private constructor()
             {
                 val builder = Request.Builder().url(url).header("User-Agent", defaultUserAgent)
 
-                CloudflareService().getCFCookies(url, defaultUserAgent) { cookies ->
+                CloudFlareService().getCFCookies(url, defaultUserAgent) { cookies ->
                     for (cookie in cookies) builder.addHeader("Cookie", cookie)
                 }
 
@@ -71,7 +71,7 @@ class NetworkService private constructor()
                         .url(url)
                         .headers(headers)
 
-                CloudflareService().getCFCookies(url, defaultUserAgent) { cookies ->
+                CloudFlareService().getCFCookies(url, defaultUserAgent) { cookies ->
                     for (cookie in cookies) builder.addHeader("Cookie", cookie)
                 }
 

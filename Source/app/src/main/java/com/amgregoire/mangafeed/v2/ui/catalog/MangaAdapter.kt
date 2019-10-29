@@ -13,7 +13,7 @@ import com.amgregoire.mangafeed.Models.Manga
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.NetworkService
 import com.amgregoire.mangafeed.v2.ScaleImageViewTarget
-import com.amgregoire.mangafeed.v2.service.CloudflareService
+import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.Glide
@@ -172,13 +172,12 @@ class MangaAdapter(
 
             loadImage(manga)
 
-            itemView.cvParent.setOnClickListener {
+            itemView.clParent.setOnClickListener {
                 itemSelected.invoke(filteredData[position])
             }
 
             // Add margin to bottom elements
             val params = itemView.cvParent.layoutParams as GridLayoutManager.LayoutParams
-
 
             var rows = data.size / 3
             if (data.size % 3 == 0) rows--
@@ -186,7 +185,6 @@ class MangaAdapter(
             else params.bottomMargin = 0
 
             itemView.cvParent.layoutParams = params
-
         }
 
         private fun loadImage(manga: Manga)
@@ -218,7 +216,7 @@ class MangaAdapter(
 
             if (source.requiresCloudFlare())
             {
-                CloudflareService().getCFCookies(imageUrl, NetworkService.defaultUserAgent) { cookies ->
+                CloudFlareService().getCFCookies(imageUrl, NetworkService.defaultUserAgent) { cookies ->
                     for (cookie in cookies) builder.addHeader("Cookie", cookie)
                 }
             }

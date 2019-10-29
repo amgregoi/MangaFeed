@@ -38,13 +38,13 @@ interface FragmentNavMap
 
     fun replaceFragment(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 
-    fun replaceFragment(fragment: Fragment, tag: String, transaction: FragmentTransaction, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
-
     fun replaceFragmentParent(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 
     fun addFragment(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 
     fun addFragment(fragment: Fragment, prevFragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
+
+    fun addFragmentParent(fragment: Fragment, prevFragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 }
 
 abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, ToolbarMap, StatusBarMap
@@ -54,16 +54,6 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
     override fun replaceFragment(fragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
     {
         supportFragmentManager.beginTransaction()
-                .setPrimaryNavigationFragment(fragment)
-                .setCustomAnimations(enter, exit, popEnter, popExit)
-                .replace(flContainer.id, fragment, tag)
-                .addToBackStack(tag)
-                .commit()
-    }
-
-    override fun replaceFragment(fragment: Fragment, tag: String, transaction: FragmentTransaction, enter: Int, exit: Int, popEnter: Int, popExit: Int)
-    {
-        transaction
                 .setPrimaryNavigationFragment(fragment)
                 .setCustomAnimations(enter, exit, popEnter, popExit)
                 .replace(flContainer.id, fragment, tag)
@@ -100,14 +90,24 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
                 .addToBackStack(tag)
                 .hide(prevFragment)
                 .commit()
+    }
 
+
+    override fun addFragmentParent(fragment: Fragment, prevFragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
+    {
+        supportFragmentManager.beginTransaction()
+                .setPrimaryNavigationFragment(fragment)
+                .setCustomAnimations(enter, exit, popEnter, popExit)
+                .add(flParent.id, fragment, tag)
+                .addToBackStack(tag)
+                .hide(prevFragment)
+                .commit()
     }
 
     override fun startMenuFragment(fragment: Fragment, tag: String)
     {
         vMenuCover.visibility = View.VISIBLE
         supportFragmentManager.beginTransaction()
-                //                .setCustomAnimations(R.anim.slide_out_bottom, 0, 0, 0)
                 .setCustomAnimations(R.anim.fab_slide_in_from_right, 0, 0, 0) // todo make slide out bottom animation
                 .add(flMenuContainer.id, fragment, tag)
                 .addToBackStack(tag)

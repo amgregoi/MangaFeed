@@ -11,7 +11,7 @@ import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.UI.Adapters.MangaInfoChaptersAdapter
 import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.Utils.NetworkService
-import com.amgregoire.mangafeed.v2.service.CloudflareService
+import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -170,7 +170,7 @@ class MangaInfoAdapter(
 
             if (source.requiresCloudFlare())
             {
-                CloudflareService().getCFCookies(image, NetworkService.defaultUserAgent) { cookies ->
+                CloudFlareService().getCFCookies(image, NetworkService.defaultUserAgent) { cookies ->
                     for (cookie in cookies) builder.addHeader("Cookie", cookie)
                 }
             }

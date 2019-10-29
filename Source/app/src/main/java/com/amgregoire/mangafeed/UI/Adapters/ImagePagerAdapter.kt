@@ -13,7 +13,6 @@ import android.support.v4.widget.NestedScrollView
 import android.text.Html
 import android.util.SparseArray
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
@@ -21,11 +20,9 @@ import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.UI.Widgets.GestureImageView
 import com.amgregoire.mangafeed.UI.Widgets.GestureTextView
 import com.amgregoire.mangafeed.UI.Widgets.GestureViewPager
-import com.amgregoire.mangafeed.Utils.MangaLogger
 import com.amgregoire.mangafeed.Utils.NetworkService
 import com.amgregoire.mangafeed.v2.custom.EmptyState
-import com.amgregoire.mangafeed.v2.service.CloudflareService
-import com.amgregoire.mangafeed.v2.service.Logger
+import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.ui.read.ReaderViewModel
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.Glide
@@ -87,8 +84,8 @@ class ImagePagerAdapter(
     private fun instantiateNovel(container: ViewGroup, position: Int): View
     {
         val lView = LayoutInflater.from(context).inflate(R.layout.item_reader_image_adapter, container, false)
-        val mNovel:GestureTextView = lView.findViewById(R.id.gestureTextViewReaderChapter)
-        val mContainer:NestedScrollView = lView.findViewById(R.id.scrollViewTextContainer)
+        val mNovel: GestureTextView = lView.findViewById(R.id.gestureTextViewReaderChapter)
+        val mContainer: NestedScrollView = lView.findViewById(R.id.scrollViewTextContainer)
         mNovel.setUserGesureListener(listener)
 
         mNovel.visibility = View.VISIBLE
@@ -121,18 +118,22 @@ class ImagePagerAdapter(
         emptyState.tag = "$EMPTY_TAG:$position"
 
         emptyState.setButtonClickListener(View.OnClickListener {
-            emptyState.showLoader()
             readerViewModel.setUiStateBlock()
-            setupImage(image, emptyState, url, position)
+            refresh(image, emptyState, url, position)
         })
 
-        setupImage(image, emptyState, url, position)
-
-        emptyState.setLoadTimeout(6000)
+        refresh(image, emptyState, url, position)
 
         container.addView(lView)
         mImageViews.put(position, lView)
         return lView
+    }
+
+    private fun refresh(image: GestureImageView, emptyState: EmptyState, url: String, position: Int)
+    {
+        emptyState.showLoader()
+        setupImage(image, emptyState, url, position)
+        emptyState.setLoadTimeout(6000)
     }
 
     private fun setupImage(image: GestureImageView, emptyState: EmptyState, url: String, position: Int)
@@ -144,7 +145,7 @@ class ImagePagerAdapter(
 
         val builder = LazyHeaders.Builder().addHeader("User-Agent", NetworkService.defaultUserAgent)
 
-        CloudflareService().getCFCookies(url, NetworkService.defaultUserAgent) { cookies ->
+        CloudFlareService().getCFCookies(url, NetworkService.defaultUserAgent) { cookies ->
             for (cookie in cookies) builder.addHeader("Cookie", cookie)
         }
 
@@ -181,8 +182,7 @@ class ImagePagerAdapter(
                     override fun onLoadFailed(errorDrawable: Drawable?)
                     {
                         super.onLoadFailed(errorDrawable)
-
-                        emptyState.show()
+                        emptyState.hideLoader(true)
                     }
                 })
     }
