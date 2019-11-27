@@ -27,7 +27,7 @@ import com.amgregoire.mangafeed.UI.Mappers.IManga;
 import com.amgregoire.mangafeed.UI.Presenters.MangaInfoPres;
 import com.amgregoire.mangafeed.Utils.DownloadManager;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
-import com.amgregoire.mangafeed.v2.ui.BaseFragment;
+import com.amgregoire.mangafeed.v2.ui.base.BaseFragment;
 import com.l4digital.fastscroll.FastScrollRecyclerView;
 
 import butterknife.BindColor;

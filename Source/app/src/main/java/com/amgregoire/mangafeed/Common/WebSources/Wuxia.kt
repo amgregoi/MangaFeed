@@ -3,14 +3,13 @@ package com.amgregoire.mangafeed.Common.WebSources
 
 import com.amgregoire.mangafeed.Common.MangaEnums
 import com.amgregoire.mangafeed.Common.RequestWrapper
+import com.amgregoire.mangafeed.Common.SyncStatusObject
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceNovel
-import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.Models.Chapter
 import com.amgregoire.mangafeed.Models.Manga
 import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.Utils.MangaLogger
 import io.reactivex.Observable
-import io.reactivex.ObservableOnSubscribe
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.jsoup.Jsoup
@@ -200,18 +199,25 @@ class Wuxia : SourceNovel()
         return "Failed to pull page."
     }
 
-    override fun updateLocalCatalogV2(): Observable<List<Manga>>
+    override fun updateLocalCatalogV2(): Observable<SyncStatusObject>
     {
         val links = listOf("https://www.wuxiaworld.com/tag/completed", "https://www.wuxiaworld.com/language/chinese", "https://www.wuxiaworld.com/language/korean", "https://www.wuxiaworld.com/language/english")
         val pages = links.map { link -> updateCatalogObservable(link) }
+        var counter = 0
 
         return Observable.fromIterable(pages)
                 .subscribeOn(Schedulers.computation())
                 .flatMap { obs -> obs.subscribeOn(Schedulers.computation()) }
-                .flatMapSingle { response -> convertCatalogPageToMangaList(response as String) }
+                .map { response ->
+                    counter++
+                    Pair(counter, response)
+                }
+                .map { (count, response) -> Pair(count, convertCatalogPageToMangaList(response as String)) }
+                .flatMap { (count, list) -> Observable.just(SyncStatusObject(count, links.size, list)) }
+
     }
 
-    private fun convertCatalogPageToMangaList(response:String):Single<List<Manga>>
+    private fun convertCatalogPageToMangaList(response: String): List<Manga>
     {
         val result = arrayListOf<Manga>()
         val lDatabase = MangaDB.getInstance()
@@ -243,7 +249,7 @@ class Wuxia : SourceNovel()
             }
         }
 
-        return Observable.fromIterable(result).toList()
+        return result.toList()
     }
 
     companion object

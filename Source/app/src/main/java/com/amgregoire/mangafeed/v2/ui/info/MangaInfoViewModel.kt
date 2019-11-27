@@ -14,6 +14,7 @@ import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.catalog.enum.FollowType
 import io.reactivex.disposables.CompositeDisposable
@@ -63,8 +64,11 @@ class MangaInfoViewModel(val app: Application, var manga: Manga) : AndroidViewMo
 
     fun refresh() = ioScope.launch {
         uiScope.launch { state.value = State.Loading }
-        fetchMangaInfoOnline()
-        fetchChapterListOnline()
+
+        CloudFlareService().verifyCookieAndDoAction {
+            fetchMangaInfoOnline()
+            fetchChapterListOnline()
+        }
     }
 
     private fun fetchMangaInfoOnline()
@@ -79,7 +83,6 @@ class MangaInfoViewModel(val app: Application, var manga: Manga) : AndroidViewMo
                                         manga = newManga
                                         mangaInfo.value = MangaInfo(manga, chapters)
                                         state.value = State.Complete
-                                        MangaFeed.app.updateManga(newManga)
                                     },
                                     { throwable ->
                                         mangaInfo.value = MangaInfo(manga, chapters)

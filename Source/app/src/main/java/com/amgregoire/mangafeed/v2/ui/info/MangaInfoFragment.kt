@@ -16,8 +16,8 @@ import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.NavigationType
 import com.amgregoire.mangafeed.v2.ResourceFactory
-import com.amgregoire.mangafeed.v2.ui.BaseFragment
-import com.amgregoire.mangafeed.v2.ui.FragmentNavMap
+import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
+import com.amgregoire.mangafeed.v2.ui.base.FragmentNavMap
 import com.amgregoire.mangafeed.v2.ui.catalog.enum.FollowType
 import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
 import com.amgregoire.mangafeed.v2.ui.read.ReaderFragment
@@ -103,6 +103,11 @@ class MangaInfoFragment : BaseFragment()
             self.swipeRefreshMangaInfo.isRefreshing = false
             mangaInfoViewModel.refresh()
         }
+
+        self.emptyStateMangaInfo.setButtonClickListener(View.OnClickListener {
+            self.swipeRefreshMangaInfo.isRefreshing = false
+            mangaInfoViewModel.refresh()
+        })
     }
 
     override fun updateParentSettings()

@@ -1,4 +1,4 @@
-package com.amgregoire.mangafeed.v2.ui
+package com.amgregoire.mangafeed.v2.ui.base
 
 import android.support.v4.app.Fragment
 import android.view.View

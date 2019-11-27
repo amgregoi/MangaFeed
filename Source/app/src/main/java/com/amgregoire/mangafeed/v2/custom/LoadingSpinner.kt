@@ -9,24 +9,29 @@ import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
 import android.widget.ImageView
 import com.amgregoire.mangafeed.R
+import com.amgregoire.mangafeed.Utils.SharedPrefs
 
 class LoadingSpinner : ImageView
 {
     constructor(context: Context) : super(context)
     {
-        setImageDrawable(context.resources.getDrawable(R.drawable.load_spinner_dark, context.theme))
+        if (SharedPrefs.isLightTheme()) setImageDrawable(context.resources.getDrawable(R.drawable.load_spinner_dark, context.theme))
+        else setImageDrawable(context.resources.getDrawable(R.drawable.load_spinner_light, context.theme))
+
         startSpin()
     }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
     {
-        setImageDrawable(context.resources.getDrawable(R.drawable.load_spinner_dark, context.theme))
+        if (SharedPrefs.isLightTheme()) setImageDrawable(context.resources.getDrawable(R.drawable.load_spinner_dark, context.theme))
+        else setImageDrawable(context.resources.getDrawable(R.drawable.load_spinner_light, context.theme))
         startSpin()
     }
 
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
     {
-        setImageDrawable(context.resources.getDrawable(R.drawable.load_spinner_dark, context.theme))
+        if (SharedPrefs.isLightTheme()) setImageDrawable(context.resources.getDrawable(R.drawable.load_spinner_dark, context.theme))
+        else setImageDrawable(context.resources.getDrawable(R.drawable.load_spinner_light, context.theme))
         startSpin()
     }
 
@@ -43,6 +48,7 @@ class LoadingSpinner : ImageView
 
     fun startSpin()
     {
+
         val anim = RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
         anim.interpolator = LinearInterpolator()
         anim.repeatCount = Animation.INFINITE

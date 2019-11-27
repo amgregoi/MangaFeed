@@ -3,7 +3,6 @@
     <item
         android:id="@+id/menuHomeSearch"
         android:icon="@android:drawable/ic_menu_search"
-        app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView"
         android:title="Search" />
 </menu>

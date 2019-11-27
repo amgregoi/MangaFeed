@@ -1,4 +1,4 @@
-package com.amgregoire.mangafeed.v2.ui.catalog
+package com.amgregoire.mangafeed.v2.ui.catalog.adapter
 
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -12,6 +12,8 @@ import com.amgregoire.mangafeed.Common.WebSources.Base.SourceBase
 import com.amgregoire.mangafeed.Models.Manga
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.NetworkService
+import com.amgregoire.mangafeed.ioScope
+import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.ScaleImageViewTarget
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
@@ -22,6 +24,7 @@ import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.item_manga.view.*
+import kotlinx.coroutines.launch
 import java.util.*
 
 
@@ -94,8 +97,7 @@ class MangaAdapter(
      *
      * @param manga
      */
-    fun updateItem(manga: Manga)
-    {
+    fun updateItem(manga: Manga) = ioScope.launch {
         val filterPosition = filteredData.indexOf(manga)
         val dataPosition = data.indexOf(manga)
 
@@ -107,7 +109,7 @@ class MangaAdapter(
         if (filterPosition >= 0)
         {
             filteredData[filterPosition] = manga
-            notifyItemChanged(filterPosition)
+            uiScope.launch { notifyItemChanged(filterPosition) }
         }
     }
 
@@ -118,8 +120,7 @@ class MangaAdapter(
      * @param aManga
      * @param isAddingFlag
      */
-    fun updateItem(aManga: Manga, isAddingFlag: Boolean)
-    {
+    fun updateItem(aManga: Manga, isAddingFlag: Boolean) = ioScope.launch {
         if (isAddingFlag && !data.contains(aManga))
         {
             data.add(aManga)
@@ -133,7 +134,7 @@ class MangaAdapter(
             filteredData.remove(aManga)
         }
 
-        notifyDataSetChanged()
+        uiScope.launch { notifyDataSetChanged() }
     }
 
     /***
@@ -141,8 +142,7 @@ class MangaAdapter(
      *
      * @param aQuery the text query used as a filter.
      */
-    fun performTextFilter(aQuery: String)
-    {
+    fun performTextFilter(aQuery: String) = ioScope.launch {
         filter.filter(aQuery)
     }
 
@@ -151,8 +151,7 @@ class MangaAdapter(
      *
      * @param filterType item status used as a filter.
      */
-    fun filterByStatus(filterType: MangaEnums.FilterStatus)
-    {
+    fun filterByStatus(filterType: MangaEnums.FilterStatus) = ioScope.launch {
         filter.filterByStatus(filterType)
     }
 
@@ -310,7 +309,7 @@ class MangaAdapter(
         override fun publishResults(aFilterText: CharSequence, aFilterResult: FilterResults)
         {
             filteredData = aFilterResult.values as ArrayList<Manga>
-            notifyDataSetChanged()
+            uiScope.launch { notifyDataSetChanged() }
         }
 
         /***

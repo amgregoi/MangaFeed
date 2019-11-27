@@ -68,10 +68,10 @@ public class DownloadsFragment extends Fragment implements IDownloads.DownloadsM
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser)
     {
-        super.setUserVisibleHint(isVisibleToUser);
         if(isVisibleToUser)
         {
             ((ToolbarMap)getActivity()).setOptionsMenu(R.menu.menu_empty);
+            ((ToolbarMap)getActivity()).setTitle(getString(R.string.nav_bottom_title_download));
         }
     }
 

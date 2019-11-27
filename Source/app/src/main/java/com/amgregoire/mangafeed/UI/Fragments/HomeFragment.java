@@ -24,7 +24,7 @@ import butterknife.ButterKnife;
 public class HomeFragment extends Fragment implements IHome.HomeMap
 {
     public final static String TAG = HomeFragment.class.getSimpleName();
-    public final static int MENU_RESOURCE = R.menu.menu_toolbar_home;
+    public final static int MENU_RESOURCE = R.menu.menu_toolbar_filter;
 
     @BindView(R.id.tabLayoutHome) TabLayout mTabLayout;
     @BindView(R.id.viewPagerHome) ViewPager mViewPager;

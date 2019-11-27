@@ -106,14 +106,12 @@ class Manga(
         var lCompare = false
         if (obj != null && obj is Manga)
         {
-            val lLink1 = link.replace("https", "http")
+            val lLink1 = fullUrl.replace("https", "http")
             val lLink2 = obj.fullUrl.replace("https", "http")
-            if (lLink1 == lLink2)
+            if (lLink1 == lLink2 && source == obj.source)
             {
                 lCompare = true
             }
-
-            if (_id == obj._id && _id != 0) lCompare = true
         }
 
         return lCompare

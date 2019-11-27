@@ -224,14 +224,6 @@ class MangaFeed : Application()
         }
     }
 
-    @ExperimentalCoroutinesApi
-    val mangaChannel = BroadcastChannel<Manga>(10)
-
-    @ExperimentalCoroutinesApi
-    fun updateManga(manga: Manga) = ioScope.launch {
-        mangaChannel.send(manga)
-    }
-
     companion object
     {
         private var TAG = MangaFeed::class.simpleName

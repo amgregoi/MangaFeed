@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable;
 
 import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Common.RequestWrapper;
+import com.amgregoire.mangafeed.Common.SyncStatusObject;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
@@ -101,7 +102,7 @@ public abstract class SourceBase
      */
     public void updateLocalCatalog() { }
 
-    public Observable<List<Manga>> updateLocalCatalogV2(){ return  null; }
+    public Observable<SyncStatusObject> updateLocalCatalogV2(){ return  null; }
 
     /***
      * This function retrieves a list of recent updates from the current source.

@@ -11,7 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.v2.service.AttrService
-import com.amgregoire.mangafeed.v2.ui.BaseFragment
+import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.catalog.CatalogViewModel
 import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
@@ -62,15 +62,15 @@ class HomeFragment2 : BaseFragment()
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean)
     {
-        super.setUserVisibleHint(isVisibleToUser)
         if (isVisibleToUser) updateParentSettings()
     }
 
     override fun updateParentSettings()
     {
         val parent = activity ?: return
+        (parent as ToolbarMap).showSpinner()
         (parent as ToolbarMap).hideToolbarElevation()
-        (parent as ToolbarMap).setOptionsMenu(R.menu.menu_empty)
+        (parent as ToolbarMap).setOptionsMenu(R.menu.menu_toolbar_filter)
     }
 
     private fun setupViewPager()

@@ -3,7 +3,6 @@ package com.amgregoire.mangafeed.UI.Fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
@@ -11,12 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
-import com.amgregoire.mangafeed.v2.UpdateSourceDialog;
 import com.amgregoire.mangafeed.v2.service.Logger;
-import com.amgregoire.mangafeed.v2.ui.BaseFragment;
+import com.amgregoire.mangafeed.v2.ui.base.BaseFragment;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -47,8 +44,8 @@ public class AccountFragmentSettings extends BaseFragment
     @OnClick(R.id.force_update_sources)
     public void onForceUpdateSources()
     {
-        DialogFragment fragment = new UpdateSourceDialog();
-        fragment.show(getChildFragmentManager(),"update");
+//        DialogFragment fragment = new UpdateSourceDialog();
+//        fragment.show(getChildFragmentManager(),"update");
 //        MangaFeed.Companion.getApp().getCurrentSource().updateLocalCatalog();
 //        MangaFeed.Companion.getApp().updateCatalogs(true);
     }

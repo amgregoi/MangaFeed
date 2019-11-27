@@ -98,7 +98,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     private void initViews()
     {
         mInternetFlag = WifiBroadcastReceiver.hasInternet(this);
-        mCurrentMenu = R.menu.menu_toolbar_home;
+        mCurrentMenu = R.menu.menu_toolbar_filter;
         setupToolbar();
         setupNavigation();
         setupFragmentBackStack();
@@ -168,7 +168,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
 
         switch (mCurrentMenu)
         {
-            case R.menu.menu_toolbar_home:
+            case R.menu.menu_toolbar_filter:
                 setTitle(MangaFeed.Companion.getApp().getCurrentSource().getSourceName());
                 setupSearchView(menu);
                 break;
@@ -229,7 +229,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     {
         mInternetFlag = true;
 
-        if (mCurrentMenu == R.menu.menu_toolbar_home)
+        if (mCurrentMenu == R.menu.menu_toolbar_filter)
         {
             setFragment(HomeFragment.TAG);
 
@@ -243,7 +243,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     {
         mInternetFlag = false;
 
-        if (mCurrentMenu == R.menu.menu_toolbar_home)
+        if (mCurrentMenu == R.menu.menu_toolbar_filter)
         {
             setFragment(OfflineFragment.TAG);
         }

@@ -8,6 +8,7 @@ import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.Models.Chapter
 import com.amgregoire.mangafeed.Models.Manga
 import com.amgregoire.mangafeed.Utils.MangaDB
+import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.Logger
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -170,29 +171,31 @@ class ReaderViewModel : ViewModel()
 
     fun getChapterContents(chapter: Chapter, chapterContent: (List<String>, Chapter, Boolean) -> Unit)
     {
-        val urls = arrayListOf<String>()
-        subscriptions.add(
-                MangaFeed.app
-                        .currentSource
-                        .getChapterImageListObservable(RequestWrapper(chapter))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                { url ->
-                                    urls.add(url)
-                                    updateChapterInfo(chapter, "Pages loaded: ${urls.size}", 0, 0)
+        CloudFlareService().verifyCookieAndDoAction {
+            val urls = arrayListOf<String>()
+            subscriptions.add(
+                    MangaFeed.app
+                            .currentSource
+                            .getChapterImageListObservable(RequestWrapper(chapter))
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    { url ->
+                                        urls.add(url)
+                                        updateChapterInfo(chapter, "Pages loaded: ${urls.size}", 0, 0)
 
-                                },
-                                { throwable ->
-                                    Logger.error(throwable)
-                                    updateChapterInfo(chapter, "Problem retrieving pages, try refreshing", 0, 0)
-                                },
-                                {
-                                    chapter.totalPages = urls.size
-                                    updateChapterInfo(chapter, chapter.chapterTitle, 0, urls.size)
-                                    chapterContent.invoke(urls, chapter, MangaFeed.app.currentSourceType == MangaEnums.SourceType.MANGA)
-                                })
-        )
+                                    },
+                                    { throwable ->
+                                        Logger.error(throwable)
+                                        updateChapterInfo(chapter, "Problem retrieving pages, try refreshing", 0, 0)
+                                    },
+                                    {
+                                        chapter.totalPages = urls.size
+                                        updateChapterInfo(chapter, chapter.chapterTitle, 0, urls.size)
+                                        chapterContent.invoke(urls, chapter, MangaFeed.app.currentSourceType == MangaEnums.SourceType.MANGA)
+                                    })
+            )
+        }
     }
 
 

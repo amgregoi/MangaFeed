@@ -8,6 +8,7 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import com.amgregoire.mangafeed.Utils.SharedPrefs
 
 
 class ProgressBar @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
@@ -21,7 +22,9 @@ class ProgressBar @JvmOverloads constructor(context: Context, attrs: AttributeSe
         if (attrs != null) init(attrs)
         else
         {
-            setProgressBarStyle(ProgressBarStyle.DarkBlue)
+            hide()
+            if(SharedPrefs.isLightTheme()) setProgressBarStyle(ProgressBarStyle.DarkBlue)
+            else setProgressBarStyle(ProgressBarStyle.White)
         }
     }
 

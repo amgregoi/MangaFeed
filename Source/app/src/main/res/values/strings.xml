@@ -49,6 +49,11 @@
     <string name="all_no_manga_message">We had a problem loading this sources catalog.</string>
     <string name="recent_no_manga_message">We had a problem loading this sources recent updates.</string>
     <string name="library_no_manga_message">It seem\'s your library is empty, check out the other sections.</string>
+    <string name="text_stop_sync">Stop Sync</string>
+    <string name="text_start_sync">Start Sync</string>
+    <string name="single_dot">•</string>
+    <string name="manage">Manage</string>
+    <string name="sources">Sources</string>
 
     <string-array name="sources_array">
         <item>ReadLight</item>

@@ -29,6 +29,9 @@ interface MangaDao
     @Query("SELECT * FROM Manga where source LIKE :source AND following LIKE :followStatus")
     fun findFollowedWithFilter(source: String, followStatus:Int): List<Manga>
 
+    @Query("SELECT * FROM Manga where source LIKE :source AND link IN (:urls)")
+    fun test(source: String, urls:List<String>): List<Manga>
+
     @Query("SELECT COUNT(*) from Manga")
     fun countUsers(): Int
 

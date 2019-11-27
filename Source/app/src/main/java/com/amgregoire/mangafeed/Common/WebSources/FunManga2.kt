@@ -3,6 +3,7 @@ package com.amgregoire.mangafeed.Common.WebSources
 
 import com.amgregoire.mangafeed.Common.MangaEnums
 import com.amgregoire.mangafeed.Common.RequestWrapper
+import com.amgregoire.mangafeed.Common.SyncStatusObject
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceManga
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.Models.Chapter
@@ -11,7 +12,6 @@ import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.Utils.MangaLogger
 import com.amgregoire.mangafeed.v2.service.Logger
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -217,19 +217,24 @@ class FunManga : SourceManga()
      * New way to update catalog, provides feedback to ui to gage activity.
      * Currently only added for FunManga
      */
-    override fun updateLocalCatalogV2(): Observable<List<Manga>>
+    override fun updateLocalCatalogV2(): Observable<SyncStatusObject>
     {
         val endPoints = listOf(' ', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z')
         val pages = endPoints.map { char -> updateCatalogObservable(mCatalogUrl + char) }
-
+        var counter = 0
         return Observable.fromIterable(pages)
                 .subscribeOn(Schedulers.computation())
                 .flatMap { obs -> obs.subscribeOn(Schedulers.computation()) }
-                .flatMapSingle { response -> convertCatalogPageToMangaList(response as String) }
+                .map { response ->
+                    counter++
+                    Pair(counter, response)
+                }
+                .map { (count, response) -> Pair(count, convertCatalogPageToMangaList(response as String)) }
+                .flatMap { (count, list) -> Observable.just(SyncStatusObject(count, endPoints.size, list)) }
     }
 
 
-    private fun convertCatalogPageToMangaList(response: String): Single<List<Manga>>
+    private fun convertCatalogPageToMangaList(response: String): List<Manga>
     {
         Logger.error("Starting local catalog", "")
         val result = ArrayList<Manga>()
@@ -243,16 +248,32 @@ class FunManga : SourceManga()
             val name = link.text()
             val url = link.attr("href") + "/"
 
-            var newManga = Manga(name, url, SourceKey)
-            if (!lDatabase.containsManga(newManga))
-            {
-                newManga = lDatabase.putManga(newManga)
-                Logger.info("Added new item -> " + newManga.title)
-                result.add(newManga)
-            }
+            //            var newManga = Manga(name, url, SourceKey)
+            //            if (!lDatabase.containsManga(newManga))
+            //            {
+            //                newManga = lDatabase.putManga(newManga)
+            //                Logger.info("Added new item -> " + newManga.title)
+            //                result.add(newManga)
+            //            }
+            result.add(Manga(name, url, SourceKey))
         }
 
-        return Observable.fromIterable(result).toList()
+        val links = result.map { m -> m.link }.chunked(200)
+        val existing = arrayListOf<Manga>()
+
+        for (list in links)
+        {
+            existing.addAll(lDatabase.getExistingManga(list, sourceName))
+        }
+
+        result.removeAll(existing)
+
+        result.map { old ->
+            Logger.info("Added new item -> " + old.title)
+            lDatabase.putManga(old)
+        }
+
+        return result.toList()
     }
 
     override fun updateLocalCatalog()

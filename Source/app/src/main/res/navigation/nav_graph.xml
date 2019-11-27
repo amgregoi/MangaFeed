@@ -21,7 +21,7 @@
     </activity>
     <activity
         android:id="@+id/MActivity"
-        android:name="com.amgregoire.mangafeed.v2.ui.main.MActivity"
+        android:name="com.amgregoire.mangafeed.v2.ui.MActivity"
         android:label="MActivity" >
         <action
             android:id="@+id/action_MActivity_to_MFragment"

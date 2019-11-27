@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,15 +17,14 @@ import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
-import com.amgregoire.mangafeed.v2.ui.BaseFragment
-import com.amgregoire.mangafeed.v2.ui.FragmentNavMap
-import com.amgregoire.mangafeed.v2.service.Logger
+import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
+import com.amgregoire.mangafeed.v2.ui.base.FragmentNavMap
 import com.amgregoire.mangafeed.v2.ui.catalog.CatalogViewModel
-import com.amgregoire.mangafeed.v2.ui.catalog.MangaAdapter
+import com.amgregoire.mangafeed.v2.ui.catalog.adapter.MangaAdapter
 import com.amgregoire.mangafeed.v2.ui.info.MangaInfoFragment
+import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
 import kotlinx.android.synthetic.main.fragment_catalog.view.*
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
@@ -52,13 +52,6 @@ abstract class CatalogBase : BaseFragment()
         super.onStart()
 
         state = State.Loading
-
-        ioScope.launch {
-            MangaFeed.app.mangaChannel.consumeEach {
-                Logger.error("CatalogBase newManga=${it} ")
-                uiScope.launch { (self.rvManga.adapter as? MangaAdapter)?.updateItem(it) }
-            }
-        }
 
         val parent = activity ?: return
         catalogViewModel?.queryFilter?.observe(parent, Observer { query ->

@@ -2,6 +2,7 @@ package com.amgregoire.mangafeed.Utils
 
 
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
+import com.amgregoire.mangafeed.v2.service.Logger
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -16,15 +17,10 @@ import java.util.concurrent.TimeUnit
 class NetworkService private constructor()
 {
 
-    private val mClient: OkHttpClient
-
-    init
-    {
-        mClient = OkHttpClient.Builder().readTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .build()
-    }
+    private val mClient: OkHttpClient = OkHttpClient.Builder().readTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .build()
 
     /***
      * This function returns an observable response tot he requested url.
@@ -34,6 +30,7 @@ class NetworkService private constructor()
      */
     fun getResponse(url: String): Observable<Response>
     {
+        Logger.debug("Getting response for: $url")
         return Observable.create { subscriber: ObservableEmitter<Response> ->
             try
             {
@@ -64,6 +61,8 @@ class NetworkService private constructor()
      */
     fun getResponseCustomHeaders(url: String, headers: Headers): Observable<Response>
     {
+        Logger.debug("Getting response for: $url")
+
         return Observable.create { subscriber: ObservableEmitter<Response> ->
             try
             {
@@ -91,15 +90,16 @@ class NetworkService private constructor()
     {
         private var instance: NetworkService? = null
 
-        val permanentInstance:NetworkService get() = instance ?: runBlocking{
-            instance = NetworkService()
-            instance!!
-        }
+        val permanentInstance: NetworkService
+            get() = instance ?: runBlocking {
+                instance = NetworkService()
+                instance!!
+            }
 
         val temporaryInstance: NetworkService = NetworkService()
 
-        const val defaultUserAgent = "Mozilla/5.0 (Windows NT 6.3; WOW64)"
-
+//        const val defaultUserAgent = "Mozilla/5.0 (Windows NT 6.3; WOW64)"
+        const val defaultUserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36"
         /***
          * This function returns an observable string from the specified response.
          *

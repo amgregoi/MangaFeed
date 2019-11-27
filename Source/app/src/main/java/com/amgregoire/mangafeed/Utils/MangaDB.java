@@ -5,12 +5,12 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.amgregoire.mangafeed.v2.database.AppDatabase;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.MangaFeedKt;
 import com.amgregoire.mangafeed.Models.Chapter;
 import com.amgregoire.mangafeed.Models.Manga;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;
+import com.amgregoire.mangafeed.v2.database.AppDatabase;
 import com.amgregoire.mangafeed.v2.di.ApplicationContext;
 import com.amgregoire.mangafeed.v2.di.DatabaseInfo;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -180,14 +180,14 @@ public class MangaDB extends SQLiteOpenHelper
     }
 
     /***
-     * This function adds or updates a manga objec tin the local database.
+     * This function adds or updates a manga object in the local database.
      *
      * @param manga the object to the added, or updated.
      */
     public Manga putManga(Manga manga)
     {
         database.mangaDao().insertAll(manga);
-        return getManga(manga.getLink());
+        return getManga(manga.getLink(), manga.getSource());
     }
 
     /***
@@ -211,6 +211,11 @@ public class MangaDB extends SQLiteOpenHelper
     public Manga getManga(int id)
     {
         return database.mangaDao().findById(id);
+    }
+
+    public List<Manga> getExistingManga(List<String> urlList, String source)
+    {
+        return database.mangaDao().test(source, urlList);
     }
 
     /***

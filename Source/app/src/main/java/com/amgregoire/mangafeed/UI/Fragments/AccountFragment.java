@@ -99,7 +99,6 @@ public class AccountFragment extends Fragment implements IAccount.AccountMap
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser)
     {
-        super.setUserVisibleHint(isVisibleToUser);
         if(isVisibleToUser)
         {
             ((ToolbarMap)getActivity()).setOptionsMenu(R.menu.menu_toolbar_account);

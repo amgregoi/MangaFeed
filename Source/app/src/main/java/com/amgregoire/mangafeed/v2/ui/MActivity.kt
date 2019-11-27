@@ -1,4 +1,4 @@
-package com.amgregoire.mangafeed.v2.ui.main
+package com.amgregoire.mangafeed.v2.ui
 
 import android.arch.lifecycle.ViewModelProviders
 import android.content.res.Resources
@@ -11,16 +11,16 @@ import android.widget.ArrayAdapter
 import com.amgregoire.mangafeed.Common.MangaEnums
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.R
-import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentSettings
 import com.amgregoire.mangafeed.Utils.NetworkService
 import com.amgregoire.mangafeed.Utils.SharedPrefs
 import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.lastFragment
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.Logger
-import com.amgregoire.mangafeed.v2.ui.BaseFragment
-import com.amgregoire.mangafeed.v2.ui.BaseNavigationActivity
+import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
+import com.amgregoire.mangafeed.v2.ui.base.BaseNavigationActivity
 import com.amgregoire.mangafeed.v2.ui.catalog.CatalogViewModel
+import com.amgregoire.mangafeed.v2.ui.main.MFragment
 import kotlinx.android.synthetic.main.activity_m.*
 import kotlinx.android.synthetic.main.widget_toolbar_2.*
 import kotlinx.coroutines.launch
@@ -77,8 +77,9 @@ class MActivity : BaseNavigationActivity()
         when (item?.itemId)
         {
             null -> Logger.debug("null menu item")
-            R.id.menuAccountSettings -> replaceFragment(AccountFragmentSettings.newInstance(), AccountFragmentSettings.TAG)
             android.R.id.home -> onBackPressed()
+            R.id.menuHomeSearch -> Logger.debug("Need to implement search + filter fragment")
+            else -> Logger.debug("Unknown menu item selected -> $item -> ${item.menuInfo}")
         }
 
         return false
@@ -93,7 +94,7 @@ class MActivity : BaseNavigationActivity()
             if (manager.backStackEntryCount == 1)
             {
                 setNavigationIcon(0)
-                showSpinner()
+                mainFragment.updateParentSettings()
                 hideToolbarElevation()
             }
 

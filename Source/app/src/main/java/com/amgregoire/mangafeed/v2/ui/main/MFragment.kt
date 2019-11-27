@@ -5,10 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.amgregoire.mangafeed.R
-import com.amgregoire.mangafeed.Utils.SharedPrefs
-import com.amgregoire.mangafeed.v2.ui.BaseFragment
 import com.amgregoire.mangafeed.v2.service.Logger
-import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
+import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import kotlinx.android.synthetic.main.fragment_m.view.*
 
 
@@ -25,6 +23,11 @@ class MFragment : BaseFragment()
         super.onResume()
         updateParentSettings()
         Logger.error("$TAG - ON RESUME")
+    }
+
+    override fun updateParentSettings()
+    {
+        (self.vpNavigation.adapter as? NavAdapter)?.getFragment(self.vpNavigation.currentItem)?.updateParentSettings()
     }
 
     override fun onStart()
@@ -45,12 +48,6 @@ class MFragment : BaseFragment()
             }
             true
         }
-    }
-
-    override fun updateParentSettings()
-    {
-        val parent = activity ?: return
-        (parent as ToolbarMap).showSpinner()
     }
 
     /**********************************************************************************

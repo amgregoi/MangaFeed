@@ -1,13 +1,11 @@
 package com.amgregoire.mangafeed.v2.ui.read
 
 import android.os.Bundle
-import android.support.v4.app.SharedElementCallback
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.amgregoire.mangafeed.R
-import com.amgregoire.mangafeed.v2.ui.BaseFragment
-import kotlinx.android.synthetic.main.fragment_chapter_grid.view.*
+import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 
 class ChapterGridFragment : BaseFragment()
 {

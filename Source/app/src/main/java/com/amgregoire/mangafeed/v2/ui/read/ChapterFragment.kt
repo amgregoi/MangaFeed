@@ -15,8 +15,9 @@ import com.amgregoire.mangafeed.UI.Adapters.ImagePagerAdapter
 import com.amgregoire.mangafeed.UI.Widgets.GestureViewPager
 import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.Logger
-import com.amgregoire.mangafeed.v2.ui.BaseFragment
+import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import kotlinx.android.synthetic.main.item_fragment_reader_chapter.view.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -49,7 +50,7 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener
         val chapter = readerViewModel?.getChapterByPosition(arguments!![POSITION_KEY] as Int) ?: return
 
         self.emptyStateReader.setButtonClickListener(View.OnClickListener {
-            setup(chapter)
+            setup(chapter, refreshing = true)
         })
 
         readerViewModel?.chapterInfo?.observe(parent, Observer { info ->
@@ -94,13 +95,13 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener
         readerViewModel?.incrementChapter()
     }
 
-    private fun setup(chapter: Chapter)
+    private fun setup(chapter: Chapter, refreshing: Boolean = false)
     {
         val parent = activity ?: return
 
         self.emptyStateReader.showLoader()
 
-        if (self.viewPagerReaderChapter.adapter == null)
+        if (self.viewPagerReaderChapter.adapter == null || refreshing)
         {
             Logger.error("Getting contents for: ${chapter.chapterTitle}")
             readerViewModel?.getChapterContents(chapter = chapter, chapterContent = { contents, chapter, isManga ->
@@ -110,6 +111,7 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener
                 if (contents.isNullOrEmpty())
                 {
                     self.emptyStateReader.hideLoader(true)
+                    CloudFlareService().getCookies {}
                     return@getChapterContents
                 }
 

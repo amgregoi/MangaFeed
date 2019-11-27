@@ -1,10 +1,9 @@
-package com.amgregoire.mangafeed.v2.ui
+package com.amgregoire.mangafeed.v2.ui.base
 
 import android.graphics.Color
 import android.support.constraint.ConstraintLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.View
@@ -149,6 +148,8 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
 
     override fun showSpinner()
     {
+        if(toolbar == null) return
+
         toolbar.setTitle(null)
 
         toolbarTitle.visibility = View.GONE

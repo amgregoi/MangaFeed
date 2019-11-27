@@ -8,6 +8,7 @@ import com.amgregoire.mangafeed.Models.Manga
 import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.Logger
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.delay
@@ -79,18 +80,20 @@ class CatalogViewModel : ViewModel()
     }
 
     fun retrieveRecentList() = ioScope.launch {
-        val source = MangaFeed.app.currentSource
-        subscribers.add(
-                source.recentMangaObservable
-                        .cache()
-                        .subscribe(
-                                { mangaList -> recent.value = mangaList },
-                                {
-                                    Logger.error("Failed to retrieve recents list: $it")
-                                    recent.value = listOf()
-                                }
-                        )
-        )
+        CloudFlareService().verifyCookieAndDoAction {
+            val source = MangaFeed.app.currentSource
+            subscribers.add(
+                    source.recentMangaObservable
+                            .cache()
+                            .subscribe(
+                                    { mangaList -> recent.value = mangaList },
+                                    {
+                                        Logger.error("Failed to retrieve recents list: $it")
+                                        recent.value = listOf()
+                                    }
+                            )
+            )
+        }
     }
 
     fun setLastItem(manga: Manga) = ioScope.launch {
