@@ -50,7 +50,6 @@ class CloudFlareService
             user_agent = userAgent
             getCookies(object : Cloudflare.cfCallback
             {
-
                 override fun onSuccess(httpCookieList: MutableList<HttpCookie>?, hasNewUrl: Boolean, newUrl: String?)
                 {
                     Logger.debug("Retrieved new cookies = $httpCookieList")

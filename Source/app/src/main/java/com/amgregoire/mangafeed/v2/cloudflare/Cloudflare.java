@@ -6,9 +6,6 @@ import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.Log;
 
-import com.eclipsesource.v8.V8;
-import com.eclipsesource.v8.V8RuntimeException;
-
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
@@ -32,12 +29,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//TODO SSLSocketFactory setEnabledCipherSuites
-//ECDHE-ECDSA-AES128-GCM-SHA256
-
-public class Cloudflare
-{
-
+public class Cloudflare {
     private String mUrl;
     private String mUser_agent;
     private int mRetry_count;
@@ -147,7 +139,9 @@ public class Cloudflare
                 mCookieList = mCookieManager.getCookieStore().getCookies();
                 checkCookie(mCookieList);
                 return;
+            case HttpURLConnection.HTTP_MOVED_PERM:
             case HttpURLConnection.HTTP_MOVED_TEMP:
+                hasNewUrl = true;
                 mUrl = mGetMainConn.getHeaderField("Location");
                 mCookieList = mCookieManager.getCookieStore().getCookies();
                 checkCookie(mCookieList);
@@ -330,117 +324,62 @@ public class Cloudflare
         void onFail();
     }
 
-    private double get_answer(String str)
-    {  //取值
+    private double get_answer(String str) {  //取值
         double a = 0;
 
-        try
-        {
-            List<String> s = regex(str, "var s,t,o,p,b,r,e,a,k,i,n,g,f, " +
+        try {
+            List<String> s = regex(str,"var s,t,o,p,b,r,e,a,k,i,n,g,f, " +
                     "(.+?)=\\{\"(.+?)\"");
             String varA = s.get(0);
             String varB = s.get(1);
+            String div_cfdn = getCfdnDOM(str);
+            List<String> eval_fuc = null;
+            if (!TextUtils.isEmpty(div_cfdn)){
+                eval_fuc = checkEval(str);
+            }
+
             StringBuilder sb = new StringBuilder();
             sb.append("var t=\"").append(new URL(mUrl).getHost()).append("\";");
             sb.append("var a=");
-            sb.append(regex(str, varA + "=\\{\"" + varB + "\":(.+?)\\}").get(0));
+            sb.append(regex(str,varA+"=\\{\""+varB+"\":(.+?)\\}").get(0));
             sb.append(";");
-            List<String> b = regex(str, varA + "\\." + varB + "(.+?)\\;");
-            for (int i = 0; i < b.size() - 1; i++)
-            {
-                sb.append("a");
-                sb.append(b.get(i));
-                sb.append(";");
+            List<String> b = regex(str,varA+"\\."+varB+"(.+?)\\;");
+            if (b != null) {
+                for (int i =0;i<b.size()-1;i++){
+                    sb.append("a");
+                    if (eval_fuc!=null&&eval_fuc.size()>0){
+                        sb.append(replaceEval(b.get(i),div_cfdn,eval_fuc));
+                    }else {
+                        sb.append(b.get(i));
+                    }
+                    sb.append(";");
+                }
             }
 
-            e("add", sb.toString());
+            e("add",sb.toString());
             Context rhino = Context.enter();
             rhino.setOptimizationLevel(-1);
-            try
-            {
-                Scriptable scope = rhino.initStandardObjects();
-                a = Double.parseDouble(rhino.evaluateString(scope, sb.toString(), "JavaScript", 1, null).toString());
-                List<String> fixNum = regex(str, "toFixed\\((.+?)\\)");
-                if (fixNum != null)
-                {
-                    String script = "String(" + String.valueOf(a) + ".toFixed(" + fixNum.get(0) + "));";
-                    a = Double.parseDouble(rhino.evaluateString(scope, script, "JavaScript", 1, null).toString());
-                }
+            Scriptable scope = rhino.initStandardObjects();
+            a= Double.parseDouble(rhino.evaluateString(scope, sb.toString(), "JavaScript", 1, null).toString());
+            List<String> fixNum = regex(str,"toFixed\\((.+?)\\)");
+            if (fixNum!=null){
+                e("toFix",fixNum.get(0));
+                String script="String("+ a +".toFixed("+fixNum.get(0)+"));";
+                a = Double.parseDouble(rhino.evaluateString(scope, script, "JavaScript", 1, null).toString());
+            }
+            if (b !=null && b.get(b.size()-1).contains("t.length")){
                 a += new URL(mUrl).getHost().length();
-
             }
-            finally
-            {
-                Context.exit();
-            }
-        }
-        catch (IndexOutOfBoundsException e)
-        {
-            e("answerErr", "get answer error");
+        }catch (IndexOutOfBoundsException e){
+            e("answerErr","get answer error");
             e.printStackTrace();
-        }
-        catch (MalformedURLException e)
-        {
+        } catch (MalformedURLException e) {
             e.printStackTrace();
+        }finally {
+            Context.exit();
         }
         return a;
     }
-
-//    private double get_answer(String str) {  //取值
-//        double a = 0;
-//
-//        try {
-//            List<String> s = regex(str,"var s,t,o,p,b,r,e,a,k,i,n,g,f, " +
-//                    "(.+?)=\\{\"(.+?)\"");
-//            String varA = s.get(0);
-//            String varB = s.get(1);
-//            String div_cfdn = getCfdnDOM(str);
-//            List<String> eval_fuc = null;
-//            if (!TextUtils.isEmpty(div_cfdn)){
-//                eval_fuc = checkEval(str);
-//            }
-//
-//            StringBuilder sb = new StringBuilder();
-//            sb.append("var t=\"").append(new URL(mUrl).getHost()).append("\";");
-//            sb.append("var a=");
-//            sb.append(regex(str,varA+"=\\{\""+varB+"\":(.+?)\\}").get(0));
-//            sb.append(";");
-//            List<String> b = regex(str,varA+"\\."+varB+"(.+?)\\;");
-//            if (b != null) {
-//                for (int i =0;i<b.size()-1;i++){
-//                    sb.append("a");
-//                    if (eval_fuc!=null&&eval_fuc.size()>0){
-//                        sb.append(replaceEval(b.get(i),div_cfdn,eval_fuc));
-//                    }else {
-//                        sb.append(b.get(i));
-//                    }
-//                    sb.append(";");
-//                }
-//            }
-//
-//            e("add",sb.toString());
-//            V8 v8 = V8.createV8Runtime();
-//            a = v8.executeDoubleScript(sb.toString());
-//            List<String> fixNum = regex(str,"toFixed\\((.+?)\\)");
-//            if (fixNum!=null){
-//                e("toFix",fixNum.get(0));
-//                a = Double.parseDouble(v8.executeStringScript("String("+ a +".toFixed("+fixNum.get(0)+"));"));
-//            }
-//            if (b !=null && b.get(b.size()-1).contains("t.length")){
-//                a += new URL(mUrl).getHost().length();
-//            }
-//            v8.release();
-//        }catch (IndexOutOfBoundsException e){
-//            e("answerErr","get answer error");
-//            e.printStackTrace();
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        }catch (V8RuntimeException e){
-//            e("scriptRuntimeErr","script runtime error,check the js code");
-//            e.printStackTrace();
-//        }
-//        return a;
-//    }
 
     private String replaceEval(String s, String div_cfdn, List<String> eval_fuc) {
         List<String> eval = regex(s,"eval\\(eval\\((.+?)");
@@ -584,4 +523,6 @@ public class Cloudflare
             this.fromData = fromData;
         }
     }
+
+
 }
