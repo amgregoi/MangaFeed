@@ -1,23 +1,19 @@
 package com.amgregoire.mangafeed.v2
 
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.widget.ImageView.ScaleType
 import android.graphics.drawable.Drawable
-import android.support.annotation.NonNull
 import android.widget.ImageView
+import androidx.annotation.NonNull
+import androidx.annotation.Nullable
 import com.amgregoire.mangafeed.R
-import com.amgregoire.mangafeed.uiScope
 import com.bumptech.glide.request.target.BaseTarget
-import com.bumptech.glide.request.target.BitmapImageViewTarget
 import com.bumptech.glide.request.target.SizeReadyCallback
-import com.bumptech.glide.request.target.ViewTarget
 import com.bumptech.glide.request.transition.Transition
-import kotlinx.coroutines.launch
 
 class ScaleImageViewTarget(val imageView: ImageView) : BaseTarget<Bitmap>()
 {
-    override fun onResourceReady(resource: Bitmap?, transition: Transition<in Bitmap>?)
+    override fun onResourceReady(@NonNull resource: Bitmap, @Nullable transition: Transition<in Bitmap>?)
     {
         if(resource == null){
             imageView.scaleType = ScaleType.CENTER
@@ -43,9 +39,9 @@ class ScaleImageViewTarget(val imageView: ImageView) : BaseTarget<Bitmap>()
         super.onLoadFailed(errorDrawable)
     }
 
-    override fun getSize(cb: SizeReadyCallback?)
+    override fun getSize(@NonNull cb: SizeReadyCallback)
     {
-        cb?.onSizeReady(SIZE_ORIGINAL, SIZE_ORIGINAL)
+        cb.onSizeReady(SIZE_ORIGINAL, SIZE_ORIGINAL)
     }
 
     override fun onStop()
@@ -54,7 +50,5 @@ class ScaleImageViewTarget(val imageView: ImageView) : BaseTarget<Bitmap>()
         imageView.scaleType = ScaleType.CENTER
     }
 
-    override fun removeCallback(cb: SizeReadyCallback?) = Unit
-
-
+    override fun removeCallback(@NonNull cb: SizeReadyCallback) = Unit
 }

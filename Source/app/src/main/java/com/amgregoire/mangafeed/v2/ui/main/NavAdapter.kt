@@ -35,6 +35,6 @@ class NavAdapter(manager: FragmentManager) : FragmentStatePagerAdapter(manager)
 
     fun getFragment(position: Int): BaseFragment?
     {
-        return references.get(position).get() as? BaseFragment
+        return references.get(position)?.get() as? BaseFragment
     }
 }

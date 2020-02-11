@@ -28,11 +28,11 @@ import io.reactivex.schedulers.Schedulers;
 public class FunManga2 extends SourceManga
 {
     public final static String TAG = FunManga.class.getSimpleName();
-    public final static String URL = "https://www.funmanga.com";
+    public final static String URL = "https://www.funmanga.com/";
 
     private final String SourceKey = "FunManga";
-    private final String mBaseUrl = "https://www.funmanga.com";
-    private final String mUpdatesUrl = "https://funmanga.com/latest-chapters";
+    private final String mBaseUrl = "https://www.funmanga.com/";
+    private final String mUpdatesUrl = "https://funmanga.com/latest-chapters/";
     private final String mCatalogUrl = "https://funmanga.com/manga-list/";
     private final String mGenres[] =
             {

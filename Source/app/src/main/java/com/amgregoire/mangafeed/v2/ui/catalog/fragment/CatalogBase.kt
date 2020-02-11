@@ -5,7 +5,6 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +21,6 @@ import com.amgregoire.mangafeed.v2.ui.base.FragmentNavMap
 import com.amgregoire.mangafeed.v2.ui.catalog.CatalogViewModel
 import com.amgregoire.mangafeed.v2.ui.catalog.adapter.MangaAdapter
 import com.amgregoire.mangafeed.v2.ui.info.MangaInfoFragment
-import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
 import kotlinx.android.synthetic.main.fragment_catalog.view.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -75,16 +73,19 @@ abstract class CatalogBase : BaseFragment()
             self.rvManga.addItemDecoration(RecyclerViewSpaceDecoration(ScreenUtil.dpToPx(it, 5)))
         }
 
+        val list = ArrayList(mangas)
+        if (this !is RecentFragment) list.sortBy { it.title }
+
         self.rvManga.itemAnimator?.changeDuration = 0
         self.rvManga.layoutManager = GridLayoutManager(context, 3)
         self.rvManga.adapter = MangaAdapter(
-                data = ArrayList(mangas),
+                data = list,
                 source = MangaFeed.app.currentSource,
                 itemSelected = { manga ->
                     ioScope.launch {
                         if (catalogViewModel?.isLastItemComplete == true)
                         {
-                            catalogViewModel?.setLastItem(manga)
+                            //                            catalogViewModel?.setLastItem(manga)
                             rvSavedState = self.rvManga.layoutManager?.onSaveInstanceState()
 
                             val parent = activity ?: return@launch

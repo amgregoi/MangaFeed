@@ -204,30 +204,30 @@ class MangaAdapter(
             }
 
             val lOptions = RequestOptions()
-            lOptions.fitCenter()
+                    .fitCenter()
                     .placeholder(itemView.context.resources.getDrawable(R.drawable.manga_loading_image))
                     .error(itemView.context.resources.getDrawable(R.drawable.manga_error))
                     .skipMemoryCache(false)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .timeout(15000)
 
 
             val builder = LazyHeaders.Builder().addHeader("User-Agent", NetworkService.defaultUserAgent)
 
-            if (source.requiresCloudFlare())
-            {
-                CloudFlareService().getCFCookies(imageUrl, NetworkService.defaultUserAgent) { cookies ->
-                    for (cookie in cookies) builder.addHeader("Cookie", cookie)
+            CloudFlareService().getCFCookies(imageUrl, NetworkService.defaultUserAgent) { cookies ->
+                for (cookie in cookies) builder.addHeader("Cookie", cookie)
+                val glideUrl = GlideUrl(imageUrl, builder.build())
+
+                uiScope.launch {
+                    Glide.with(itemView.context)
+                            .asBitmap()
+                            .load(glideUrl)
+                            .apply(lOptions)
+                            .transition(GenericTransitionOptions<Any>().transition(android.R.anim.fade_in))
+                            .into(ScaleImageViewTarget(itemView.ivManga))
                 }
+
             }
-
-            val glideUrl = GlideUrl(imageUrl, builder.build())
-
-            Glide.with(itemView.context)
-                    .asBitmap()
-                    .load(glideUrl)
-                    .apply(lOptions)
-                    .transition(GenericTransitionOptions<Any>().transition(android.R.anim.fade_in))
-                    .into(ScaleImageViewTarget(itemView.ivManga))
         }
 
         private fun backGroundFactory(status: Int): Int = when (status)

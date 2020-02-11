@@ -21,8 +21,10 @@ import com.amgregoire.mangafeed.UI.Widgets.GestureImageView
 import com.amgregoire.mangafeed.UI.Widgets.GestureTextView
 import com.amgregoire.mangafeed.UI.Widgets.GestureViewPager
 import com.amgregoire.mangafeed.Utils.NetworkService
+import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.custom.EmptyState
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
+import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.read.ReaderViewModel
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.Glide
@@ -32,6 +34,7 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.BitmapImageViewTarget
 import com.bumptech.glide.request.transition.Transition
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
 /**
@@ -94,7 +97,7 @@ class ImagePagerAdapter(
         val lContent = data[position].replace("</p>", "</p><br>")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
         {
-            mNovel.text = Html.fromHtml(lContent, Html.FROM_HTML_MODE_COMPACT)
+            mNovel.text = Html.fromHtml(lContent, Html.FROM_HTML_MODE_COMPACT) as CharSequence?
         }
         else
         {
@@ -133,58 +136,80 @@ class ImagePagerAdapter(
     {
         emptyState.showLoader()
         setupImage(image, emptyState, url, position)
-        emptyState.setLoadTimeout(6000)
+        //        emptyState.setLoadTimeout(6000)
     }
 
     private fun setupImage(image: GestureImageView, emptyState: EmptyState, url: String, position: Int)
     {
         val lOptions = RequestOptions()
-        lOptions.skipMemoryCache(true)
+                .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .fitCenter()
+                .timeout(15000)
 
 
         val builder = LazyHeaders.Builder().addHeader("User-Agent", NetworkService.defaultUserAgent)
 
         CloudFlareService().getCFCookies(url, NetworkService.defaultUserAgent) { cookies ->
             for (cookie in cookies) builder.addHeader("Cookie", cookie)
+
+            val glideUrl = GlideUrl(url, builder.build())
+
+            uiScope.launch {
+                Glide.with(parent)
+                        .asBitmap()
+                        .load(glideUrl)
+                        .apply(lOptions)
+                        .transition(GenericTransitionOptions<Any>().transition(android.R.anim.fade_in))
+                        .into(object : BitmapImageViewTarget(image)
+                        {
+                            override fun onResourceReady(resource: Bitmap, glideAnimation: Transition<in Bitmap>?)
+                            {
+                                super.onResourceReady(resource, glideAnimation)
+                                try
+                                {
+                                    if (resource.byteCount > 107647000)
+                                        Logger.error("Pre compress byte count: ${resource.byteCount}")
+
+                                    // Compress incoming image, relieves memory usage + phone slowing down with large images
+                                    val stream = ByteArrayOutputStream()
+
+                                    // TODO :: turn compression rate into shared pref to be toggled in app
+                                    resource.compress(Bitmap.CompressFormat.JPEG, 40, stream)
+                                    val byteArray = stream.toByteArray()
+                                    val compressedBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+                                    image.setImageBitmap(compressedBitmap)
+
+                                    if (resource.byteCount > 107647000)
+                                        Logger.error("Post compress byte count: ${compressedBitmap.byteCount}")
+
+
+                                    image.initializeView()
+                                    image.setTag("$IMAGE_TAG:$position")
+
+                                    image.visibility = View.VISIBLE
+                                    image.startFling(0f, 100000f) //large fling to initialize the image to the top for long pages
+
+                                    emptyState.hide()
+                                }
+                                catch (ex: Exception)
+                                {
+                                    emptyState.hideLoader(true)
+                                    Logger.error("Well shit..")
+                                    Logger.error(ex)
+                                }
+                            }
+
+                            override fun onLoadFailed(errorDrawable: Drawable?)
+                            {
+                                super.onLoadFailed(errorDrawable)
+                                emptyState.hideLoader(true)
+                            }
+                        })
+            }
         }
 
-        val glideUrl = GlideUrl(url, builder.build())
 
-        Glide.with(parent)
-                .asBitmap()
-                .load(glideUrl)
-                .apply(lOptions)
-                .transition(GenericTransitionOptions<Any>().transition(android.R.anim.fade_in))
-                .into(object : BitmapImageViewTarget(image)
-                {
-                    override fun onResourceReady(resource: Bitmap, glideAnimation: Transition<in Bitmap>?)
-                    {
-                        super.onResourceReady(resource, glideAnimation)
-
-                        // Compress incoming image, relieves memory usage + phone slowing down with large images
-                        val stream = ByteArrayOutputStream()
-                        // TODO :: turn compression rate into shared pref to be toggled in app
-                        resource.compress(Bitmap.CompressFormat.JPEG, 40, stream)
-                        val byteArray = stream.toByteArray();
-                        val compressedBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-                        image.setImageBitmap(compressedBitmap)
-
-                        image.initializeView()
-                        image.setTag("$IMAGE_TAG:$position")
-
-                        image.visibility = View.VISIBLE
-                        image.startFling(0f, 100000f) //large fling to initialize the image to the top for long pages
-
-                        emptyState.hide()
-                    }
-
-                    override fun onLoadFailed(errorDrawable: Drawable?)
-                    {
-                        super.onLoadFailed(errorDrawable)
-                        emptyState.hideLoader(true)
-                    }
-                })
     }
 
     companion object

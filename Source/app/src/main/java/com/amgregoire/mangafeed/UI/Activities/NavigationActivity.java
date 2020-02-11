@@ -85,14 +85,14 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
     public void onLowMemory()
     {
         super.onLowMemory();
-        Glide.with(this).onLowMemory();
+//        Glide.with(this).onLowMemory();
     }
 
     @Override
     public void onTrimMemory(int level)
     {
         super.onTrimMemory(level);
-        Glide.with(this).onTrimMemory(Glide.TRIM_MEMORY_RUNNING_LOW);
+//        Glide.with(this).onTrimMemory(Glide.TRIM_MEMORY_RUNNING_LOW);
     }
 
     private void initViews()
