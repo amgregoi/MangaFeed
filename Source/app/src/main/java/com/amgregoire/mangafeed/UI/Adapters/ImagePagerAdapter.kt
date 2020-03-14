@@ -134,9 +134,15 @@ class ImagePagerAdapter(
 
     private fun refresh(image: GestureImageView, emptyState: EmptyState, url: String, position: Int)
     {
-        emptyState.showLoader()
-        setupImage(image, emptyState, url, position)
-        //        emptyState.setLoadTimeout(6000)
+        try
+        {
+            emptyState.showLoader()
+            setupImage(image, emptyState, url, position)
+        }
+        catch (ex: IllegalStateException)
+        {
+            Logger.error(ex)
+        }
     }
 
     private fun setupImage(image: GestureImageView, emptyState: EmptyState, url: String, position: Int)
@@ -145,7 +151,7 @@ class ImagePagerAdapter(
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .fitCenter()
-                .timeout(15000)
+                .timeout(8000)
 
 
         val builder = LazyHeaders.Builder().addHeader("User-Agent", NetworkService.defaultUserAgent)

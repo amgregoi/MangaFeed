@@ -209,7 +209,7 @@ class MangaAdapter(
                     .error(itemView.context.resources.getDrawable(R.drawable.manga_error))
                     .skipMemoryCache(false)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .timeout(15000)
+                    .timeout(8000)
 
 
             val builder = LazyHeaders.Builder().addHeader("User-Agent", NetworkService.defaultUserAgent)

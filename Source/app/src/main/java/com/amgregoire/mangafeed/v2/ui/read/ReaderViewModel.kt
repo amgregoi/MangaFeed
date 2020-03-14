@@ -48,6 +48,8 @@ class ReaderViewModel : ViewModel()
             manga.recentChapter = chapter.url
             MangaDB.getInstance().putManga(manga)
         }
+
+        updateChapterInfo(chapter, chapter.chapterTitle, chapter.currentPage, chapter.totalPages)
     }
 
     private fun updateReaderInfo(manga: Manga, chapters: List<Chapter>, chapter: Chapter)
@@ -137,30 +139,45 @@ class ReaderViewModel : ViewModel()
 
         if (chapter.url != info.chapter.url) return
 
-        val current = (chapterInfo.value ?: ChapterInfo(chapter, ""))
-                .apply {
-                    title?.let { this.title = title }
-                    currentPage?.let { this.currentPage = currentPage }
-                    totalPages?.let { this.totalPages = totalPages }
-                }
-
-        chapterInfo.value = current
+        val newInfo = ChapterInfo(chapter, title ?: chapter.chapterTitle, currentPage ?: chapter.currentPage, totalPages ?: chapter.totalPages)
+        chapterInfo.value = newInfo
     }
 
     fun incrementPage(chapter: Chapter)
     {
-        val reader = readerInfo.value ?: return
-        val current = chapterInfo.value ?: return
-        if (reader.chapter.url != chapter.url) return
+        val reader = readerInfo.value ?: run {
+            Logger.debug("ReaderVM :: ReaderInfo was null")
+            return
+        }
+        val current = chapterInfo.value ?: run {
+            Logger.debug("ReaderVM :: ChapterInfo was null")
+            return
+        }
+        if (reader.chapter.url != chapter.url) run {
+            Logger.debug("ReaderVM :: Chapter didn't match")
+            return
+        }
+
         if (current.currentPage < current.totalPages) updateChapterInfo(chapter, currentPage = current.currentPage + 1)
+        else Logger.debug("Skipped page increment, went past total pages")
     }
 
     fun decrementPage(chapter: Chapter)
     {
-        val reader = readerInfo.value ?: return
-        val current = chapterInfo.value ?: return
-        if (reader.chapter.url != chapter.url) return
+        val reader = readerInfo.value ?: run {
+            Logger.debug("ReaderVM :: ReaderInfo was null")
+            return
+        }
+        val current = chapterInfo.value ?: run {
+            Logger.debug("ReaderVM :: ChapterInfo was null")
+            return
+        }
+        if (reader.chapter.url != chapter.url) run {
+            Logger.debug("ReaderVM :: Chapter didn't match")
+            return
+        }
         if (current.currentPage > 0) updateChapterInfo(chapter, currentPage = current.currentPage - 1)
+        else Logger.debug("Skipped page decrement, went below zero")
     }
 
     fun isCurrentChapter(chapter: Chapter): Boolean
