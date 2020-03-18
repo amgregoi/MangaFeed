@@ -2,6 +2,8 @@ package com.amgregoire.mangafeed.v2
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import com.amgregoire.mangafeed.Common.WebSources.FunManga
+import com.amgregoire.mangafeed.Common.WebSources.ReadLight
 import java.util.*
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -9,12 +11,15 @@ import kotlin.reflect.KProperty
 private const val USER_PREFERENCES_NAME = "USER_PREFERENCES_NAME"
 private const val PUSHER_PREFERENCES_NAME = "PUSHER_PREFERENCES_NAME"
 
-class FunMangaCookiePreferences(context: Context)
+class FunMangaCookiePreferences(context: Context) : BaseCookiePreferences(context, FunManga.SourceKey)
+class ReadLightCookiePreferences(context: Context) : BaseCookiePreferences(context, ReadLight.SourceKey)
+
+abstract class BaseCookiePreferences(context: Context, sourceName: String)
 {
     private val preferences = SharedPreferencesExtension(context.applicationContext, PUSHER_PREFERENCES_NAME)
 
-    var cookies by preferences.stringSet("cookies")
-    var expiresAt by preferences.long("expires_at")
+    var cookies by preferences.stringSet(sourceName)
+    var expiresAt by preferences.long("${sourceName}_expires_at")
         private set
 
     fun setExpiresAt() = run {

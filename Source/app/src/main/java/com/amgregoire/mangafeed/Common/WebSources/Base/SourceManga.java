@@ -25,7 +25,7 @@ public abstract class SourceManga extends SourceBase
         final List<String> lTemporaryCachedImageUrls = new ArrayList<>();
         final NetworkService lCurrentService = NetworkService.Companion.getTemporaryInstance();
 
-        return lCurrentService.getResponse(aRequest.getChapter().getUrl())
+        return lCurrentService.getResponseCustomHeaders(aRequest.getChapter().getUrl(), constructRequestHeaders())
                               .flatMap(aResponse -> NetworkService.Companion.mapResponseToString(aResponse))
                               .flatMap(aUnparsedHtml -> Observable.just(parseResponseToPageUrls(aRequest, aUnparsedHtml)))
                               .flatMap(aPageUrls -> Observable.fromArray(aPageUrls.toArray(new String[aPageUrls.size()])))
@@ -35,7 +35,7 @@ public abstract class SourceManga extends SourceBase
                                   List<Observable<String>> lImageUrlObservables = new ArrayList<>();
                                   for (String iPageUrl : batchedPageUrls)
                                   {
-                                      Observable<String> lTemporaryObservable = lCurrentService.getResponse(iPageUrl)
+                                      Observable<String> lTemporaryObservable = lCurrentService.getResponseCustomHeaders(iPageUrl, constructRequestHeaders())
                                                                                                .flatMap(NetworkService.Companion::mapResponseToString)
                                                                                                .flatMap(unparsedHtml -> Observable.just(parseResponseToImageUrls(unparsedHtml, iPageUrl)));
                                       lImageUrlObservables.add(lTemporaryObservable);

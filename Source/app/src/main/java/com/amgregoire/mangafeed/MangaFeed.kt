@@ -9,18 +9,20 @@ import com.amgregoire.mangafeed.Common.WebSources.MangaEden
 import com.amgregoire.mangafeed.Common.WebSources.MangaHere
 import com.amgregoire.mangafeed.Common.WebSources.ReadLight
 import com.amgregoire.mangafeed.Models.Chapter
-import com.amgregoire.mangafeed.Models.Manga
 import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.Utils.MangaLogger
 import com.amgregoire.mangafeed.Utils.RxBus
 import com.amgregoire.mangafeed.Utils.SharedPrefs
 import com.amgregoire.mangafeed.v2.FunMangaCookiePreferences
+import com.amgregoire.mangafeed.v2.ReadLightCookiePreferences
 import com.amgregoire.mangafeed.v2.UserPreferences
 import com.amgregoire.mangafeed.v2.di.component.AppComponent
 import com.amgregoire.mangafeed.v2.di.component.DaggerAppComponent
 import com.amgregoire.mangafeed.v2.di.module.ApiModule
 import com.amgregoire.mangafeed.v2.di.module.ApplicationModule
 import com.amgregoire.mangafeed.v2.di.module.RoomModule
+import com.amgregoire.mangafeed.v2.model.domain.User
+import com.amgregoire.mangafeed.v2.model.dto.ApiUser
 import com.bumptech.glide.request.target.ViewTarget
 import com.squareup.picasso.Cache
 import com.squareup.picasso.Picasso
@@ -30,12 +32,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.consume
-import kotlinx.coroutines.channels.consumeEach
-import kotlinx.coroutines.launch
 import java.util.*
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -58,7 +54,14 @@ class MangaFeed : Application()
     private var mCurrentChapters: ArrayList<Chapter>? = null
     private var mPicasso: Picasso? = null
 
-    val cookiePreferences by lazy { FunMangaCookiePreferences(app) }
+    var user: User? = null
+
+    fun cookiePreferences() = when (currentSource.sourceName)
+    {
+        ReadLight.SourceKey -> ReadLightCookiePreferences(app)
+        else -> FunMangaCookiePreferences(app)
+    }
+
     val userPreferences by lazy { UserPreferences(app) }
 
     /************************************************************************
@@ -107,7 +110,7 @@ class MangaFeed : Application()
     {
         super.onCreate()
         mangaApp = this
-        cookiePreferences.clear()
+        cookiePreferences().clear()
 
         appComponent.inject(this)
 

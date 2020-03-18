@@ -14,7 +14,7 @@ import okhttp3.Request
 import okhttp3.Response
 import java.util.concurrent.TimeUnit
 
-class NetworkService private constructor()
+class NetworkService()
 {
 
     private val mClient: OkHttpClient = OkHttpClient.Builder().readTimeout(10, TimeUnit.SECONDS)
@@ -100,6 +100,8 @@ class NetworkService private constructor()
 
 //        const val defaultUserAgent = "Mozilla/5.0 (Windows NT 6.3; WOW64)"
         const val defaultUserAgent = "Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36"
+//        const val defaultUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+
         /***
          * This function returns an observable string from the specified response.
          *

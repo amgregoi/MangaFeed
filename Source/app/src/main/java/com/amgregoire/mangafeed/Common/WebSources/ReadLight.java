@@ -28,9 +28,14 @@ public class ReadLight extends SourceNovel
     public final static String TAG = ReadLight.class.getSimpleName();
     final public static String URL = "readlight";
 
-    private final String SourceKey = "ReadLight";
+    public final static String SourceKey = "ReadLight";
     private final String mBaseUrl = "https://www.readlightnovel.org";
 
+    @Override
+    public boolean requiresCloudFlare()
+    {
+        return true;
+    }
 
     @Override
     public String getSourceName()

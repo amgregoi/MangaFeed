@@ -145,39 +145,19 @@ class ReaderViewModel : ViewModel()
 
     fun incrementPage(chapter: Chapter)
     {
-        val reader = readerInfo.value ?: run {
-            Logger.debug("ReaderVM :: ReaderInfo was null")
-            return
-        }
-        val current = chapterInfo.value ?: run {
-            Logger.debug("ReaderVM :: ChapterInfo was null")
-            return
-        }
-        if (reader.chapter.url != chapter.url) run {
-            Logger.debug("ReaderVM :: Chapter didn't match")
-            return
-        }
+        val reader = readerInfo.value ?: return
+        val current = chapterInfo.value ?: return
+        if (reader.chapter.url != chapter.url) return
 
         if (current.currentPage < current.totalPages) updateChapterInfo(chapter, currentPage = current.currentPage + 1)
-        else Logger.debug("Skipped page increment, went past total pages")
     }
 
     fun decrementPage(chapter: Chapter)
     {
-        val reader = readerInfo.value ?: run {
-            Logger.debug("ReaderVM :: ReaderInfo was null")
-            return
-        }
-        val current = chapterInfo.value ?: run {
-            Logger.debug("ReaderVM :: ChapterInfo was null")
-            return
-        }
-        if (reader.chapter.url != chapter.url) run {
-            Logger.debug("ReaderVM :: Chapter didn't match")
-            return
-        }
+        val reader = readerInfo.value ?: return
+        val current = chapterInfo.value ?: return
+        if (reader.chapter.url != chapter.url) return
         if (current.currentPage > 0) updateChapterInfo(chapter, currentPage = current.currentPage - 1)
-        else Logger.debug("Skipped page decrement, went below zero")
     }
 
     fun isCurrentChapter(chapter: Chapter): Boolean

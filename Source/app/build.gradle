@@ -30,12 +30,16 @@ android {
 
         debug {
             applicationIdSuffix ".debug"
-            buildConfigField 'String', 'BASE_URL', '"http://manga.amgregoire.com/api/"'
+            buildConfigField 'String', 'BASE_URL', '"https://bb6d2f40.ngrok.io/"'
         }
     }
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 }
 

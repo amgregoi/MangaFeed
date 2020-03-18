@@ -132,7 +132,6 @@ public class SharedPrefs
     }
 
 
-
     /**
      * TODO: Might remove.
      * Get the users application layout preferences
@@ -204,8 +203,7 @@ public class SharedPrefs
     {
         Context lContext = MangaFeed.Companion.getApp();
         return PreferenceManager.getDefaultSharedPreferences(lContext)
-                                .getString(lContext.getString(R.string.PREF_USER_SOURCE), MangaEnums.Source.FunManga
-                                        .name());
+                                .getString(lContext.getString(R.string.PREF_USER_SOURCE), MangaEnums.Source.FunManga.name());
     }
 
     /***

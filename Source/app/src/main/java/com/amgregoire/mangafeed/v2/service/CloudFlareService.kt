@@ -5,6 +5,7 @@ import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.Utils.MangaLogger
 import com.amgregoire.mangafeed.Utils.NetworkService
 import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.BaseCookiePreferences
 import com.amgregoire.mangafeed.v2.FunMangaCookiePreferences
 import com.amgregoire.mangafeed.v2.cloudflare.Cloudflare
 import kotlinx.coroutines.launch
@@ -21,7 +22,7 @@ class CloudFlareService
             return
         }
 
-        val cookiePrefs = MangaFeed.app.cookiePreferences
+        val cookiePrefs = MangaFeed.app.cookiePreferences()
         if (isValidCookie(cookiePrefs))
         {
             val oldCookies = cookiePrefs.cookies!!
@@ -37,7 +38,7 @@ class CloudFlareService
 
     fun getCookies(url: String = MangaFeed.app.currentSource.baseUrl, userAgent: String = NetworkService.defaultUserAgent, cookies: (List<String>) -> Unit)
     {
-        val cookiePrefs = MangaFeed.app.cookiePreferences
+        val cookiePrefs = MangaFeed.app.cookiePreferences()
 
         if (isValidCookie(cookiePrefs))
         {
@@ -78,7 +79,7 @@ class CloudFlareService
         }
     }
 
-    private fun isValidCookie(cookiePrefs: FunMangaCookiePreferences): Boolean
+    private fun isValidCookie(cookiePrefs: BaseCookiePreferences): Boolean
     {
         val oldCookies = cookiePrefs.cookies
 
@@ -102,7 +103,7 @@ class CloudFlareService
             return
         }
 
-        val cookiePrefs = MangaFeed.app.cookiePreferences
+        val cookiePrefs = MangaFeed.app.cookiePreferences()
         if (isValidCookie(cookiePrefs))
         {
             action.invoke()

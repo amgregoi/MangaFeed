@@ -22,9 +22,9 @@ public abstract class SourceNovel extends SourceBase
     {
         final NetworkService lCurrentService = NetworkService.Companion.getTemporaryInstance();
 
-        return lCurrentService.getResponse(request.getChapter().getUrl())
-                              .flatMap(aResponse -> NetworkService.Companion.mapResponseToString(aResponse))
-                              .flatMap(aUnparsedHtml -> Observable.just(parseResponseToImageUrls(aUnparsedHtml, request.getChapter().getUrl())));
+        return lCurrentService.getResponseCustomHeaders(request.getChapter().getUrl(), constructRequestHeaders())
+                              .flatMap(response -> NetworkService.Companion.mapResponseToString(response))
+                              .flatMap(unParsedHtml -> Observable.just(parseResponseToImageUrls(unParsedHtml, request.getChapter().getUrl())));
     }
 
 }

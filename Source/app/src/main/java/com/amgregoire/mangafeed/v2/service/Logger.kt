@@ -38,7 +38,7 @@ object Logger
         Log.i(mApplication, lMessage)
     }
 
-    fun error(error: Throwable, extra: String = "") = error(error.localizedMessage, extra)
+    fun error(error: Throwable?, extra: String = "") = error?.let { error(error.localizedMessage, extra) }
 
     fun error(error: String, extra: String = "")
     {

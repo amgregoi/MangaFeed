@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="background_color" format="reference|color"/>
-    <attr name="background_color2" format="reference|color"/>
-    <attr name="text_color" format="reference|color"/>
-    <attr name="text_color2" format="reference|color"/>
-    <attr name="accent1" format="reference|color"/>
-    <attr name="accent2" format="reference|color"/>
+    <attr name="background_color" format="reference|color" />
+    <attr name="background_color2" format="reference|color" />
+    <attr name="text_color" format="reference|color" />
+    <attr name="text_color2" format="reference|color" />
+    <attr name="accent1" format="reference|color" />
+    <attr name="accent2" format="reference|color" />
 
 
     <declare-styleable name="MButton">
-        <attr name="mButtonStyle"/>
-        <attr name="mButtonText" format="string"/>
-        <attr name="mLoading" format="boolean"/>
+        <attr name="mButtonStyle" />
+        <attr name="mButtonText" format="string" />
+        <attr name="mLoading" format="boolean" />
     </declare-styleable>
 
 
@@ -40,6 +40,31 @@
         <flag name="DarkBlue" value="0x00" />
         <flag name="White" value="0x01" />
     </attr>
+
+    <declare-styleable name="InputLine">
+        <attr name="mHideTopDivider" format="boolean" />
+        <attr name="mHideBottomDivider" format="boolean" />
+        <attr name="mLabelTextColor" format="reference" />
+        <attr name="mInputTextColor" format="reference" />
+        <attr name="mLabel" format="string" />
+        <attr name="mHint" format="string" />
+        <attr name="mHideLabel" format="boolean" />
+        <attr name="mFocused" format="boolean" />
+        <attr name="mImeOption" format="flags">
+            <flag name="None" value="0x00" />
+            <flag name="Next" value="0x05" />
+            <flag name="Done" value="0x06" />
+        </attr>
+
+        <attr name="mInputType" format="flags">
+            <flag name="text" value="0x01" />
+            <flag name="textPersonName" value="0x61" />
+            <flag name="textEmailAddress" value="0xd1" />
+            <flag name="textPassword" value="0x81" />
+            <flag name="textPasswordVisible" value="0x91" />
+            <flag name="phone" value="0x03" />
+        </attr>
+    </declare-styleable>
 
 
     <!--

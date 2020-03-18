@@ -20,7 +20,6 @@ import java.util.*
 class FunManga : SourceManga()
 {
 
-    private val SourceKey = "FunManga"
     private val mBaseUrl = "https://www.funmanga.com"
     private val mUpdatesUrl = "https://funmanga.com/latest-chapters"
     private val mCatalogUrl = "https://funmanga.com/manga-list/"
@@ -366,6 +365,7 @@ class FunManga : SourceManga()
     {
         val TAG = FunManga::class.java.simpleName
         val URL = "https://www.funmanga.com"
+        val SourceKey = "FunManga"
     }
 }
 

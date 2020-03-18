@@ -54,6 +54,12 @@
     <string name="single_dot">•</string>
     <string name="manage">Manage</string>
     <string name="sources">Sources</string>
+    <string name="show">Show</string>
+    <string name="hide">Hide</string>
+    <string name="enter_email">Enter email</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
 
     <string-array name="sources_array">
         <item>ReadLight</item>

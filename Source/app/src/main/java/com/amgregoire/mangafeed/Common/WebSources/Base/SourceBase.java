@@ -112,7 +112,7 @@ public abstract class SourceBase
     public Observable<List<Manga>> getRecentMangaObservable()
     {
         return NetworkService.Companion.getTemporaryInstance()
-                                       .getResponse(getRecentUpdatesUrl())
+                                       .getResponseCustomHeaders(getRecentUpdatesUrl(), constructRequestHeaders())
                                        .flatMap(aResponse -> NetworkService.Companion.mapResponseToString(aResponse))
                                        .flatMap(aHtml -> Observable.just(parseResponseToRecentList(aHtml)))
                                        .observeOn(AndroidSchedulers.mainThread())
