@@ -1,10 +1,10 @@
 package com.amgregoire.mangafeed.v2.ui.catalog.fragment
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.os.Parcelable
-import android.support.v7.widget.GridLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -77,7 +77,7 @@ abstract class CatalogBase : BaseFragment()
         if (this !is RecentFragment) list.sortBy { it.title }
 
         self.rvManga.itemAnimator?.changeDuration = 0
-        self.rvManga.layoutManager = GridLayoutManager(context, 3)
+        self.rvManga.layoutManager = androidx.recyclerview.widget.GridLayoutManager(context, 3)
         self.rvManga.adapter = MangaAdapter(
                 data = list,
                 source = MangaFeed.app.currentSource,

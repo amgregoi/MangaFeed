@@ -1,11 +1,11 @@
 package com.amgregoire.mangafeed.v2.ui.info
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.PopupMenu
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.appcompat.widget.PopupMenu
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -75,7 +75,7 @@ class MangaInfoFragment : BaseFragment()
 
             mangaInfoViewModel.setFollowStatus(mangaInfo.manga.following)
 
-            self.rvMangaInfo.layoutManager = LinearLayoutManager(context)
+            self.rvMangaInfo.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
             self.rvMangaInfo.adapter = MangaInfoAdapter(
                     manga = mangaInfo.manga,
                     source = MangaFeed.app.currentSource,
@@ -191,7 +191,7 @@ class MangaInfoFragment : BaseFragment()
         val MANGA_KEY = TAG + "MANGA"
         val OFFLINE_KEY = TAG + "OFFLINE"
 
-        fun newInstance(mangaId: Int, offline: Boolean): Fragment
+        fun newInstance(mangaId: Int, offline: Boolean): androidx.fragment.app.Fragment
         {
             val lBundle = Bundle()
             lBundle.putInt(MANGA_KEY, mangaId)

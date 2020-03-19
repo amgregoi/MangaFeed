@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/background_color"
+    android:background="?attr/background_color2"
     android:clickable="true"
     android:focusable="true">
 
@@ -21,12 +21,24 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent=".95" />
 
+    <com.amgregoire.mangafeed.v2.custom.ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:mLoading="false" />
+
     <TextView
         android:id="@+id/tvHeader"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Welcome back"
+        android:layout_marginTop="40dp"
+        android:text="Sign up"
+        android:textColor="?attr/text_color"
         android:textSize="28sp"
         app:layout_constraintEnd_toEndOf="@id/guidelineRight"
         app:layout_constraintStart_toStartOf="@id/guidelineLeft"
@@ -37,34 +49,67 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        app:mHideTopDivider="true"
-        app:mHint="@string/enter_email"
-        app:mInputType="textEmailAddress"
-        app:mLabel="@string/email"
         app:layout_constraintEnd_toEndOf="@id/guidelineRight"
         app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-        app:layout_constraintTop_toBottomOf="@id/tvHeader" />
+        app:layout_constraintTop_toBottomOf="@id/tvHeader"
+        app:mHideTopDivider="true"
+        app:mHint="@string/enter_email"
+        app:mImeOption="Next"
+        app:mInputTextColor="?attr/text_color2"
+        app:mInputType="textEmailAddress"
+        app:mLabel="@string/email"
+        app:mLabelTextColor="?attr/text_color" />
 
     <com.amgregoire.mangafeed.v2.custom.InputLine
         android:id="@+id/inputPassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+        app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+        app:layout_constraintTop_toBottomOf="@id/inputEmail"
         app:mHideTopDivider="true"
         app:mHint="@string/enter_password"
+        app:mImeOption="Next"
+        app:mInputTextColor="?attr/text_color2"
         app:mInputType="textPassword"
         app:mLabel="@string/password"
-        app:layout_constraintEnd_toEndOf="@id/guidelineRight"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-        app:layout_constraintTop_toBottomOf="@id/inputEmail" />
+        app:mLabelTextColor="?attr/text_color" />
 
-    <com.amgregoire.mangafeed.v2.custom.MButton
-        android:id="@+id/buttonContinue"
+    <com.amgregoire.mangafeed.v2.custom.InputLine
+        android:id="@+id/inputPasswordConfirm"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="@id/guidelineRight"
         app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-        app:layout_constraintTop_toBottomOf="@+id/inputPassword"
+        app:layout_constraintTop_toBottomOf="@id/inputPassword"
+        app:mHideTopDivider="true"
+        app:mHint="@string/enter_password"
+        app:mImeOption="Done"
+        app:mInputTextColor="?attr/text_color2"
+        app:mInputType="textPassword"
+        app:mLabel="@string/password"
+        app:mLabelTextColor="?attr/text_color" />
+
+    <TextView
+        style="@style/Fable.TextView.Body.Small.Normal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="@string/password_requirements"
+        app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+        app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+        app:layout_constraintTop_toBottomOf="@id/inputPasswordConfirm" />
+
+    <com.amgregoire.mangafeed.v2.custom.MButton
+        android:id="@+id/buttonSignIn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+        app:layout_constraintStart_toStartOf="@id/guidelineLeft"
         app:mButtonStyle="Solid"
-        app:mButtonText="Sign in" />
+        app:mButtonText="@string/text_continue" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

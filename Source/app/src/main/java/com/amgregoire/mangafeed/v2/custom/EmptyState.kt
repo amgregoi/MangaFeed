@@ -2,10 +2,9 @@ package com.amgregoire.mangafeed.v2.custom
 
 import android.animation.Animator
 import android.content.Context
-import android.support.constraint.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.SharedPrefs
@@ -39,22 +38,22 @@ class EmptyState @JvmOverloads constructor(context: Context, attrs: AttributeSet
     {
         val attributes = context.obtainStyledAttributes(attrs, R.styleable.EmptyState)
 
-        imageView.setImageResource(attributes.getResourceId(R.styleable.EmptyState_mangaDrawableImage, R.drawable.img_noactivity))
+        imageView.setImageResource(attributes.getResourceId(R.styleable.EmptyState_mDrawableImage, R.drawable.img_noactivity))
 
-        if (attributes.hasValue(R.styleable.EmptyState_mangaPrimaryText)) textViewEmptyStatePrimary.text = attributes.getText(R.styleable.EmptyState_mangaPrimaryText)
-        if (attributes.hasValue(R.styleable.EmptyState_mangaSecondaryText)) textViewEmptyStateSecondary.text = attributes.getText(R.styleable.EmptyState_mangaSecondaryText)
+        if (attributes.hasValue(R.styleable.EmptyState_mPrimaryText)) textViewEmptyStatePrimary.text = attributes.getText(R.styleable.EmptyState_mPrimaryText)
+        if (attributes.hasValue(R.styleable.EmptyState_mSecondaryText)) textViewEmptyStateSecondary.text = attributes.getText(R.styleable.EmptyState_mSecondaryText)
         else textViewEmptyStateSecondary.visibility = View.GONE
 
-        if (attributes.getBoolean(R.styleable.EmptyState_mangaButtonVisible, false))
+        if (attributes.getBoolean(R.styleable.EmptyState_mButtonVisible, false))
         {
             hasButton = true
             buttonAction.visibility = View.VISIBLE
         }
 
-        if (attributes.getBoolean(R.styleable.EmptyState_mangaLoading, false)) showLoader()
+        if (attributes.getBoolean(R.styleable.EmptyState_mLoading, false)) showLoader()
         else hideLoader(true)
 
-        if (attributes.hasValue(R.styleable.EmptyState_mangaButtonText)) buttonAction.text = (attributes.getText(R.styleable.EmptyState_mangaButtonText).toString())
+        if (attributes.hasValue(R.styleable.EmptyState_mButtonText)) buttonAction.text = (attributes.getText(R.styleable.EmptyState_mButtonText).toString())
 
         if (SharedPrefs.isLightTheme()) progressBarLoading.setProgressBarStyle(ProgressBar.ProgressBarStyle.DarkBlue)
         else progressBarLoading.setProgressBarStyle(ProgressBar.ProgressBarStyle.White)

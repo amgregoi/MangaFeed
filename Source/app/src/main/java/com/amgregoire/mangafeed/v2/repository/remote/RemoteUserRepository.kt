@@ -65,10 +65,10 @@ class RemoteUserRepository(
      * @param result Function1<RetroResult<User>, Unit>
      * @return Job
      */
-    fun signUp(name: String, email: String, password: String, result: (Result<User>) -> Unit) = ioScope.launch {
+    fun signUp(email: String, password: String, result: (Result<User>) -> Unit) = ioScope.launch {
         val res = try
         {
-            val loginRequest = UserApi.CreateUserRequest(name, email, password)
+            val loginRequest = UserApi.CreateUserRequest(email, password)
             userApi.postSignUp(loginRequest).result { mapUser(it) }
         }
         catch (ex: Exception)

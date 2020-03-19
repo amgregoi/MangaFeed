@@ -1,7 +1,7 @@
 package com.amgregoire.mangafeed.UI.Presenters;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.FragmentManager;
 
 import com.amgregoire.mangafeed.Common.RequestWrapper;
 import com.amgregoire.mangafeed.MangaFeed;

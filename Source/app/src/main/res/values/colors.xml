@@ -17,6 +17,7 @@
     <color name="manga_green">#FF2DED4D</color>
     <color name="manga_blue">#FF3F51B5</color>
     <color name="manga_gray">#FFC4C4C4</color>
+    <color name="transparent">#00000000</color>
 
     <color name="link_blue">#33A1DE</color>
 

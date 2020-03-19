@@ -1,7 +1,7 @@
 package com.amgregoire.mangafeed.v2.custom
 
 import android.content.Context
-import android.support.constraint.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -28,13 +28,13 @@ class ImageTextLineItem @JvmOverloads constructor(context: Context, attrs: Attri
     {
         val attributes = context.obtainStyledAttributes(attrs, R.styleable.ImageTextLineItem)
 
-        val icon = attributes.getResourceId(R.styleable.ImageTextLineItem_mangaIconSrc, 0)
+        val icon = attributes.getResourceId(R.styleable.ImageTextLineItem_mIconSrc, 0)
         if(icon == 0) ivIcon.visibility = View.GONE
         else ivIcon.setImageResource(icon)
 
-        tvPrimary.text = attributes.getText(R.styleable.ImageTextLineItem_mangaText)
+        tvPrimary.text = attributes.getText(R.styleable.ImageTextLineItem_mText)
 
-        val text = attributes.getText(R.styleable.ImageTextLineItem_mangaTextSecondary)
+        val text = attributes.getText(R.styleable.ImageTextLineItem_mTextSecondary)
         if (text.isNullOrEmpty()) tvSecondary.visibility = View.GONE
         else tvSecondary.text = text
 

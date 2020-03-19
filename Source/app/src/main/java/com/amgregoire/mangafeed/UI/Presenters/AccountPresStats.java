@@ -1,11 +1,10 @@
 package com.amgregoire.mangafeed.UI.Presenters;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+
+import androidx.fragment.app.FragmentManager;
 
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentFiltered;
 import com.amgregoire.mangafeed.UI.Mappers.IAccount;
 import com.amgregoire.mangafeed.Utils.BusEvents.StatusFilterEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;

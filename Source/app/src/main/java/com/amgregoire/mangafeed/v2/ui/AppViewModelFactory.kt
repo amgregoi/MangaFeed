@@ -1,8 +1,8 @@
 package com.amgregoire.mangafeed.v2.ui
 
 import android.app.Application
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 
 class AppViewModelFactory(private var app: Application) : ViewModelProvider.Factory
 {

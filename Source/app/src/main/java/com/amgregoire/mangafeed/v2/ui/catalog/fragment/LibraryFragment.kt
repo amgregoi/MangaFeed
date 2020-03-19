@@ -1,7 +1,7 @@
 package com.amgregoire.mangafeed.v2.ui.catalog.fragment
 
-import android.arch.lifecycle.Observer
-import android.support.v4.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.fragment.app.Fragment
 import com.amgregoire.mangafeed.R
 import kotlinx.android.synthetic.main.fragment_catalog.view.*
 
@@ -23,6 +23,6 @@ class LibraryFragment : CatalogBase()
     }
     companion object
     {
-        fun newInstance(): Fragment = LibraryFragment()
+        fun newInstance(): androidx.fragment.app.Fragment = LibraryFragment()
     }
 }

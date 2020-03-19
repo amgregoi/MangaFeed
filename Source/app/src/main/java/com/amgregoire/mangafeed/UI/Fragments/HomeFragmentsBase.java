@@ -1,7 +1,7 @@
 package com.amgregoire.mangafeed.UI.Fragments;
 
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 import com.amgregoire.mangafeed.Common.RecyclerViewSpaceDecoration;

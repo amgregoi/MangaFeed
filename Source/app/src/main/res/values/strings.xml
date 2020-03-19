@@ -6,6 +6,10 @@
     <string name="empty">""</string>
 
 
+    <string name="password_regex"><![CDATA[^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$]]></string>
+    <string name="email_regex"><![CDATA[^[a-zA-Z0-9]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$]]></string>
+    <string name="password_requirements">Passwords must be at least 8 characters long and contain a lowercase, uppercase, and a number.</string>
+
     <string name="text_continue">Continue</string>
     <string name="text_start">Start</string>
 
@@ -60,6 +64,11 @@
     <string name="enter_password">Enter Password</string>
     <string name="password">Password</string>
     <string name="email">Email</string>
+    <string name="login_error_404">User not found. Try signing up!</string>
+    <string name="login_error">Failed to login, please verify your information and try again.</string>
+    <string name="passwords_must_match">Passwords must match</string>
+    <string name="login_error_invalid_email">Please input a valid email</string>
+    <string name="login_error_invalid_password">Password does not meet the criteria</string>
 
     <string-array name="sources_array">
         <item>ReadLight</item>

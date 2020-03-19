@@ -1,8 +1,8 @@
 package com.amgregoire.mangafeed.UI.Adapters;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import android.util.SparseArray;
 
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentSources;

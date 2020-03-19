@@ -1,11 +1,11 @@
 package com.amgregoire.mangafeed.v2.ui.main
 
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
-import android.support.design.widget.BottomSheetBehavior
-import android.support.design.widget.TabLayout
-import android.support.v7.widget.SearchView
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.tabs.TabLayout
+import androidx.appcompat.widget.SearchView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,24 +40,19 @@ class HomeFragment2 : BaseFragment()
         setupViewPager()
         setupTabLayout()
 
-        self.bottomSheetHeader.setOnClickListener {
-            val bottomSheetBehavior = BottomSheetBehavior.from<ConstraintLayout>(self.constraintLayoutBottomSheet)
-            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) setBottomSheetExpanded()
-            else setBottomSheetCollapsed()
-        }
 
-        val lTextArea = self.searchView.findViewById<SearchView.SearchAutoComplete>(R.id.search_src_text)
-        lTextArea.setTextColor(resources.getColor(AttrService.getAttrColor(context!!, R.attr.text_color))) //or any color that you want
-        self.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener
-        {
-            override fun onQueryTextSubmit(p0: String?): Boolean = false
-            override fun onQueryTextChange(query: String?): Boolean
-            {
-                query ?: return false
-                catalogViewModel?.setQuery(query)
-                return true
-            }
-        })
+//        val lTextArea = self.searchView.findViewById<SearchView.SearchAutoComplete>(R.id.search_src_text)
+//        lTextArea.setTextColor(resources.getColor(AttrService.getAttrColor(context!!, R.attr.text_color))) //or any color that you want
+//        self.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener
+//        {
+//            override fun onQueryTextSubmit(p0: String?): Boolean = false
+//            override fun onQueryTextChange(query: String?): Boolean
+//            {
+//                query ?: return false
+//                catalogViewModel?.setQuery(query)
+//                return true
+//            }
+//        })
     }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean)
@@ -69,7 +64,6 @@ class HomeFragment2 : BaseFragment()
     {
         val parent = activity ?: return
         (parent as ToolbarMap).showSpinner()
-        (parent as ToolbarMap).hideToolbarElevation()
         (parent as ToolbarMap).setOptionsMenu(R.menu.menu_toolbar_filter)
     }
 
@@ -81,19 +75,6 @@ class HomeFragment2 : BaseFragment()
         self.viewPagerHome.adapter = CatalogViewPagerAdapter(childFragmentManager, 3)
         self.viewPagerHome.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(self.tabLayoutHome))
         self.viewPagerHome.offscreenPageLimit = 3
-    }
-
-    fun setBottomSheetCollapsed()
-    {
-        val bottomSheetBehavior = BottomSheetBehavior.from<ConstraintLayout>(self.constraintLayoutBottomSheet)
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        self.searchView.clearFocus()
-    }
-
-    fun setBottomSheetExpanded()
-    {
-        val bottomSheetBehavior = BottomSheetBehavior.from<ConstraintLayout>(self.constraintLayoutBottomSheet)
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
     /***

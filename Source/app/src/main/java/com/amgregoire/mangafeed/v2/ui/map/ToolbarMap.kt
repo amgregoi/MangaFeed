@@ -16,10 +16,6 @@ interface ToolbarMap
 
     fun showToolbar()
 
-    fun showToolbarElevation()
-
-    fun hideToolbarElevation()
-
     /***
      * 0 -> Default (no menu)
      * R.menu.<insert menu>

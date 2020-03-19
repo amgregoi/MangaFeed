@@ -1,7 +1,7 @@
 package com.amgregoire.mangafeed.v2.custom
 
 import android.content.Context
-import android.support.constraint.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +11,12 @@ import com.amgregoire.mangafeed.v2.service.AttrService
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.cv_button.view.*
 
-enum class ButtonStyle
+enum class ButtonStyle(val style:Int, val textColor:Int)
 {
-    BORDER, SOLID
+    BORDER(R.drawable.button_border, R.color.manga_white),
+    SOLID(R.drawable.button_solid, R.color.manga_white),
+    LIGHT(R.drawable.button_light, R.color.manga_black),
+    TRANSPARENT(R.drawable.button_transparent, R.attr.text_color)
 }
 
 class MButton @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
@@ -41,8 +44,6 @@ class MButton @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
 
         setButtonStyle(attributes.getInt(R.styleable.MButton_mButtonStyle, 1))
         setButtonText(attributes.getString(R.styleable.MButton_mButtonText) ?: "")
-
-
         if (attributes.getBoolean(R.styleable.MButton_mLoading, false)) startLoading()
 
         attributes.recycle()
@@ -102,17 +103,17 @@ class MButton @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         if (SharedPrefs.isLightTheme()) progressBar.setImageDrawable(context.getDrawable(R.drawable.load_spinner_light))
         else progressBar.setImageDrawable(context.getDrawable(R.drawable.load_spinner_dark))
 
+        viewButton.background = context.getDrawable(style.style)
 
-        // Custom Styles
-        when (style)
+        when(style)
         {
-            ButtonStyle.BORDER ->
+            ButtonStyle.TRANSPARENT ->
             {
-                viewButton.background = context.getDrawable(R.drawable.button_border)
+                textViewButtonText.setTextColor(resources.getColor(AttrService.getAttrColor(context, style.textColor)))
             }
-            ButtonStyle.SOLID ->
+            else ->
             {
-                viewButton.background = context.getDrawable(R.drawable.button_solid)
+                textViewButtonText.setTextColor(context.getColor(style.textColor))
             }
         }
     }
@@ -133,8 +134,10 @@ class MButton @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
     {
         when (style)
         {
-            1 -> setButtonStyle(ButtonStyle.BORDER)
-            2 -> setButtonStyle(ButtonStyle.SOLID)
+            0x01 -> setButtonStyle(ButtonStyle.BORDER)
+            0x02 -> setButtonStyle(ButtonStyle.SOLID)
+            0x03 -> setButtonStyle(ButtonStyle.LIGHT)
+            0x04 -> setButtonStyle(ButtonStyle.TRANSPARENT)
         }
     }
 }

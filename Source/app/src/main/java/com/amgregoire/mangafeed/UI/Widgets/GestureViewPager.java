@@ -1,7 +1,7 @@
 package com.amgregoire.mangafeed.UI.Widgets;
 
 import android.content.Context;
-import android.support.v4.view.ViewPager;
+import androidx.viewpager.widget.ViewPager;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -9,12 +9,10 @@ import android.view.View;
 
 import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Adapters.ImagePagerAdapter;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
 import com.amgregoire.mangafeed.v2.custom.EmptyState;
-import com.amgregoire.mangafeed.v2.service.Logger;
 
 public class GestureViewPager extends ViewPager implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener
 {

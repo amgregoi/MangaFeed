@@ -2,10 +2,10 @@ package com.amgregoire.mangafeed.v2.ui.info
 
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.amgregoire.mangafeed.Common.RequestWrapper
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.Models.Chapter

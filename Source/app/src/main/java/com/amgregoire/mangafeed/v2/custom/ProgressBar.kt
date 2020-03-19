@@ -1,14 +1,13 @@
 package com.amgregoire.mangafeed.v2.custom
 
-import com.amgregoire.mangafeed.R
-import kotlinx.android.synthetic.main.cv_progress_bar.view.*
-
 import android.content.Context
-import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.SharedPrefs
+import kotlinx.android.synthetic.main.cv_progress_bar.view.*
 
 
 class ProgressBar @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
@@ -23,7 +22,7 @@ class ProgressBar @JvmOverloads constructor(context: Context, attrs: AttributeSe
         else
         {
             hide()
-            if(SharedPrefs.isLightTheme()) setProgressBarStyle(ProgressBarStyle.DarkBlue)
+            if (SharedPrefs.isLightTheme()) setProgressBarStyle(ProgressBarStyle.DarkBlue)
             else setProgressBarStyle(ProgressBarStyle.White)
         }
     }
@@ -31,8 +30,17 @@ class ProgressBar @JvmOverloads constructor(context: Context, attrs: AttributeSe
     fun init(attrs: AttributeSet)
     {
         val attributes = context.obtainStyledAttributes(attrs, R.styleable.ProgressBar)
-        setProgressBarStyle(attributes.getInt(R.styleable.ProgressBar_mangaProgressBarStyle, 0))
-        startSpin()
+        val style = attributes.getInt(R.styleable.ProgressBar_mProgressBarStyle, 0)
+
+        when
+        {
+            style != 0 -> setProgressBarStyle(style)
+            SharedPrefs.isLightTheme() -> setProgressBarStyle(ProgressBarStyle.DarkBlue)
+            else -> setProgressBarStyle(ProgressBarStyle.White)
+        }
+
+        if(attributes.getBoolean(R.styleable.ProgressBar_mLoading, false)) startSpin()
+
         attributes.recycle()
     }
 
@@ -44,16 +52,16 @@ class ProgressBar @JvmOverloads constructor(context: Context, attrs: AttributeSe
     fun show()
     {
         visibility = View.VISIBLE
+        startSpin()
     }
 
-    fun isHidden():Boolean
+    fun isHidden(): Boolean
     {
         return visibility != View.VISIBLE
     }
 
-    fun startSpin()
+    private fun startSpin()
     {
-        show()
         loadingSpinner.startSpin()
     }
 

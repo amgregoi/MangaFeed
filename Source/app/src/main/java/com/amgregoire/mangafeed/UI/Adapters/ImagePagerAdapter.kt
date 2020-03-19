@@ -1,21 +1,18 @@
 package com.amgregoire.mangafeed.UI.Adapters
 
 import android.annotation.SuppressLint
-import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
-import android.support.v4.view.PagerAdapter
-import android.support.v4.widget.NestedScrollView
 import android.text.Html
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
+import androidx.core.widget.NestedScrollView
+import androidx.lifecycle.ViewModelProviders
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.UI.Widgets.GestureImageView
 import com.amgregoire.mangafeed.UI.Widgets.GestureTextView
@@ -42,11 +39,11 @@ import java.io.ByteArrayOutputStream
  */
 
 class ImagePagerAdapter(
-        val parent: Fragment,
-        val context: FragmentActivity,
+        val parent: androidx.fragment.app.Fragment,
+        val context: androidx.fragment.app.FragmentActivity,
         var data: List<String>,
         private val listener: GestureViewPager.UserGestureListener? = null
-) : PagerAdapter()
+) : androidx.viewpager.widget.PagerAdapter()
 {
 
     private val readerViewModel: ReaderViewModel by lazy {
@@ -162,56 +159,64 @@ class ImagePagerAdapter(
             val glideUrl = GlideUrl(url, builder.build())
 
             uiScope.launch {
-                Glide.with(parent)
-                        .asBitmap()
-                        .load(glideUrl)
-                        .apply(lOptions)
-                        .transition(GenericTransitionOptions<Any>().transition(android.R.anim.fade_in))
-                        .into(object : BitmapImageViewTarget(image)
-                        {
-                            override fun onResourceReady(resource: Bitmap, glideAnimation: Transition<in Bitmap>?)
+                try
+                {
+                    Glide.with(parent)
+                            .asBitmap()
+                            .load(glideUrl)
+                            .apply(lOptions)
+                            .transition(GenericTransitionOptions<Any>().transition(android.R.anim.fade_in))
+                            .into(object : BitmapImageViewTarget(image)
                             {
-                                super.onResourceReady(resource, glideAnimation)
-                                try
+                                override fun onResourceReady(resource: Bitmap, glideAnimation: Transition<in Bitmap>?)
                                 {
-                                    if (resource.byteCount > 107647000)
-                                        Logger.error("Pre compress byte count: ${resource.byteCount}")
+                                    super.onResourceReady(resource, glideAnimation)
+                                    try
+                                    {
+                                        if (resource.byteCount > 107647000)
+                                            Logger.error("Pre compress byte count: ${resource.byteCount}")
 
-                                    // Compress incoming image, relieves memory usage + phone slowing down with large images
-                                    val stream = ByteArrayOutputStream()
+                                        // Compress incoming image, relieves memory usage + phone slowing down with large images
+                                        val stream = ByteArrayOutputStream()
 
-                                    // TODO :: turn compression rate into shared pref to be toggled in app
-                                    resource.compress(Bitmap.CompressFormat.JPEG, 40, stream)
-                                    val byteArray = stream.toByteArray()
-                                    val compressedBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-                                    image.setImageBitmap(compressedBitmap)
+                                        // TODO :: turn compression rate into shared pref to be toggled in app
+                                        resource.compress(Bitmap.CompressFormat.JPEG, 40, stream)
+                                        val byteArray = stream.toByteArray()
+                                        val compressedBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+                                        image.setImageBitmap(compressedBitmap)
 
-                                    if (resource.byteCount > 107647000)
-                                        Logger.error("Post compress byte count: ${compressedBitmap.byteCount}")
+                                        if (resource.byteCount > 107647000)
+                                            Logger.error("Post compress byte count: ${compressedBitmap.byteCount}")
 
 
-                                    image.initializeView()
-                                    image.setTag("$IMAGE_TAG:$position")
+                                        image.initializeView()
+                                        image.setTag("$IMAGE_TAG:$position")
 
-                                    image.visibility = View.VISIBLE
-                                    image.startFling(0f, 100000f) //large fling to initialize the image to the top for long pages
+                                        image.visibility = View.VISIBLE
+                                        image.startFling(0f, 100000f) //large fling to initialize the image to the top for long pages
 
-                                    emptyState.hide()
+                                        emptyState.hide()
+                                    }
+                                    catch (ex: Exception)
+                                    {
+                                        emptyState.hideLoader(true)
+                                        Logger.error("Well shit..")
+                                        Logger.error(ex)
+                                    }
                                 }
-                                catch (ex: Exception)
+
+                                override fun onLoadFailed(errorDrawable: Drawable?)
                                 {
+                                    super.onLoadFailed(errorDrawable)
                                     emptyState.hideLoader(true)
-                                    Logger.error("Well shit..")
-                                    Logger.error(ex)
                                 }
-                            }
-
-                            override fun onLoadFailed(errorDrawable: Drawable?)
-                            {
-                                super.onLoadFailed(errorDrawable)
-                                emptyState.hideLoader(true)
-                            }
-                        })
+                            })
+                }
+                catch (ex: Exception)
+                {
+                    // View wasn't attached to fragment fast enough
+                    // Occurs during fast scrolling through adapter
+                }
             }
         }
 

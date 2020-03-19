@@ -1,6 +1,6 @@
 package com.amgregoire.mangafeed.v2.ui.settings
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +14,7 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.item_sync_sources.view.*
 import kotlinx.coroutines.launch
 
-class SyncAdapter : RecyclerView.Adapter<SyncAdapter.SyncViewHolder>()
+class SyncAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<SyncAdapter.SyncViewHolder>()
 {
     val sources = MangaEnums.Source.values()
 
@@ -42,7 +42,7 @@ class SyncAdapter : RecyclerView.Adapter<SyncAdapter.SyncViewHolder>()
         notifyDataSetChanged()
     }
 
-    inner class SyncViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    inner class SyncViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView)
     {
         fun onBind(position: Int)
         {

@@ -1,8 +1,8 @@
 package com.amgregoire.mangafeed.UI.Presenters;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.amgregoire.mangafeed.UI.Adapters.HomeViewPagerAdapter;
 import com.amgregoire.mangafeed.UI.Mappers.IHome;

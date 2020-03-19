@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipeManga"
     android:layout_width="match_parent"
@@ -16,13 +16,13 @@
             android:layout_height="match_parent"
             android:elevation="1dp"
             android:visibility="gone"
-            app:mangaButtonVisible="false"
-            app:mangaDrawableImage="@drawable/empty"
-            app:mangaLoading="true"
-            app:mangaPrimaryText="No Manga"
-            app:mangaSecondaryText="There are no manga to display" />
+            app:mButtonVisible="false"
+            app:mDrawableImage="@drawable/empty"
+            app:mLoading="true"
+            app:mPrimaryText="No Manga"
+            app:mSecondaryText="There are no manga to display" />
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvManga"
             android:nestedScrollingEnabled="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -30,4 +30,4 @@
             android:layout_height="match_parent"/>
 
     </RelativeLayout>
-</android.support.v4.widget.SwipeRefreshLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

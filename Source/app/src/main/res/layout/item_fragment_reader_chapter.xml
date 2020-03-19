@@ -16,12 +16,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="100dp"
-        app:mangaButtonText="Refresh"
+        app:mButtonText="Refresh"
         android:visibility="visible"
-        app:mangaButtonVisible="true"
-        app:mangaDrawableImage="@drawable/manga_error"
-        app:mangaLoading="true"
-        app:mangaPrimaryText="Oops"
-        app:mangaSecondaryText="Something went wrong loading this chapter, trying refreshing or try again later." />
+        app:mButtonVisible="true"
+        app:mDrawableImage="@drawable/manga_error"
+        app:mLoading="true"
+        app:mPrimaryText="Oops"
+        app:mSecondaryText="Something went wrong loading this chapter, trying refreshing or try again later." />
 
 </RelativeLayout>

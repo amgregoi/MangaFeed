@@ -1,8 +1,8 @@
 package com.amgregoire.mangafeed.v2.ui.settings
 
 import android.os.Bundle
-import android.support.v7.widget.DrawableUtils
-import android.support.v7.widget.LinearLayoutManager
+import androidx.appcompat.widget.DrawableUtils
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,7 +34,7 @@ class SyncSourceFragment : BaseFragment()
     override fun onStart()
     {
         super.onStart()
-        self.rvSync.layoutManager = LinearLayoutManager(context)
+        self.rvSync.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         self.rvSync.adapter = SyncAdapter()
 
         self.buttonSync.setClickListener(View.OnClickListener {
@@ -47,7 +47,7 @@ class SyncSourceFragment : BaseFragment()
     {
         self.buttonSync.setButtonText(getString(R.string.text_stop_sync))
         isSyncing = true
-        val count = (self.rvSync.layoutManager as LinearLayoutManager).itemCount
+        val count = (self.rvSync.layoutManager as androidx.recyclerview.widget.LinearLayoutManager).itemCount
         var completeCount = 0
         for (i in 0..count)
         {

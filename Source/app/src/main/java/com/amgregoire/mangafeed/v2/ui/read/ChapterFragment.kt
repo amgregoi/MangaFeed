@@ -1,10 +1,10 @@
 package com.amgregoire.mangafeed.v2.ui.read
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.view.ViewPager
+import androidx.fragment.app.Fragment
+import androidx.viewpager.widget.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -68,7 +68,7 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener
     fun initViews()
     {
         self.viewPagerReaderChapter.setUserGestureListener(this)
-        self.viewPagerReaderChapter.addOnPageChangeListener(object : ViewPager.OnPageChangeListener
+        self.viewPagerReaderChapter.addOnPageChangeListener(object : androidx.viewpager.widget.ViewPager.OnPageChangeListener
         {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) = Unit
             override fun onPageScrollStateChanged(state: Int) = Unit
@@ -146,7 +146,7 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener
         val POSITION_KEY = TAG + "POSITION"
         val MANGA_KEY = TAG + "MANGA"
 
-        fun newInstance(isFollowing: Boolean, position: Int, manga: Manga): Fragment
+        fun newInstance(isFollowing: Boolean, position: Int, manga: Manga): androidx.fragment.app.Fragment
         {
             val lBundle = Bundle()
             lBundle.putBoolean(FOLLOWING_KEY, isFollowing)

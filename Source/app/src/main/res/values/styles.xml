@@ -8,7 +8,7 @@
         <item name="android:textColorSecondary">@android:color/white</item>
         <item name="actionMenuTextColor">?attr/text_color</item>
         <item name="actionOverflowMenuStyle">@style/MangaFeed.Widget.PopupMenu.OverflowMenu</item>
-        <item name="android:windowBackground">@drawable/splash_bg</item>
+        <item name="android:windowBackground">?attr/background_color</item>
     </style>
 
     <style name="Splash" parent="AppTheme">
@@ -122,7 +122,7 @@
     <style name="Fable.TextView.Header.Bold" parent="AppTheme">
         <item name="android:fontFamily">@font/nunito_bold</item>
         <item name="android:textSize">@dimen/text_size_19sp</item>
-        <item name="android:textColor">@color/manga_black</item>
+        <item name="android:textColor">?attr/text_color</item>
         <item name="android:lineSpacingExtra">0sp</item>
         <item name="android:textStyle">normal</item>
     </style>
@@ -138,7 +138,7 @@
     <style name="Fable.TextView.Body.Bold" parent="AppTheme">
         <item name="android:fontFamily">@font/nunito_bold</item>
         <item name="android:textSize">@dimen/text_size_16sp</item>
-        <item name="android:textColor">@color/manga_black</item>
+        <item name="android:textColor">?attr/text_color</item>
         <item name="android:lineSpacingExtra">0.02sp</item>
     </style>
 
@@ -155,7 +155,7 @@
     <style name="Fable.TextView.Body.Small.Bold" parent="AppTheme">
         <item name="android:fontFamily">@font/nunito_bold</item>
         <item name="android:textSize">@dimen/text_size_14sp</item>
-        <item name="android:textColor">@color/manga_black</item>
+        <item name="android:textColor">?attr/text_color</item>
         <item name="android:lineSpacingExtra">3sp</item>
     </style>
 
@@ -173,7 +173,7 @@
     <style name="Fable.TextView.Tiny.Bold" parent="AppTheme">
         <item name="android:fontFamily">@font/nunito_bold</item>
         <item name="android:textSize">@dimen/text_size_11sp</item>
-        <item name="android:textColor">@color/manga_black</item>
+        <item name="android:textColor">?attr/text_color</item>
         <item name="android:fontStyle" tools:targetApi="o">normal</item>
     </style>
 

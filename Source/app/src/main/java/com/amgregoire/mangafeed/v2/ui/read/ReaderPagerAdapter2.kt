@@ -1,8 +1,8 @@
 package com.amgregoire.mangafeed.v2.ui.read
 
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentStatePagerAdapter
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
 import android.util.SparseArray
 import android.view.ViewGroup
 import com.amgregoire.mangafeed.Models.Chapter
@@ -14,15 +14,15 @@ import java.lang.ref.WeakReference
  */
 
 class ChapterPagerAdapter(
-        private val manager: FragmentManager,
+        private val manager: androidx.fragment.app.FragmentManager,
         private val chapterList: List<Chapter>,
         private val isFollowing: Boolean,
         private val manga: Manga
-) : FragmentStatePagerAdapter(manager)
+) : androidx.fragment.app.FragmentStatePagerAdapter(manager)
 {
-    private val mFragmentRefs = SparseArray<WeakReference<Fragment>>()
+    private val mFragmentRefs = SparseArray<WeakReference<androidx.fragment.app.Fragment>>()
 
-    override fun getItem(position: Int): Fragment?
+    override fun getItem(position: Int): androidx.fragment.app.Fragment?
     {
         val reference = mFragmentRefs.get(position)
 

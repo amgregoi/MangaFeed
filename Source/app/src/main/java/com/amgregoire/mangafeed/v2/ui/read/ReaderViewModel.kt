@@ -1,7 +1,7 @@
 package com.amgregoire.mangafeed.v2.ui.read
 
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.amgregoire.mangafeed.Common.MangaEnums
 import com.amgregoire.mangafeed.Common.RequestWrapper
 import com.amgregoire.mangafeed.MangaFeed

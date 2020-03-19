@@ -6,13 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentSettings
-import com.amgregoire.mangafeed.v2.extension.toJson
-import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.base.FragmentNavMap
+import com.amgregoire.mangafeed.v2.ui.login.SignInFragment
 import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
-import com.amgregoire.mangafeed.v2.usecase.LoginUseCase
-import com.amgregoire.mangafeed.v2.usecase.SignUpUseCase
 import kotlinx.android.synthetic.main.fragment_more.view.*
 
 class AccountFragment : BaseFragment()
@@ -33,7 +30,9 @@ class AccountFragment : BaseFragment()
         }
 
         self.buttonManage.setOnClickListener {
-            Logger.error("test")
+            val fragment = SignInFragment.newInstance()
+            val tag = SignInFragment.TAG
+            (activity as? FragmentNavMap)?.addFragment(fragment, this, tag)
         }
 
         self.itConfigSourceSync.setOnClickListener(View.OnClickListener {

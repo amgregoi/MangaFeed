@@ -1,7 +1,7 @@
 package com.amgregoire.mangafeed.v2.ui.catalog.adapter
 
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,7 +36,7 @@ class MangaAdapter(
         private var data: ArrayList<Manga>,
         private var source: SourceBase,
         private var itemSelected: (Manga) -> Unit
-) : RecyclerView.Adapter<MangaAdapter.MangaViewHolder>()
+) : androidx.recyclerview.widget.RecyclerView.Adapter<MangaAdapter.MangaViewHolder>()
 {
     private var filteredData: ArrayList<Manga> = ArrayList(data)
     private val filter = TextFilter()
@@ -155,7 +155,7 @@ class MangaAdapter(
         filter.filterByStatus(filterType)
     }
 
-    inner class MangaViewHolder(view: View) : RecyclerView.ViewHolder(view)
+    inner class MangaViewHolder(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view)
     {
         fun onBind(position: Int)
         {
@@ -176,7 +176,7 @@ class MangaAdapter(
             }
 
             // Add margin to bottom elements
-            val params = itemView.cvParent.layoutParams as GridLayoutManager.LayoutParams
+            val params = itemView.cvParent.layoutParams as androidx.recyclerview.widget.GridLayoutManager.LayoutParams
 
             var rows = data.size / 3
             if (data.size % 3 == 0) rows--

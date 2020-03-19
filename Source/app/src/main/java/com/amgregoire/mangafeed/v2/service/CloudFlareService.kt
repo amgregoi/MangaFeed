@@ -6,7 +6,6 @@ import com.amgregoire.mangafeed.Utils.MangaLogger
 import com.amgregoire.mangafeed.Utils.NetworkService
 import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.BaseCookiePreferences
-import com.amgregoire.mangafeed.v2.FunMangaCookiePreferences
 import com.amgregoire.mangafeed.v2.cloudflare.Cloudflare
 import kotlinx.coroutines.launch
 import java.net.HttpCookie
@@ -25,11 +24,13 @@ class CloudFlareService
         val cookiePrefs = MangaFeed.app.cookiePreferences()
         if (isValidCookie(cookiePrefs))
         {
+            Logger.error("######################## Using old cookies")
             val oldCookies = cookiePrefs.cookies!!
             cookies.invoke(oldCookies.toList())
         }
         else
         {
+            Logger.error("~~~~~~~~~~~~~~~~~~~~~~~ Using new cookies")
             getCookies(url, userAgent) { newCookies ->
                 cookies.invoke(newCookies)
             }
@@ -38,44 +39,46 @@ class CloudFlareService
 
     fun getCookies(url: String = MangaFeed.app.currentSource.baseUrl, userAgent: String = NetworkService.defaultUserAgent, cookies: (List<String>) -> Unit)
     {
-        val cookiePrefs = MangaFeed.app.cookiePreferences()
+        synchronized(this) {
+            val cookiePrefs = MangaFeed.app.cookiePreferences()
 
-        if (isValidCookie(cookiePrefs))
-        {
-            val oldCookies = cookiePrefs.cookies!!
-            uiScope.launch { cookies.invoke(oldCookies.toList()) }
-            return
-        }
-
-        Cloudflare(url, userAgent).apply {
-            user_agent = userAgent
-            getCookies(object : Cloudflare.cfCallback
+            if (isValidCookie(cookiePrefs))
             {
-                override fun onSuccess(httpCookieList: MutableList<HttpCookie>?, hasNewUrl: Boolean, newUrl: String?)
-                {
-                    Logger.debug("Retrieved new cookies = $httpCookieList")
-                    val cookieList = Cloudflare.List2Map(httpCookieList).map { (k, v) -> "$k=$v" }
-                    cookiePrefs.cookies = cookieList.toMutableSet()
-                    cookiePrefs.setExpiresAt()
+                val oldCookies = cookiePrefs.cookies!!
+                uiScope.launch { cookies.invoke(oldCookies.toList()) }
+                return
+            }
 
-                    uiScope.launch { cookies.invoke(cookieList) }
-                }
-
-                override fun onFail()
+            Cloudflare(url, userAgent).apply {
+                user_agent = userAgent
+                getCookies(object : Cloudflare.cfCallback
                 {
-                    MangaLogger.logError("CloudflareService", "Failed to retrieve new cookies")
-                    if (!isValidCookie(cookiePrefs))
+                    override fun onSuccess(httpCookieList: MutableList<HttpCookie>?, hasNewUrl: Boolean, newUrl: String?)
                     {
-                        cookiePrefs.clear()
-                        cookies.invoke(listOf())
+                        Logger.debug("Retrieved new cookies = $httpCookieList")
+                        val cookieList = Cloudflare.List2Map(httpCookieList).map { (k, v) -> "$k=$v" }
+                        cookiePrefs.cookies = cookieList.toMutableSet()
+                        cookiePrefs.setExpiresAt()
+
+                        uiScope.launch { cookies.invoke(cookieList) }
                     }
-                    else
+
+                    override fun onFail()
                     {
-                        val oldCookies = cookiePrefs.cookies!!
-                        uiScope.launch { cookies.invoke(oldCookies.toList()) }
+                        MangaLogger.logError("CloudflareService", "Failed to retrieve new cookies")
+                        if (!isValidCookie(cookiePrefs))
+                        {
+                            cookiePrefs.clear()
+                            cookies.invoke(listOf())
+                        }
+                        else
+                        {
+                            val oldCookies = cookiePrefs.cookies!!
+                            uiScope.launch { cookies.invoke(oldCookies.toList()) }
+                        }
                     }
-                }
-            })
+                })
+            }
         }
     }
 
@@ -83,8 +86,8 @@ class CloudFlareService
     {
         val oldCookies = cookiePrefs.cookies
 
-        oldCookies ?: return false
-        if (oldCookies.size < 2) return false
+//        oldCookies ?: return false
+//        if (oldCookies.size < 2) return false
 
         if (cookiePrefs.expiresAt > Date().time)
         {

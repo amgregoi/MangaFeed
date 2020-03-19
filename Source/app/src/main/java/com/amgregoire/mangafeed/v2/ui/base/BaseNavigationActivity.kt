@@ -1,15 +1,16 @@
 package com.amgregoire.mangafeed.v2.ui.base
 
 import android.graphics.Color
-import android.support.constraint.ConstraintLayout
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v7.app.AppCompatActivity
+import android.view.Gravity
 import android.view.Menu
 import android.view.View
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
 import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_m.*
 import kotlinx.android.synthetic.main.widget_toolbar_2.*
 
@@ -27,7 +28,7 @@ interface StatusBarMap
 
 interface FragmentNavMap
 {
-    fun startMenuFragment(fragment: Fragment, tag: String)
+    fun startMenuFragment(fragment: androidx.fragment.app.Fragment, tag: String)
 
     fun hideMenuCover()
 
@@ -35,22 +36,30 @@ interface FragmentNavMap
 
     fun popBackStack(tag: String, popInclusive: Boolean)
 
-    fun replaceFragment(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
+    fun replaceFragment(fragment: androidx.fragment.app.Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 
-    fun replaceFragmentParent(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
+    fun replaceFragmentParent(fragment: androidx.fragment.app.Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 
-    fun addFragment(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
+    fun addFragment(fragment: androidx.fragment.app.Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 
-    fun addFragment(fragment: Fragment, prevFragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
+    fun addFragment(fragment: androidx.fragment.app.Fragment, prevFragment: androidx.fragment.app.Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 
-    fun addFragmentParent(fragment: Fragment, prevFragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
+    fun addFragmentParent(fragment: androidx.fragment.app.Fragment, prevFragment: androidx.fragment.app.Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 }
 
-abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, ToolbarMap, StatusBarMap
+interface NotificationMap
 {
+    fun snackbar(message: String)
+    fun snackbarError(message: String)
+}
+
+abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, ToolbarMap, StatusBarMap, NotificationMap
+{
+
+
     protected var mMenuId = 0
 
-    override fun replaceFragment(fragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
+    override fun replaceFragment(fragment: androidx.fragment.app.Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
     {
         supportFragmentManager.beginTransaction()
                 .setPrimaryNavigationFragment(fragment)
@@ -60,7 +69,7 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
                 .commit()
     }
 
-    override fun replaceFragmentParent(fragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
+    override fun replaceFragmentParent(fragment: androidx.fragment.app.Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
     {
         supportFragmentManager.beginTransaction()
                 .setPrimaryNavigationFragment(fragment)
@@ -70,7 +79,7 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
                 .commit()
     }
 
-    override fun addFragment(fragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
+    override fun addFragment(fragment: androidx.fragment.app.Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
     {
         supportFragmentManager.beginTransaction()
                 .setPrimaryNavigationFragment(fragment)
@@ -80,7 +89,7 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
                 .commit()
     }
 
-    override fun addFragment(fragment: Fragment, prevFragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
+    override fun addFragment(fragment: androidx.fragment.app.Fragment, prevFragment: androidx.fragment.app.Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
     {
         supportFragmentManager.beginTransaction()
                 .setPrimaryNavigationFragment(fragment)
@@ -92,7 +101,7 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
     }
 
 
-    override fun addFragmentParent(fragment: Fragment, prevFragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
+    override fun addFragmentParent(fragment: androidx.fragment.app.Fragment, prevFragment: androidx.fragment.app.Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
     {
         supportFragmentManager.beginTransaction()
                 .setPrimaryNavigationFragment(fragment)
@@ -103,7 +112,7 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
                 .commit()
     }
 
-    override fun startMenuFragment(fragment: Fragment, tag: String)
+    override fun startMenuFragment(fragment: androidx.fragment.app.Fragment, tag: String)
     {
         vMenuCover.visibility = View.VISIBLE
         supportFragmentManager.beginTransaction()
@@ -125,7 +134,7 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
 
     override fun popBackStack(tag: String, popInclusive: Boolean)
     {
-        val popFlag = if (popInclusive) FragmentManager.POP_BACK_STACK_INCLUSIVE else 0
+        val popFlag = if (popInclusive) androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE else 0
         supportFragmentManager.popBackStack(tag, popFlag)
     }
 
@@ -148,7 +157,7 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
 
     override fun showSpinner()
     {
-        if(toolbar == null) return
+        if (toolbar == null) return
 
         toolbar.setTitle(null)
 
@@ -157,17 +166,10 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
         toolbarSpinner.visibility = View.VISIBLE
     }
 
-    fun showToolBarLogo()
-    {
-        hideToolbarElevation()
-        toolbarLogo.visibility = View.VISIBLE
-        toolbarTitle.visibility = View.GONE
-    }
-
-    fun setNavigationIcon(drawableId: Int)
+    override fun setNavigationIcon(drawableId: Int?)
     {
         if (toolbar == null) return
-        if (drawableId == 0)
+        if (drawableId == null || drawableId == 0)
         {
             toolbar.navigationIcon = null
         }
@@ -176,6 +178,7 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
             toolbar.navigationIcon = resources.getDrawable(drawableId)
         }
     }
+
 
     override fun setToolbarColor(color: Int)
     {
@@ -199,18 +202,6 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
     {
         if (toolbar == null) return
         toolbar!!.visibility = visibility
-    }
-
-    override fun showToolbarElevation()
-    {
-        if (toolbar == null) return
-        toolbar.elevation = ScreenUtil.convertDpToPixel(4f, this)
-    }
-
-    override fun hideToolbarElevation()
-    {
-        if (toolbar == null) return
-        toolbar.elevation = 0f
     }
 
     override fun setOptionsMenu(menuId: Int?)
@@ -268,9 +259,33 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
 
         return super.onCreateOptionsMenu(menu)
     }
+
+    /********************************************************
+     *
+     * Navigation Map
+     *
+     */
+    override fun snackbar(message: String)
+    {
+        val lSnack = Snackbar.make(flParent, message, Snackbar.LENGTH_SHORT)
+        val lSnackText = lSnack.view
+                .findViewById<TextView>(R.id.snackbar_text)
+        lSnackText.gravity = Gravity.CENTER_HORIZONTAL
+        lSnackText.textAlignment = View.TEXT_ALIGNMENT_CENTER
+
+        lSnack.show()
+    }
+
+    override fun snackbarError(message: String)
+    {
+        val lSnack = Snackbar.make(flParent, message, Snackbar.LENGTH_LONG)
+        val lSnackText = lSnack.view
+                .findViewById<TextView>(R.id.snackbar_text)
+        lSnack.view.setBackgroundColor(resources.getColor(R.color.manga_red))
+        lSnackText.gravity = Gravity.CENTER_HORIZONTAL
+        lSnackText.textAlignment = View.TEXT_ALIGNMENT_CENTER
+
+        lSnack.show()
+    }
 }
-/********************************************************
- *
- * Fragment Navigation Map
- *
- */
+

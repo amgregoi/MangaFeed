@@ -1,8 +1,8 @@
 package com.amgregoire.mangafeed.UI.Presenters;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.UI.Adapters.DownloadScheduleAdapter;

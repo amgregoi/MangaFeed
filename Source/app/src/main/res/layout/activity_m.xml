@@ -6,16 +6,16 @@
     android:layout_height="match_parent"
     android:background="?attr/background_color2">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.design.widget.CoordinatorLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:id="@+id/clParent"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <android.support.design.widget.AppBarLayout
+            <com.google.android.material.appbar.AppBarLayout
                 android:id="@+id/toolbarLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
 
                 <include layout="@layout/widget_toolbar_2" />
 
-            </android.support.design.widget.AppBarLayout>
+            </com.google.android.material.appbar.AppBarLayout>
 
             <FrameLayout
                 android:id="@+id/flContainer"
@@ -36,7 +36,7 @@
                 android:layout_marginTop="?attr/actionBarSize"
                 app:layout_dodgeInsetEdges="none" />
 
-        </android.support.design.widget.CoordinatorLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <View
             android:id="@+id/vMenuCover"
@@ -54,5 +54,5 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             app:layout_constraintBottom_toBottomOf="parent" />
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

@@ -32,7 +32,7 @@ interface UserApi
     @POST("/users/signup")
     fun postSignUp(@Body requestBody: CreateUserRequest): Call<Result<LoginResponse>>
 
-    data class CreateUserRequest(val name: String, val email: String, val password: String)
+    data class CreateUserRequest(val email: String, val password: String)
 
     /***
      *

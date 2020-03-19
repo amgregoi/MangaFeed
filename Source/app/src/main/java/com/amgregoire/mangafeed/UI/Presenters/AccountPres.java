@@ -1,7 +1,7 @@
 package com.amgregoire.mangafeed.UI.Presenters;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.FragmentManager;
 
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.UI.Adapters.AccountPagerAdapter;
@@ -9,18 +9,9 @@ import com.amgregoire.mangafeed.UI.Mappers.IAccount;
 import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLoginSuccessEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.GoogleLogoutEvent;
 import com.amgregoire.mangafeed.Utils.LoginManager;
-import com.amgregoire.mangafeed.Utils.MangaDB;
-import com.amgregoire.mangafeed.Utils.MangaFeedRest;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import cz.msebera.android.httpclient.Header;
 import io.reactivex.disposables.Disposable;
 
 /**

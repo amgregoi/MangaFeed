@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?attr/background_color">
     
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarFilteredManga"
         android:layout_width="match_parent"
         android:background="@color/colorPrimary"

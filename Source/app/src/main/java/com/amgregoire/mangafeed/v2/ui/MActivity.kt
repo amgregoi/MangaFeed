@@ -1,6 +1,7 @@
 package com.amgregoire.mangafeed.v2.ui
 
-import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
 import android.transition.Fade
@@ -8,13 +9,14 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.lifecycle.ViewModelProviders
 import com.amgregoire.mangafeed.Common.MangaEnums
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.NetworkService
 import com.amgregoire.mangafeed.Utils.SharedPrefs
 import com.amgregoire.mangafeed.uiScope
-import com.amgregoire.mangafeed.v2.lastFragment
+import com.amgregoire.mangafeed.v2.extension.lastFragment
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
@@ -46,7 +48,6 @@ class MActivity : BaseNavigationActivity()
             }
         }
         else setupView()
-
     }
 
     private fun setupView()
@@ -93,9 +94,8 @@ class MActivity : BaseNavigationActivity()
         {
             if (manager.backStackEntryCount == 1)
             {
-                setNavigationIcon(0)
+                setNavigationIcon(null)
                 mainFragment.updateParentSettings()
-                hideToolbarElevation()
             }
 
             manager.lastFragment()?.let { fragment ->
@@ -148,5 +148,15 @@ class MActivity : BaseNavigationActivity()
         else theme.applyStyle(R.style.AppTheme_Dark, true)
 
         return theme
+    }
+
+    companion object
+    {
+        fun newInstance(context: Context) = Intent(context, MActivity::class.java)
+                .apply {
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                }
     }
 }

@@ -1,6 +1,6 @@
 package com.amgregoire.mangafeed.v2.ui.info
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,7 +31,7 @@ class MangaInfoAdapter(
         val source: SourceBase,
         var chapters: List<Chapter> = listOf(),
         val chapterSelected: (Manga, List<Chapter>, Chapter) -> Unit
-) : RecyclerView.Adapter<MangaInfoAdapter.BaseViewHolder>()
+) : androidx.recyclerview.widget.RecyclerView.Adapter<MangaInfoAdapter.BaseViewHolder>()
 {
     private var data = arrayListOf<BaseData>()
 
@@ -121,7 +121,7 @@ class MangaInfoAdapter(
      * View Holders
      *
      *************************************************************************************/
-    open inner class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    open inner class BaseViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView)
     {
         open fun onBind(position: Int)
         {

@@ -1,16 +1,18 @@
 package com.amgregoire.mangafeed.v2.custom
 
 import android.content.Context
-import android.support.constraint.ConstraintLayout
-import android.support.v4.content.res.ResourcesCompat
-import android.support.v7.app.AppCompatActivity
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.ResourcesCompat
 import com.amgregoire.mangafeed.R
+import com.amgregoire.mangafeed.v2.service.AttrService
 import com.amgregoire.mangafeed.v2.service.KeyboardUtil
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.cv_input_line.view.*
+import org.w3c.dom.Attr
 
 class InputLine @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
     : ConstraintLayout(context, attrs, defStyleAttr)
@@ -49,7 +51,8 @@ class InputLine @JvmOverloads constructor(context: Context, attrs: AttributeSet?
         tvLineLabel.setTextColor(labelColor)
 
         val inputColor = attributes.getColor(R.styleable.InputLine_mInputTextColor, resources.getColor(R.color.manga_black))
-        tvLineLabel.setTextColor(inputColor)
+        etLineInput.setTextColor(inputColor)
+        etLineInput.setHintTextColor(inputColor)
 
         etLineInput.inputType = attributes.getInt(R.styleable.InputLine_mInputType, 0x01)
         etLineInput.imeOptions = attributes.getInt(R.styleable.InputLine_mImeOption, 0x00)

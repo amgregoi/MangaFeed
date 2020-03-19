@@ -1,14 +1,14 @@
 package com.amgregoire.mangafeed.v2.ui.read
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.support.v4.view.ViewPager
+import androidx.viewpager.widget.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -255,7 +255,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
      */
     private fun setupViewPager()
     {
-        self.vpReader.addOnPageChangeListener(object : ViewPager.OnPageChangeListener
+        self.vpReader.addOnPageChangeListener(object : androidx.viewpager.widget.ViewPager.OnPageChangeListener
         {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) = Unit
             override fun onPageScrollStateChanged(state: Int) = Unit

@@ -1,6 +1,6 @@
 package com.amgregoire.mangafeed.UI.Mappers;
 
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 import com.amgregoire.mangafeed.UI.Mappers.Maps.ContextMap;
 import com.amgregoire.mangafeed.UI.Mappers.Maps.EventBusMap;
