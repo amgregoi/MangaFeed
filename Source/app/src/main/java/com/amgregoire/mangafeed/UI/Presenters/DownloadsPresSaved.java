@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbManga;
 import com.amgregoire.mangafeed.UI.Adapters.SearchRecyclerAdapter;
 import com.amgregoire.mangafeed.UI.Mappers.IDownloads;
 import com.amgregoire.mangafeed.Utils.BusEvents.SearchQueryChangeEvent;
@@ -108,12 +108,12 @@ public class DownloadsPresSaved implements IDownloads.DownloadsSavedPres
         }
     }
 
-    public void registerAdapter(List<Manga> manga)
+    public void registerAdapter(List<DbManga> dbManga)
     {
         try
         {
             mLayoutManager = new GridLayoutManager(mMap.getContext(), 3);
-            mAdapter = new SearchRecyclerAdapter(manga);
+            mAdapter = new SearchRecyclerAdapter(dbManga);
             mAdapter.setOffline();
 
             mMap.registerAdapter(mAdapter, mLayoutManager);

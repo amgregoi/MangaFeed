@@ -3,40 +3,40 @@ package com.amgregoire.mangafeed.Common;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.amgregoire.mangafeed.Models.Chapter;
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbChapter;
+import com.amgregoire.mangafeed.Models.DbManga;
 
 
 public class RequestWrapper implements Parcelable
 {
     public static final String TAG = RequestWrapper.class.getSimpleName();
 
-    private Manga mManga;
-    private Chapter mChapter;
+    private DbManga mDbManga;
+    private DbChapter mDbChapter;
 
     /***
      * Request Wrapper Constructor
      *
-     * @param aManga
+     * @param aDbManga
      */
-    public RequestWrapper(Manga aManga)
+    public RequestWrapper(DbManga aDbManga)
     {
-        mManga = aManga;
+        mDbManga = aDbManga;
     }
 
     /***
      * Request Wrapper Constructor
      *
-     * @param aChapter
+     * @param aDbChapter
      */
-    public RequestWrapper(Chapter aChapter)
+    public RequestWrapper(DbChapter aDbChapter)
     {
-        mChapter = aChapter;
+        mDbChapter = aDbChapter;
     }
 
     private RequestWrapper(Parcel aIn)
     {
-        mManga = aIn.readParcelable(ClassLoader.getSystemClassLoader());
+        mDbManga = aIn.readParcelable(ClassLoader.getSystemClassLoader());
     }
 
     /***
@@ -46,17 +46,17 @@ public class RequestWrapper implements Parcelable
      */
     public String getSource()
     {
-        return mManga.getSource();
+        return mDbManga.getSource();
     }
 
-    public Manga getManga()
+    public DbManga getManga()
     {
-        return mManga;
+        return mDbManga;
     }
 
-    public Chapter getChapter()
+    public DbChapter getChapter()
     {
-        return mChapter;
+        return mDbChapter;
     }
 
     @Override
@@ -68,7 +68,7 @@ public class RequestWrapper implements Parcelable
     @Override
     public void writeToParcel(Parcel aOut, int aFlags)
     {
-        aOut.writeParcelable(mManga, 0);
+        aOut.writeParcelable(mDbManga, 0);
     }
 
     public static final Parcelable.Creator<RequestWrapper> CREATOR = new Parcelable.Creator<RequestWrapper>()

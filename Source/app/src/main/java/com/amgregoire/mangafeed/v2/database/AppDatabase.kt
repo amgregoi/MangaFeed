@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.Database
-import com.amgregoire.mangafeed.Models.Chapter
-import com.amgregoire.mangafeed.Models.Manga
+import com.amgregoire.mangafeed.Models.DbChapter
+import com.amgregoire.mangafeed.Models.DbManga
 
 
-@Database(entities = [Manga::class, Chapter::class], version = 1)
+@Database(entities = [DbManga::class, DbChapter::class], version = 1)
 abstract class AppDatabase : RoomDatabase()
 {
 

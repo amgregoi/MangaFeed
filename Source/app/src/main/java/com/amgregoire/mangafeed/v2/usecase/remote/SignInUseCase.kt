@@ -1,17 +1,17 @@
-package com.amgregoire.mangafeed.v2.usecase
+package com.amgregoire.mangafeed.v2.usecase.remote
 
 import com.amgregoire.mangafeed.v2.model.domain.User
 import com.amgregoire.mangafeed.v2.network.Result
 import com.amgregoire.mangafeed.v2.repository.remote.RemoteUserRepository
 import com.amgregoire.mangafeed.v2.service.Logger
 
-class SignUpUseCase
+class SignInUseCase
 {
     private val userRepo = RemoteUserRepository()
 
-    fun signUp(email: String, password: String, result: (User) -> Unit, error: (Int) -> Unit)
+    fun login(email: String, password: String, result: (User) -> Unit, error: (Int) -> Unit)
     {
-        userRepo.signUp(email, password) {
+        userRepo.signIn(email, password) {
             when (it)
             {
                 is Result.Success -> result(it.value)

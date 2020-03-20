@@ -8,9 +8,8 @@ import com.amgregoire.mangafeed.Common.WebSources.FunManga
 import com.amgregoire.mangafeed.Common.WebSources.MangaEden
 import com.amgregoire.mangafeed.Common.WebSources.MangaHere
 import com.amgregoire.mangafeed.Common.WebSources.ReadLight
-import com.amgregoire.mangafeed.Models.Chapter
+import com.amgregoire.mangafeed.Models.DbChapter
 import com.amgregoire.mangafeed.Utils.MangaDB
-import com.amgregoire.mangafeed.Utils.MangaLogger
 import com.amgregoire.mangafeed.Utils.RxBus
 import com.amgregoire.mangafeed.Utils.SharedPrefs
 import com.amgregoire.mangafeed.v2.FunMangaCookiePreferences
@@ -21,20 +20,21 @@ import com.amgregoire.mangafeed.v2.di.component.DaggerAppComponent
 import com.amgregoire.mangafeed.v2.di.module.ApiModule
 import com.amgregoire.mangafeed.v2.di.module.ApplicationModule
 import com.amgregoire.mangafeed.v2.di.module.RoomModule
+import com.amgregoire.mangafeed.v2.extension.fromJson
+import com.amgregoire.mangafeed.v2.extension.toJson
 import com.amgregoire.mangafeed.v2.model.domain.User
-import com.amgregoire.mangafeed.v2.model.dto.ApiUser
+import com.amgregoire.mangafeed.v2.model.domain.UserLibrary
+import com.amgregoire.mangafeed.v2.service.Logger
+import com.amgregoire.mangafeed.v2.ui.LoginActivity
+import com.amgregoire.mangafeed.v2.usecase.remote.GetRemoteUserUseCase
+import com.amgregoire.mangafeed.v2.usecase.remote.SignOutUseCase
 import com.bumptech.glide.request.target.ViewTarget
-import com.squareup.picasso.Cache
-import com.squareup.picasso.Picasso
-import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.util.*
-import java.util.concurrent.Executors
 import javax.inject.Inject
+
 
 /**
  * Created by Andy Gregoire on 3/8/2018.
@@ -49,12 +49,38 @@ val appComponent: AppComponent = MangaFeed.app.appComponent
 
 class MangaFeed : Application()
 {
-    private var mBus: RxBus? = null
     private var compositeDisposable = CompositeDisposable()
-    private var mCurrentChapters: ArrayList<Chapter>? = null
-    private var mPicasso: Picasso? = null
+    private val userPreferences by lazy { UserPreferences(app) }
 
-    var user: User? = null
+    @Deprecated("v1")
+    private var mCurrentDbChapters: ArrayList<DbChapter>? = null
+
+    var user: User?
+        get()
+        {
+            return userPreferences.user?.fromJson()
+        }
+        set(value)
+        {
+            if (value != null)
+            {
+                userPreferences.user = value.toJson()
+                isSignedIn = true
+            }
+            else userPreferences.clear()
+        }
+
+    var isSignedIn: Boolean
+        get()
+        {
+            return userPreferences.isSignedIn
+        }
+        set(value)
+        {
+            userPreferences.isSignedIn = value
+        }
+
+    var userLibrary: UserLibrary? = null
 
     fun cookiePreferences() = when (currentSource.sourceName)
     {
@@ -62,7 +88,6 @@ class MangaFeed : Application()
         else -> FunMangaCookiePreferences(app)
     }
 
-    val userPreferences by lazy { UserPreferences(app) }
 
     /************************************************************************
      *
@@ -92,13 +117,23 @@ class MangaFeed : Application()
     val currentSource: SourceBase
         get() = MangaEnums.Source.valueOf(SharedPrefs.getSavedSource()).source
 
-    var currentChapters: List<Chapter>?
-        get() = mCurrentChapters
+    @Deprecated("v1")
+    var currentDbChapters: List<DbChapter>?
+        get() = mCurrentDbChapters
         set(chapters)
         {
-            mCurrentChapters = ArrayList(chapters)
-            mCurrentChapters!!.reverse()
+            mCurrentDbChapters = ArrayList(chapters)
+            mCurrentDbChapters!!.reverse()
         }
+
+    @Deprecated("v1")
+    private var mBus: RxBus? = null
+
+    @Deprecated("v1")
+    fun rxBus(): RxBus?
+    {
+        return mBus
+    }
 
     /************************************************************************
      *
@@ -115,22 +150,25 @@ class MangaFeed : Application()
         appComponent.inject(this)
 
         ViewTarget.setTagId(R.id.glide_tag)
+
         mBus = RxBus()
 
-        mPicasso = Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).memoryCache(Cache.NONE).indicatorsEnabled(true).build()
-        mPicasso!!.setIndicatorsEnabled(true)
-        Picasso.setSingletonInstance(mPicasso!!)
-        updateCatalogs(false) // check if we should update local database on application open
+        updateUser()
     }
 
-    /***
-     * This function returns the application RxBus instance.
-     *
-     * @return
-     */
-    fun rxBus(): RxBus?
+    fun logout()
     {
-        return mBus
+        user?.let {
+            SignOutUseCase().signOut(
+                    accessToken = it.accessToken,
+                    result = { Logger.debug("Logout success") },
+                    error = { Logger.debug("Logout failed") }
+            )
+        }
+
+        this.user = null
+        this.userLibrary = null
+        startActivity(LoginActivity.newInstance(this))
     }
 
     /***
@@ -187,50 +225,21 @@ class MangaFeed : Application()
         }
     }
 
-    /***
-     * This function updates source catalogs items on the local database, adding any missing items.
-     * Currently it is set to update no more than once a week.
-     *
-     */
-    fun updateCatalogs(isForceUpdate: Boolean)
+    private fun updateUser()
     {
-        val lWeekSeconds = 604800
-        val lWeekMs = lWeekSeconds * 1000
-
-        // Check if we updated in the last week, if we have we'll skip.
-        val lLowerLimit = Date(SharedPrefs.getLastCatalogUpdate().time + lWeekMs)
-        if (lLowerLimit.before(Date()) || isForceUpdate)
-        {
-            compositeDisposable.add(
-                    Observable.create { subscriber: ObservableEmitter<SourceBase> ->
-                        try
-                        {
-                            SharedPrefs.setLastCatalogUpdate()
-                            val lSources = MangaEnums.Source.values()
-
-                            for (source in lSources)
-                            {
-                                source.source.updateLocalCatalog()
-                                subscriber.onNext(source.source)
-                            }
-                            subscriber.onComplete()
-                        }
-                        catch (ex: Exception)
-                        {
-                            subscriber.onError(ex)
-                        }
-                    }.subscribeOn(Schedulers.computation()).subscribe(
-                            { source -> source.updateLocalCatalog() }, // onNext
-                            { throwable -> MangaLogger.logError(TAG, throwable.message) } // onError
-                    )
-            )
+        user ?: return
+        GetRemoteUserUseCase().user { result ->
+            result ?: return@user // TODO :: Determine what to do if failed to get user
+            user = result.user
+            userLibrary = result.userLibrary
+            // TODO :: Use case to sync local database?
+            // Maybe have a pop up if there are inconsistencies ?
         }
     }
 
     companion object
     {
-        private var TAG = MangaFeed::class.simpleName
-
+        private var TAG: String = MangaFeed::class.java.simpleName
         private var mangaApp: MangaFeed? = null
         val app get() = checkNotNull(mangaApp)
     }

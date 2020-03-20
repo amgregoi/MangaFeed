@@ -1,11 +1,10 @@
 package com.amgregoire.mangafeed.v2.ui.settings
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.amgregoire.mangafeed.Common.MangaEnums
-import com.amgregoire.mangafeed.Models.Manga
+import com.amgregoire.mangafeed.Models.DbManga
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
@@ -63,7 +62,7 @@ class SyncAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<SyncAdapte
             {
                 val source = sources[adapterPosition].source
                 itemView.tvCount.visibility = View.VISIBLE
-                val mangaList = arrayListOf<Manga>()
+                val mangaList = arrayListOf<DbManga>()
 
                 ioScope.launch {
                     val disp = source.updateLocalCatalogV2()?.subscribe(

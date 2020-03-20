@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbManga;
 import com.amgregoire.mangafeed.UI.Adapters.SearchRecyclerAdapter;
 import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentFiltered;
 import com.amgregoire.mangafeed.UI.Mappers.IAccount;
@@ -81,7 +81,7 @@ public class AccountPresFiltered implements IAccount.AccountFilteredPres
                         if (o instanceof UpdateMangaItemViewEvent)
                         {
                             UpdateMangaItemViewEvent lEvent = ((UpdateMangaItemViewEvent) o);
-                            mAdapter.updateItem(lEvent.manga);
+                            mAdapter.updateItem(lEvent.dbManga);
                         }
                         else if (o instanceof SearchQueryChangeEvent)
                         {
@@ -131,23 +131,23 @@ public class AccountPresFiltered implements IAccount.AccountFilteredPres
     /***
      * This function updates the adapter and views when the list is retrieved.
      *
-     * @param manga
+     * @param dbManga
      */
-    private void updateMangaGridView(List<Manga> manga)
+    private void updateMangaGridView(List<DbManga> dbManga)
     {
         try
         {
-            if (manga != null)
+            if (dbManga != null)
             {
                 if (mAdapter == null)
                 {
                     mLayoutManager = new GridLayoutManager(mMap.getContext(), 3);
-                    mAdapter = new SearchRecyclerAdapter(manga);
+                    mAdapter = new SearchRecyclerAdapter(dbManga);
                     mMap.registerAdapter(mAdapter, mLayoutManager);
                 }
                 else
                 {
-                    mAdapter.updateOriginalData(manga);
+                    mAdapter.updateOriginalData(dbManga);
                 }
             }
         }

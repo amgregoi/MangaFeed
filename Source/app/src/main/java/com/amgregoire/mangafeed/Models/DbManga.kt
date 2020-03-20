@@ -17,7 +17,7 @@ import org.json.JSONObject
 
 @Parcelize
 @Entity(tableName = "Manga")
-class Manga(
+class DbManga(
         @PrimaryKey(autoGenerate = true)
         var _id: Int = 0,
 
@@ -104,7 +104,7 @@ class Manga(
     override fun equals(obj: Any?): Boolean
     {
         var lCompare = false
-        if (obj != null && obj is Manga)
+        if (obj != null && obj is DbManga)
         {
             val lLink1 = fullUrl.replace("https", "http")
             val lLink2 = obj.fullUrl.replace("https", "http")
@@ -160,7 +160,7 @@ class Manga(
         val TAG = "MANGA"
         var LinkRegex = "(http)*s*:\\/\\/www.[a-zA-Z]*.(com|net|org|cc)"
 
-        fun mangaToFormattedUrl(manga:Manga) = manga.link.replaceFirst(LinkRegex.toRegex(), "{${manga.source}}")
+        fun mangaToFormattedUrl(dbManga:DbManga) = dbManga.link.replaceFirst(LinkRegex.toRegex(), "{${dbManga.source}}")
         fun urlSourceToFormattedUrl(url:String, source: String) = url.replaceFirst(LinkRegex.toRegex(), "{${source}}")
 
         const val UNFOLLOW = 0

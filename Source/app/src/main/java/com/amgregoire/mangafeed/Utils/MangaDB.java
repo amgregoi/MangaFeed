@@ -7,12 +7,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.MangaFeedKt;
-import com.amgregoire.mangafeed.Models.Chapter;
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbChapter;
+import com.amgregoire.mangafeed.Models.DbManga;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;
 import com.amgregoire.mangafeed.v2.database.AppDatabase;
 import com.amgregoire.mangafeed.v2.di.ApplicationContext;
 import com.amgregoire.mangafeed.v2.di.DatabaseInfo;
+import com.amgregoire.mangafeed.v2.model.domain.Manga;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -67,7 +69,12 @@ public class MangaDB extends SQLiteOpenHelper
         database = appDatabase;
     }
 
-    AppDatabase database;
+    private AppDatabase database;
+
+    public AppDatabase getDatabase()
+    {
+        return database;
+    }
 
     public MangaDB(Context context)
     {
@@ -182,12 +189,12 @@ public class MangaDB extends SQLiteOpenHelper
     /***
      * This function adds or updates a manga object in the local database.
      *
-     * @param manga the object to the added, or updated.
+     * @param dbManga the object to the added, or updated.
      */
-    public Manga putManga(Manga manga)
+    public DbManga putManga(DbManga dbManga)
     {
-        database.mangaDao().insertAll(manga);
-        return getManga(manga.getLink(), manga.getSource());
+        database.mangaDao().insertAll(dbManga);
+        return getManga(dbManga.getLink(), dbManga.getSource());
     }
 
     /***
@@ -196,24 +203,24 @@ public class MangaDB extends SQLiteOpenHelper
      * @param link the URL of the manga.
      * @return
      */
-    public Manga getManga(String link)
+    public DbManga getManga(String link)
     {
 
         return database.mangaDao().findByUrl(link, MangaFeedKt.getCurrentSource().getSourceName());
     }
 
-    public Manga getManga(String link, String source)
+    public DbManga getManga(String link, String source)
     {
 
         return database.mangaDao().findByUrl(link, source);
     }
 
-    public Manga getManga(int id)
+    public DbManga getManga(int id)
     {
         return database.mangaDao().findById(id);
     }
 
-    public List<Manga> getExistingManga(List<String> urlList, String source)
+    public List<DbManga> getExistingManga(List<String> urlList, String source)
     {
         return database.mangaDao().test(source, urlList);
     }
@@ -229,21 +236,21 @@ public class MangaDB extends SQLiteOpenHelper
         return getManga(link) != null;
     }
 
-    public boolean containsManga(Manga manga)
+    public boolean containsManga(DbManga dbManga)
     {
-        String url = Manga.Companion.mangaToFormattedUrl(manga);
-        return getManga(url, manga.getSource()) != null;
+        String url = DbManga.Companion.mangaToFormattedUrl(dbManga);
+        return getManga(url, dbManga.getSource()) != null;
     }
 
 
     /***
      * This function adds or updates a chapter object in the local database.
      *
-     * @param chapter the Chapter to be added, or updated.
+     * @param dbChapter the Chapter to be added, or updated.
      */
-    public void putChapter(Chapter chapter)
+    public void putChapter(DbChapter dbChapter)
     {
-        database.chapterDao().insertAll(chapter);
+        database.chapterDao().insertAll(dbChapter);
     }
 
     /***
@@ -252,12 +259,12 @@ public class MangaDB extends SQLiteOpenHelper
      * @param url the URL of the chapter.
      * @return
      */
-    public Chapter getChapter(String url)
+    public DbChapter getChapter(String url)
     {
         return database.chapterDao().findByUrl(url);
     }
 
-    public Chapter getChapter(int id)
+    public DbChapter getChapter(int id)
     {
         return database.chapterDao().findById(id);
     }
@@ -266,12 +273,12 @@ public class MangaDB extends SQLiteOpenHelper
      * This function retrieves a locally created chapter with the stored version in the local database.
      * If there is no entry for the chapter, one is made and returned.
      *
-     * @param chapter
+     * @param dbChapter
      * @return
      */
-    public Chapter getChapter(Chapter chapter)
+    public DbChapter getChapter(DbChapter dbChapter)
     {
-        return getChapter(chapter.getUrl());
+        return getChapter(dbChapter.getUrl());
     }
 
 
@@ -280,18 +287,18 @@ public class MangaDB extends SQLiteOpenHelper
      *
      * @return
      */
-    public Observable<List<Manga>> getMangaWithDownloadedChapters()
+    public Observable<List<DbManga>> getMangaWithDownloadedChapters()
     {
 
-        return Observable.create((ObservableEmitter<List<Manga>> subscriber) ->
+        return Observable.create((ObservableEmitter<List<DbManga>> subscriber) ->
         {
             try
             {
-                List<Manga> lManga = DownloadManager.getMangaWithSavedChapters();
-                Collections.sort(lManga, (emp1, emp2) -> emp1.getTitle()
-                                                             .compareToIgnoreCase(emp2.getTitle()));
+                List<DbManga> lDbManga = DownloadManager.getMangaWithSavedChapters();
+                Collections.sort(lDbManga, (emp1, emp2) -> emp1.getTitle()
+                                                               .compareToIgnoreCase(emp2.getTitle()));
 
-                subscriber.onNext(lManga);
+                subscriber.onNext(lDbManga);
                 subscriber.onComplete();
             }
             catch (Exception aException)
@@ -301,13 +308,13 @@ public class MangaDB extends SQLiteOpenHelper
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Observable<List<Chapter>> getDownloadedChapters(Manga manga)
+    public Observable<List<DbChapter>> getDownloadedChapters(DbManga dbManga)
     {
-        return Observable.create((ObservableEmitter<List<Chapter>> subscriber) ->
+        return Observable.create((ObservableEmitter<List<DbChapter>> subscriber) ->
         {
             try
             {
-                List<Chapter> lResult = DownloadManager.getSavedChapters(manga);
+                List<DbChapter> lResult = DownloadManager.getSavedChapters(dbManga);
                 Collections.sort(lResult, (emp1, emp2) ->
                 {
                     if (emp1.getChapterNumber() > emp2.getChapterNumber())
@@ -330,16 +337,16 @@ public class MangaDB extends SQLiteOpenHelper
     /***
      * This function returns the list of cached chapters, representing what the user has viewed.
      *
-     * @param manga
+     * @param dbManga
      * @return
      */
-    public Observable<List<Chapter>> getViewedChapters(Manga manga)
+    public Observable<List<DbChapter>> getViewedChapters(DbManga dbManga)
     {
-        return Observable.create((ObservableEmitter<List<Chapter>> subscriber) ->
+        return Observable.create((ObservableEmitter<List<DbChapter>> subscriber) ->
         {
             try
             {
-                subscriber.onNext(database.chapterDao().findAllByMangaUrl(manga.getLink()));
+                subscriber.onNext(database.chapterDao().findAllByMangaUrl(dbManga.getLink()));
                 subscriber.onComplete();
             }
             catch (Exception aException)
@@ -350,42 +357,41 @@ public class MangaDB extends SQLiteOpenHelper
     }
 
 
-    /**
-     * This function retrieves the list of followed items from the database.
-     *
-     * @return Observable arraylist of users followed manga
-     */
-    public Observable<ArrayList<Manga>> getLibraryList()
-    {
-        return Observable.create((ObservableEmitter<ArrayList<Manga>> subscriber) ->
-        {
-            try
-            {
-                ArrayList<Manga> lMangaList = new ArrayList<>(database.mangaDao().findFollowed(SharedPrefs.getSavedSource()));
-
-                subscriber.onNext(lMangaList);
-                subscriber.onComplete();
-            }
-            catch (Exception aException)
-            {
-                subscriber.onError(aException);
-            }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
-    }
+//    /**
+//     * This function retrieves the list of followed items from the database.
+//     *
+//     * @return Observable arraylist of users followed manga
+//     */
+//    public Observable<ArrayList<DbManga>> getLibraryList()
+//    {
+//        return Observable.create((ObservableEmitter<ArrayList<DbManga>> subscriber) ->
+//        {
+//            try
+//            {
+//                ArrayList<DbManga> lDbMangaList = new ArrayList<>(database.mangaDao().findFollowed(SharedPrefs.getSavedSource()));
+//                subscriber.onNext(lDbMangaList);
+//                subscriber.onComplete();
+//            }
+//            catch (Exception aException)
+//            {
+//                subscriber.onError(aException);
+//            }
+//        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+//    }
 
     /**
      * This function retrieves the list of followed items from the database with a specified filter (follow type)
      *
      * @return Observable arraylist of users followed manga
      */
-    public Observable<ArrayList<Manga>> getLibraryList(int filter)
+    public Observable<ArrayList<DbManga>> getLibraryList(int filter)
     {
-        return Observable.create((ObservableEmitter<ArrayList<Manga>> subscriber) ->
+        return Observable.create((ObservableEmitter<ArrayList<DbManga>> subscriber) ->
         {
             try
             {
-                ArrayList<Manga> lMangaList = new ArrayList<>(database.mangaDao().findFollowedWithFilter(SharedPrefs.getSavedSource(), filter));
-                subscriber.onNext(lMangaList);
+                ArrayList<DbManga> lDbMangaList = new ArrayList<>(database.mangaDao().findFollowedWithFilter(SharedPrefs.getSavedSource(), filter));
+                subscriber.onNext(lDbMangaList);
                 subscriber.onComplete();
             }
             catch (Exception aException)
@@ -428,15 +434,15 @@ public class MangaDB extends SQLiteOpenHelper
      *
      * @return Observable arraylist of sources manga
      */
-    public Observable<ArrayList<Manga>> getCatalogList()
+    public Observable<ArrayList<DbManga>> getCatalogList()
     {
-        return Observable.create((ObservableEmitter<ArrayList<Manga>> subscriber) ->
+        return Observable.create((ObservableEmitter<ArrayList<DbManga>> subscriber) ->
         {
             try
             {
 
-                ArrayList<Manga> lMangaList = new ArrayList<>(database.mangaDao().findAllBySource(SharedPrefs.getSavedSource()));
-                subscriber.onNext(lMangaList);
+                ArrayList<DbManga> lDbMangaList = new ArrayList<>(database.mangaDao().findAllBySource(SharedPrefs.getSavedSource()));
+                subscriber.onNext(lDbMangaList);
                 subscriber.onComplete();
             }
             catch (Exception lException)
@@ -471,12 +477,12 @@ public class MangaDB extends SQLiteOpenHelper
                     {
                         lFollow = lFollowList.getJSONObject(i);
 
-                        Manga lManga = getManga(lFollow.getString("url"));
-                        if (lManga != null)
+                        DbManga lDbManga = getManga(lFollow.getString("url"));
+                        if (lDbManga != null)
                         {
-                            lManga.updateFollowing(lFollow.getInt("followType"));
-                            lManga.setImage(lFollow.getString("image"));
-                            putManga(lManga);
+                            lDbManga.updateFollowing(lFollow.getInt("followType"));
+                            lDbManga.setImage(lFollow.getString("image"));
+                            putManga(lDbManga);
                         }
                     }
 

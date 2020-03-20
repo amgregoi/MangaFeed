@@ -1,6 +1,6 @@
 package com.amgregoire.mangafeed.Utils.BusEvents;
 
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbManga;
 
 /**
  * Created by Andy Gregoire on 3/10/2018.
@@ -22,12 +22,12 @@ import com.amgregoire.mangafeed.Models.Manga;
  */
 public class UpdateMangaItemViewEvent
 {
-    public Manga manga;
+    public DbManga dbManga;
     public boolean isMulti;
 
-    public UpdateMangaItemViewEvent(Manga m)
+    public UpdateMangaItemViewEvent(DbManga m)
     {
-        manga = m;
+        dbManga = m;
         isMulti = false;
     }
 

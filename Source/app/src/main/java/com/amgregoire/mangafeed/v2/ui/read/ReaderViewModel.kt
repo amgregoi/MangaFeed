@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import com.amgregoire.mangafeed.Common.MangaEnums
 import com.amgregoire.mangafeed.Common.RequestWrapper
 import com.amgregoire.mangafeed.MangaFeed
-import com.amgregoire.mangafeed.Models.Chapter
-import com.amgregoire.mangafeed.Models.Manga
+import com.amgregoire.mangafeed.Models.DbChapter
+import com.amgregoire.mangafeed.Models.DbManga
 import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.Logger
@@ -15,8 +15,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 
-data class ReaderInfo(var manga: Manga, var chapter: Chapter, var chapters: List<Chapter>)
-data class ChapterInfo(var chapter: Chapter, var title: String, var currentPage: Int = 0, var totalPages: Int = 0)
+data class ReaderInfo(var dbManga: DbManga, var dbChapter: DbChapter, var dbChapters: List<DbChapter>)
+data class ChapterInfo(var dbChapter: DbChapter, var title: String, var currentPage: Int = 0, var totalPages: Int = 0)
 
 sealed class ReaderUIState
 {
@@ -36,32 +36,32 @@ class ReaderViewModel : ViewModel()
 
     // Note: should only be called from manga info fragment to initialize reader view model data
     // TODO :: account for reversed list throughout vm (currently only account for ascending order due to ui
-    fun updateReaderInfo(manga: Manga, chapters: List<Chapter>, chapter: Chapter, isDataReversed: Boolean)
+    fun updateReaderInfo(dbManga: DbManga, dbChapters: List<DbChapter>, dbChapter: DbChapter, isDataReversed: Boolean)
     {
-        if (isDataReversed) readerInfo.value = ReaderInfo(manga, chapter, chapters.reversed())
-        else readerInfo.value = ReaderInfo(manga, chapter, chapters)
+        if (isDataReversed) readerInfo.value = ReaderInfo(dbManga, dbChapter, dbChapters.reversed())
+        else readerInfo.value = ReaderInfo(dbManga, dbChapter, dbChapters)
 
-        if (manga.isFollowing)
+        if (dbManga.isFollowing)
         {
-            MangaDB.getInstance().putChapter(chapter)
+            MangaDB.getInstance().putChapter(dbChapter)
 
-            manga.recentChapter = chapter.url
-            MangaDB.getInstance().putManga(manga)
+            dbManga.recentChapter = dbChapter.url
+            MangaDB.getInstance().putManga(dbManga)
         }
 
-        updateChapterInfo(chapter, chapter.chapterTitle, chapter.currentPage, chapter.totalPages)
+        updateChapterInfo(dbChapter, dbChapter.chapterTitle, dbChapter.currentPage, dbChapter.totalPages)
     }
 
-    private fun updateReaderInfo(manga: Manga, chapters: List<Chapter>, chapter: Chapter)
+    private fun updateReaderInfo(dbManga: DbManga, dbChapters: List<DbChapter>, dbChapter: DbChapter)
     {
-        readerInfo.value = ReaderInfo(manga, chapter, chapters)
+        readerInfo.value = ReaderInfo(dbManga, dbChapter, dbChapters)
 
-        if (manga.isFollowing)
+        if (dbManga.isFollowing)
         {
-            MangaDB.getInstance().putChapter(chapter)
+            MangaDB.getInstance().putChapter(dbChapter)
 
-            manga.recentChapter = chapter.url
-            MangaDB.getInstance().putManga(manga)
+            dbManga.recentChapter = dbChapter.url
+            MangaDB.getInstance().putManga(dbManga)
         }
     }
 
@@ -69,16 +69,16 @@ class ReaderViewModel : ViewModel()
     {
         val info = readerInfo.value ?: return
         val newChapter = getChapterByPosition(position) ?: return
-        if (info.chapter.url == newChapter.url) return
+        if (info.dbChapter.url == newChapter.url) return
 
-        updateReaderInfo(info.manga, info.chapters, newChapter)
+        updateReaderInfo(info.dbManga, info.dbChapters, newChapter)
         updateChapterInfo(newChapter, newChapter.chapterTitle, 0, newChapter.totalPages)
     }
 
-    fun getChapterByPosition(position: Int): Chapter?
+    fun getChapterByPosition(position: Int): DbChapter?
     {
         val info = readerInfo.value ?: return null
-        return info.chapters.getOrNull(position)
+        return info.dbChapters.getOrNull(position)
     }
 
     /***
@@ -88,10 +88,10 @@ class ReaderViewModel : ViewModel()
     fun incrementChapter()
     {
         val info = readerInfo.value ?: return
-        val position = info.chapters.indexOf(info.chapter)
-        val newChapter = info.chapters.getOrNull(position + 1) ?: return
+        val position = info.dbChapters.indexOf(info.dbChapter)
+        val newChapter = info.dbChapters.getOrNull(position + 1) ?: return
 
-        updateReaderInfo(info.manga, info.chapters, newChapter)
+        updateReaderInfo(info.dbManga, info.dbChapters, newChapter)
         updateChapterInfo(newChapter, newChapter.chapterTitle, 0, newChapter.totalPages)
     }
 
@@ -102,10 +102,10 @@ class ReaderViewModel : ViewModel()
     fun decrementChapter()
     {
         val info = readerInfo.value ?: return
-        val position = info.chapters.indexOf(info.chapter)
-        val newChapter = info.chapters.getOrNull(position - 1) ?: return
+        val position = info.dbChapters.indexOf(info.dbChapter)
+        val newChapter = info.dbChapters.getOrNull(position - 1) ?: return
 
-        updateReaderInfo(info.manga, info.chapters, newChapter)
+        updateReaderInfo(info.dbManga, info.dbChapters, newChapter)
         updateChapterInfo(newChapter, newChapter.chapterTitle, 0, newChapter.totalPages)
     }
 
@@ -131,65 +131,65 @@ class ReaderViewModel : ViewModel()
         uiState.value = ReaderUIState.SHOW
     }
 
-    fun updateChapterInfo(chapter: Chapter?, title: String? = null, currentPage: Int? = null, totalPages: Int? = null)
+    fun updateChapterInfo(dbChapter: DbChapter?, title: String? = null, currentPage: Int? = null, totalPages: Int? = null)
     {
-        chapter ?: return
+        dbChapter ?: return
 
         val info = readerInfo.value ?: return
 
-        if (chapter.url != info.chapter.url) return
+        if (dbChapter.url != info.dbChapter.url) return
 
-        val newInfo = ChapterInfo(chapter, title ?: chapter.chapterTitle, currentPage ?: chapter.currentPage, totalPages ?: chapter.totalPages)
+        val newInfo = ChapterInfo(dbChapter, title ?: dbChapter.chapterTitle, currentPage ?: dbChapter.currentPage, totalPages ?: dbChapter.totalPages)
         chapterInfo.value = newInfo
     }
 
-    fun incrementPage(chapter: Chapter)
+    fun incrementPage(dbChapter: DbChapter)
     {
         val reader = readerInfo.value ?: return
         val current = chapterInfo.value ?: return
-        if (reader.chapter.url != chapter.url) return
+        if (reader.dbChapter.url != dbChapter.url) return
 
-        if (current.currentPage < current.totalPages) updateChapterInfo(chapter, currentPage = current.currentPage + 1)
+        if (current.currentPage < current.totalPages) updateChapterInfo(dbChapter, currentPage = current.currentPage + 1)
     }
 
-    fun decrementPage(chapter: Chapter)
+    fun decrementPage(dbChapter: DbChapter)
     {
         val reader = readerInfo.value ?: return
         val current = chapterInfo.value ?: return
-        if (reader.chapter.url != chapter.url) return
-        if (current.currentPage > 0) updateChapterInfo(chapter, currentPage = current.currentPage - 1)
+        if (reader.dbChapter.url != dbChapter.url) return
+        if (current.currentPage > 0) updateChapterInfo(dbChapter, currentPage = current.currentPage - 1)
     }
 
-    fun isCurrentChapter(chapter: Chapter): Boolean
+    fun isCurrentChapter(dbChapter: DbChapter): Boolean
     {
         val info = readerInfo.value ?: return false
-        return info.chapter.url == chapter.url
+        return info.dbChapter.url == dbChapter.url
     }
 
-    fun getChapterContents(chapter: Chapter, chapterContent: (List<String>, Chapter, Boolean) -> Unit)
+    fun getChapterContents(dbChapter: DbChapter, chapterContent: (List<String>, DbChapter, Boolean) -> Unit)
     {
         CloudFlareService().verifyCookieAndDoAction {
             val urls = arrayListOf<String>()
             subscriptions.add(
                     MangaFeed.app
                             .currentSource
-                            .getChapterImageListObservable(RequestWrapper(chapter))
+                            .getChapterImageListObservable(RequestWrapper(dbChapter))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     { url ->
                                         urls.add(url)
-                                        updateChapterInfo(chapter, "Pages loaded: ${urls.size}", 0, 0)
+                                        updateChapterInfo(dbChapter, "Pages loaded: ${urls.size}", 0, 0)
 
                                     },
                                     { throwable ->
                                         Logger.error(throwable)
-                                        updateChapterInfo(chapter, "Problem retrieving pages, try refreshing", 0, 0)
+                                        updateChapterInfo(dbChapter, "Problem retrieving pages, try refreshing", 0, 0)
                                     },
                                     {
-                                        chapter.totalPages = urls.size
-                                        updateChapterInfo(chapter, chapter.chapterTitle, 0, urls.size)
-                                        chapterContent.invoke(urls, chapter, MangaFeed.app.currentSourceType == MangaEnums.SourceType.MANGA)
+                                        dbChapter.totalPages = urls.size
+                                        updateChapterInfo(dbChapter, dbChapter.chapterTitle, 0, urls.size)
+                                        chapterContent.invoke(urls, dbChapter, MangaFeed.app.currentSourceType == MangaEnums.SourceType.MANGA)
                                     })
             )
         }
@@ -199,7 +199,7 @@ class ReaderViewModel : ViewModel()
     fun getCurrentPosition(): Int
     {
         val info = readerInfo.value ?: return 0
-        return info.chapters.indexOf(info.chapter)
+        return info.dbChapters.indexOf(info.dbChapter)
     }
 
 

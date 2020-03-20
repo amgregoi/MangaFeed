@@ -1,15 +1,19 @@
 package com.amgregoire.mangafeed.v2.ui.base
 
-import androidx.fragment.app.Fragment
 import android.view.View
 import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.usecase.local.GetLocalUserUserCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 open abstract class BaseFragment : androidx.fragment.app.Fragment()
 {
+    private val localUserUseCase = GetLocalUserUserCase()
+
     lateinit var self: View
+
+    fun user() = localUserUseCase.user()
 
     open fun onChildBackPress()
     {

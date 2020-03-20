@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import androidx.viewpager.widget.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -102,9 +101,9 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
                 activity ?: return@Observer
 
                 initViews()
-                setupToolbar(info.manga.title)
+                setupToolbar(info.dbManga.title)
                 self.vpReader.offscreenPageLimit = 1
-                if (self.vpReader.adapter == null) self.vpReader.adapter = ChapterPagerAdapter(childFragmentManager, info.chapters, info.manga.isFollowing, info.manga)
+                if (self.vpReader.adapter == null) self.vpReader.adapter = ChapterPagerAdapter(childFragmentManager, info.dbChapters, info.dbManga.isFollowing, info.dbManga)
                 if (MangaFeed.app.currentSourceType == MangaEnums.SourceType.NOVEL) self.vpReader.setPagingEnabled(true)
 
                 val position = readerVm.getCurrentPosition()

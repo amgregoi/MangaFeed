@@ -1,12 +1,9 @@
 package com.amgregoire.mangafeed.v2.ui.read
 
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
 import android.util.SparseArray
 import android.view.ViewGroup
-import com.amgregoire.mangafeed.Models.Chapter
-import com.amgregoire.mangafeed.Models.Manga
+import com.amgregoire.mangafeed.Models.DbChapter
+import com.amgregoire.mangafeed.Models.DbManga
 import java.lang.ref.WeakReference
 
 /**
@@ -15,9 +12,9 @@ import java.lang.ref.WeakReference
 
 class ChapterPagerAdapter(
         private val manager: androidx.fragment.app.FragmentManager,
-        private val chapterList: List<Chapter>,
+        private val dbChapterList: List<DbChapter>,
         private val isFollowing: Boolean,
-        private val manga: Manga
+        private val dbManga: DbManga
 ) : androidx.fragment.app.FragmentStatePagerAdapter(manager)
 {
     private val mFragmentRefs = SparseArray<WeakReference<androidx.fragment.app.Fragment>>()
@@ -32,7 +29,7 @@ class ChapterPagerAdapter(
         }
         else
         {
-            val chapterFragment = ChapterFragment.newInstance(isFollowing, position, manga)
+            val chapterFragment = ChapterFragment.newInstance(isFollowing, position, dbManga)
             mFragmentRefs.put(position, WeakReference(chapterFragment))
             chapterFragment
         }
@@ -46,6 +43,6 @@ class ChapterPagerAdapter(
 
     override fun getCount(): Int
     {
-        return chapterList.size
+        return dbChapterList.size
     }
 }

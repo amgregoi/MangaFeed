@@ -5,8 +5,8 @@ import androidx.fragment.app.FragmentManager;
 
 import com.amgregoire.mangafeed.Common.RequestWrapper;
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.Models.Chapter;
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbChapter;
+import com.amgregoire.mangafeed.Models.DbManga;
 import com.amgregoire.mangafeed.UI.Adapters.ChapterPagerAdapter;
 import com.amgregoire.mangafeed.UI.Fragments.ReaderFragment;
 import com.amgregoire.mangafeed.UI.Fragments.ReaderFragmentChapter;
@@ -32,8 +32,8 @@ public class ReaderPres implements IReader.ReaderPres
 
     private IReader.ReaderMap mMap;
 
-    private Manga mManga;
-    private List<Chapter> mChapterList;
+    private DbManga mDbManga;
+    private List<DbChapter> mDbChapterList;
     private int mCurrentPosition;
     private ChapterPagerAdapter mAdapter;
     private FragmentManager mManager;
@@ -49,26 +49,26 @@ public class ReaderPres implements IReader.ReaderPres
     {
         try
         {
-            mManga = bundle.getParcelable(ReaderFragment.MANGA_KEY);
+            mDbManga = bundle.getParcelable(ReaderFragment.MANGA_KEY);
 
             mManager = ((ReaderFragment) mMap).getFragmentManager();
             mCurrentPosition = bundle.getInt(ReaderFragment.POSITION_KEY);
-            mChapterList = MangaFeed.Companion.getApp().getCurrentChapters();
+            mDbChapterList = MangaFeed.Companion.getApp().getCurrentDbChapters();
 
             mMap.initViews();
 
-            if (mChapterList == null)
+            if (mDbChapterList == null)
             {
                 MangaFeed.Companion.getApp()
                          .getCurrentSource()
-                         .getChapterListObservable(new RequestWrapper(mManga))
+                         .getChapterListObservable(new RequestWrapper(mDbManga))
                          .subscribe(
-                                 chapters -> MangaFeed.Companion.getApp().setCurrentChapters(chapters),
+                                 chapters -> MangaFeed.Companion.getApp().setCurrentDbChapters(chapters),
                                  throwable -> MangaLogger.logError(TAG, "Failed to parse chapters", throwable
                                          .getMessage()),
                                  () ->
                                  {
-                                     mChapterList = MangaFeed.Companion.getApp().getCurrentChapters();
+                                     mDbChapterList = MangaFeed.Companion.getApp().getCurrentDbChapters();
                                      finishInit();
                                  }
                          );
@@ -87,19 +87,19 @@ public class ReaderPres implements IReader.ReaderPres
     @Override
     public String getMangaTitle()
     {
-        return mManga.getTitle();
+        return mDbManga.getTitle();
     }
 
     @Override
     public String getChapterTitle()
     {
-        return mChapterList.get(mCurrentPosition).getChapterTitle();
+        return mDbChapterList.get(mCurrentPosition).getChapterTitle();
     }
 
     @Override
     public void onSaveState(Bundle save)
     {
-        save.putParcelable(ReaderFragment.MANGA_KEY, mManga);
+        save.putParcelable(ReaderFragment.MANGA_KEY, mDbManga);
         save.putInt(ReaderFragment.POSITION_KEY, mCurrentPosition);
     }
 
@@ -108,7 +108,7 @@ public class ReaderPres implements IReader.ReaderPres
     {
         if (restore != null)
         {
-            mManga = restore.getParcelable(ReaderFragment.MANGA_KEY);
+            mDbManga = restore.getParcelable(ReaderFragment.MANGA_KEY);
             mCurrentPosition = restore.getInt(ReaderFragment.POSITION_KEY);
         }
     }
@@ -120,7 +120,7 @@ public class ReaderPres implements IReader.ReaderPres
         updateRecentChapter();
         ((ReaderFragmentChapter) mAdapter.getItem(position)).update();
 
-        MangaDB.getInstance().putChapter(mChapterList.get(mCurrentPosition));
+        MangaDB.getInstance().putChapter(mDbChapterList.get(mCurrentPosition));
     }
 
 
@@ -179,7 +179,7 @@ public class ReaderPres implements IReader.ReaderPres
      */
     private void finishInit()
     {
-        mAdapter = new ChapterPagerAdapter(mManager, mChapterList, mManga.isFollowing(), mManga);
+        mAdapter = new ChapterPagerAdapter(mManager, mDbChapterList, mDbManga.isFollowing(), mDbManga);
         mMap.registerAdapter(mAdapter);
         mMap.setPagerPosition(mCurrentPosition);
     }
@@ -190,10 +190,10 @@ public class ReaderPres implements IReader.ReaderPres
      */
     private void updateRecentChapter()
     {
-        if (mManga.isFollowing())
+        if (mDbManga.isFollowing())
         {
-            mManga.setRecentChapter(mChapterList.get(mCurrentPosition).getUrl());
-            MangaDB.getInstance().putManga(mManga);
+            mDbManga.setRecentChapter(mDbChapterList.get(mCurrentPosition).getUrl());
+            MangaDB.getInstance().putManga(mDbManga);
         }
     }
 }

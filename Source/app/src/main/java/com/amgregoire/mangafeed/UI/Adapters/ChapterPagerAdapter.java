@@ -6,8 +6,8 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 
-import com.amgregoire.mangafeed.Models.Chapter;
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbChapter;
+import com.amgregoire.mangafeed.Models.DbManga;
 import com.amgregoire.mangafeed.UI.Fragments.ReaderFragmentChapter;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
@@ -23,17 +23,17 @@ public class ChapterPagerAdapter extends FragmentStatePagerAdapter
 {
     public final static String TAG = ChapterPagerAdapter.class.getSimpleName();
 
-    private ArrayList<Chapter> mChapterList;
+    private ArrayList<DbChapter> mDbChapterList;
     private SparseArray<WeakReference<Fragment>> mPageReferenceMap = new SparseArray<>();
 
     private boolean mParentFollowing;
-    private Manga mManga;
-    public ChapterPagerAdapter(FragmentManager manager, List<Chapter> chapterList, boolean isParentFollowing, Manga manga)
+    private DbManga mDbManga;
+    public ChapterPagerAdapter(FragmentManager manager, List<DbChapter> dbChapterList, boolean isParentFollowing, DbManga dbManga)
     {
         super(manager);
-        mChapterList = new ArrayList<>(chapterList);
+        mDbChapterList = new ArrayList<>(dbChapterList);
         mParentFollowing = isParentFollowing;
-        mManga = manga;
+        mDbManga = dbManga;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class ChapterPagerAdapter extends FragmentStatePagerAdapter
             }
             else
             {
-                Fragment lChapterFragment = ReaderFragmentChapter.newInstance(mParentFollowing, position, mManga);
+                Fragment lChapterFragment = ReaderFragmentChapter.newInstance(mParentFollowing, position, mDbManga);
                 mPageReferenceMap.put(position, new WeakReference<>(lChapterFragment));
 
                 return lChapterFragment;
@@ -91,7 +91,7 @@ public class ChapterPagerAdapter extends FragmentStatePagerAdapter
     @Override
     public int getCount()
     {
-        return mChapterList.size();
+        return mDbChapterList.size();
     }
 
 }

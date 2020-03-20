@@ -1,6 +1,6 @@
 package com.amgregoire.mangafeed.Utils.BusEvents;
 
-import com.amgregoire.mangafeed.Models.Chapter;
+import com.amgregoire.mangafeed.Models.DbChapter;
 
 import java.util.List;
 
@@ -20,10 +20,10 @@ import java.util.List;
  */
 public class StartDownloadEvent
 {
-    public List<Chapter> chapters;
+    public List<DbChapter> dbChapters;
 
-    public StartDownloadEvent(List<Chapter> list)
+    public StartDownloadEvent(List<DbChapter> list)
     {
-        chapters = list;
+        dbChapters = list;
     }
 }

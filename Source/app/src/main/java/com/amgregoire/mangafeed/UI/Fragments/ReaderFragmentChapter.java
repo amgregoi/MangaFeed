@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbManga;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Mappers.IReader;
 import com.amgregoire.mangafeed.UI.Widgets.GestureViewPager;
@@ -37,12 +37,12 @@ public class ReaderFragmentChapter extends Fragment implements IReader.ReaderMap
 
     private IReader.ReaderPresChapter mPresenter;
 
-    public static Fragment newInstance(boolean isFollowing, int position, Manga manga)
+    public static Fragment newInstance(boolean isFollowing, int position, DbManga dbManga)
     {
         Bundle lBundle = new Bundle();
         lBundle.putBoolean(FOLLOWING_KEY, isFollowing);
         lBundle.putInt(POSITION_KEY, position);
-        lBundle.putParcelable(MANGA_KEY, manga);
+        lBundle.putParcelable(MANGA_KEY, dbManga);
 
         Fragment lFragment = new ReaderFragmentChapter();
         lFragment.setArguments(lBundle);

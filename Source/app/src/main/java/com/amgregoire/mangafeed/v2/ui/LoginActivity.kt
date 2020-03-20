@@ -1,5 +1,7 @@
 package com.amgregoire.mangafeed.v2.ui
 
+import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
 import android.view.MenuItem
@@ -10,10 +12,11 @@ import com.amgregoire.mangafeed.v2.extension.lastFragment
 import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.base.BaseNavigationActivity
-import com.amgregoire.mangafeed.v2.ui.login.SignInFragment
-import com.amgregoire.mangafeed.v2.ui.login.SignUpFragment
-import com.amgregoire.mangafeed.v2.usecase.GetLocalUserUserCase
+import com.amgregoire.mangafeed.v2.ui.login.WelcomeFragment
+import com.amgregoire.mangafeed.v2.ui.main.MFragment
+import com.amgregoire.mangafeed.v2.usecase.local.GetLocalUserUserCase
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.activity_login.flContainer
 import kotlinx.android.synthetic.main.activity_m.vMenuCover
 
 
@@ -27,7 +30,7 @@ class LoginActivity : BaseNavigationActivity()
 
         toolbar.title = getString(R.string.empty)
 
-        if (getUser.user() != null)
+        if (getUser.user() != null || getUser.isGuest())
         {
             startActivity(MActivity.newInstance(this))
         }
@@ -40,7 +43,6 @@ class LoginActivity : BaseNavigationActivity()
         {
             null -> Logger.debug("null menu item")
             android.R.id.home -> onBackPressed()
-            R.id.menuHomeSearch -> Logger.debug("Need to implement search + filter fragment")
             else -> Logger.debug("Unknown menu item selected -> $item -> ${item.menuInfo}")
         }
 
@@ -87,21 +89,11 @@ class LoginActivity : BaseNavigationActivity()
         setSupportActionBar(toolbar)
         setupBackStackListener()
 
-        buttonSignIn.setClickListener(View.OnClickListener {
-            val fragment = SignInFragment()
-            val tag = SignInFragment.TAG
-            addFragment(fragment, tag)
-        })
-
-        buttonSignUp.setClickListener(View.OnClickListener {
-            val fragment = SignUpFragment()
-            val tag = SignUpFragment.TAG
-            addFragment(fragment, tag)
-        })
-
-        buttonGuest.setClickListener(View.OnClickListener {
-            startActivity(MActivity.newInstance(this))
-        })
+        val welcomeFragment = WelcomeFragment.newInstance()
+        supportFragmentManager.beginTransaction()
+                .setPrimaryNavigationFragment(welcomeFragment)
+                .add(flContainer.id, welcomeFragment, MFragment.TAG)
+                .commit()
     }
 
     private fun setupBackStackListener()
@@ -110,5 +102,14 @@ class LoginActivity : BaseNavigationActivity()
             val fragment = supportFragmentManager.lastFragment() ?: return@addOnBackStackChangedListener
             (fragment as BaseFragment).updateParentSettings()
         }
+    }
+
+    companion object
+    {
+        fun newInstance(context: Context) = Intent(context, LoginActivity::class.java)
+                .apply {
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                }
+
     }
 }

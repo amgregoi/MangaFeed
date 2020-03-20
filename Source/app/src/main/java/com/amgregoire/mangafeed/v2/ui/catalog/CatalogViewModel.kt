@@ -3,18 +3,19 @@ package com.amgregoire.mangafeed.v2.ui.catalog
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceBase
-import com.amgregoire.mangafeed.MangaFeed
-import com.amgregoire.mangafeed.Models.Manga
-import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
-import com.amgregoire.mangafeed.v2.service.CloudFlareService
-import com.amgregoire.mangafeed.v2.service.Logger
+import com.amgregoire.mangafeed.v2.enums.FilterType
+import com.amgregoire.mangafeed.v2.model.domain.Manga
+import com.amgregoire.mangafeed.v2.repository.local.LocalCatalogRepository
+import com.amgregoire.mangafeed.v2.usecase.local.GetRecentsUseCase
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class CatalogViewModel : ViewModel()
+class CatalogViewModel(
+        private val catalogRepository: LocalCatalogRepository = LocalCatalogRepository()
+) : ViewModel()
 {
     private val subscribers = CompositeDisposable()
 
@@ -55,45 +56,19 @@ class CatalogViewModel : ViewModel()
     }
 
     private fun retrieveAll() = ioScope.launch {
-        val database = MangaDB.getInstance() // Dagger injection?
-        subscribers.add(
-                database.catalogList
-                        .cache()
-                        .subscribe(
-                                { mangaList -> all.value = mangaList },
-                                { throwable -> all.value = listOf() }
-                        )
-        )
+        catalogRepository.getCatalogList {
+            all.value = it
+        }
     }
 
-
     private fun retrieveLibrary() = ioScope.launch {
-        val database = MangaDB.getInstance() // Dagger injection?
-        subscribers.add(
-                database.libraryList
-                        .cache()
-                        .subscribe(
-                                { mangaList -> library.value = mangaList },
-                                { library.value = listOf() }
-                        )
-        )
+        catalogRepository.getLibrary(FilterType.NONE) {
+            library.value = it
+        }
     }
 
     fun retrieveRecentList() = ioScope.launch {
-        CloudFlareService().verifyCookieAndDoAction {
-            val source = MangaFeed.app.currentSource
-            subscribers.add(
-                    source.recentMangaObservable
-                            .cache()
-                            .subscribe(
-                                    { mangaList -> recent.value = mangaList },
-                                    {
-                                        Logger.error("Failed to retrieve recents list: $it")
-                                        recent.value = listOf()
-                                    }
-                            )
-            )
-        }
+        GetRecentsUseCase().retrieveRecentList { result -> recent.value = result }
     }
 
     fun setLastItem(manga: Manga) = ioScope.launch {

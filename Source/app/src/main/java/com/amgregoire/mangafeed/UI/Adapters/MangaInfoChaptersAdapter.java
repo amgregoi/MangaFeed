@@ -12,8 +12,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.Models.Chapter;
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbChapter;
+import com.amgregoire.mangafeed.Models.DbManga;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.Utils.BusEvents.ChapterSelectedEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.ToggleDownloadViewEvent;
@@ -46,47 +46,47 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
     private final static int VIEW_CHAPTER = 2;
     private final static int VIEW_CHAPTER_HEADER = 3;
 
-    private List<Chapter> mChapterData;
-    private List<Chapter> mDownloadList;
-    private Manga mManga;
+    private List<DbChapter> mDbChapterData;
+    private List<DbChapter> mDownloadList;
+    private DbManga mDbManga;
     private boolean mDownloadViewFlag = false;
 
-    public MangaInfoChaptersAdapter(List<Chapter> data, Manga manga)
+    public MangaInfoChaptersAdapter(List<DbChapter> data, DbManga dbManga)
     {
-        mChapterData = new ArrayList<>(data);
+        mDbChapterData = new ArrayList<>(data);
         mDownloadList = new ArrayList<>();
-        mManga = manga;
+        mDbManga = dbManga;
     }
 
     public MangaInfoChaptersAdapter()
     {
-        mChapterData = new ArrayList<>();
-        mManga = null;
+        mDbChapterData = new ArrayList<>();
+        mDbManga = null;
     }
 
-    public MangaInfoChaptersAdapter(Manga manga)
+    public MangaInfoChaptersAdapter(DbManga dbManga)
     {
-        mManga = manga;
-        mChapterData = new ArrayList<>();
+        mDbManga = dbManga;
+        mDbChapterData = new ArrayList<>();
         mDownloadList = new ArrayList<>();
     }
 
-    public MangaInfoChaptersAdapter(List<Chapter> data)
+    public MangaInfoChaptersAdapter(List<DbChapter> data)
     {
-        mChapterData = new ArrayList<>(data);
+        mDbChapterData = new ArrayList<>(data);
         mDownloadList = new ArrayList<>();
-        mManga = null;
+        mDbManga = null;
     }
 
-    public void setManga(Manga manga)
+    public void setManga(DbManga dbManga)
     {
-        mManga = manga;
+        mDbManga = dbManga;
         notifyItemChanged(0);
     }
 
-    public void setChapters(List<Chapter> chapters)
+    public void setChapters(List<DbChapter> dbChapters)
     {
-        mChapterData = new ArrayList<>(chapters);
+        mDbChapterData = new ArrayList<>(dbChapters);
         notifyDataSetChanged();
     }
 
@@ -162,12 +162,12 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
     @Override
     public int getItemCount()
     {
-        if (mManga == null)
+        if (mDbManga == null)
         {
             return 0;
         }
 
-        return mChapterData.size() + getHeaderCount();
+        return mDbChapterData.size() + getHeaderCount();
     }
 
     /***
@@ -225,17 +225,17 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
          */
         public void initViews()
         {
-            mTitle.setText(mManga.getTitle());
-            mAlternates.setText(mManga.getAlternate());
-            mArtist.setText(mManga.getArtist());
-            mAuthor.setText(mManga.getAuthor());
-            mDescription.setText(mManga.getDescription());
-            mStatus.setText(mManga.getStatus());
-            mGenres.setText(mManga.getGenres());
+            mTitle.setText(mDbManga.getTitle());
+            mAlternates.setText(mDbManga.getAlternate());
+            mArtist.setText(mDbManga.getArtist());
+            mAuthor.setText(mDbManga.getAuthor());
+            mDescription.setText(mDbManga.getDescription());
+            mStatus.setText(mDbManga.getStatus());
+            mGenres.setText(mDbManga.getGenres());
 
-            if (mManga.getImage() != null && !mManga.getImage().isEmpty())
+            if (mDbManga.getImage() != null && !mDbManga.getImage().isEmpty())
             {
-                Picasso.get().load(mManga.getImage())
+                Picasso.get().load(mDbManga.getImage())
                        .error(mError)
                        .placeholder(mPlaceHolder)
                        .into(mImageTarget);
@@ -293,7 +293,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
          */
         public void initViews()
         {
-            if (mChapterData.size() == 0)
+            if (mDbChapterData.size() == 0)
             {
                 mChapterHeaderLabel.setText(R.string.manga_info_adapter_chapter_header_none);
             }
@@ -331,20 +331,20 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
          */
         public void initViews(int position)
         {
-            Chapter lChapter = mChapterData.get(position);
+            DbChapter lDbChapter = mDbChapterData.get(position);
 
-            mTitle.setText(lChapter.getChapterTitle());
-            mDate.setText(lChapter.getChapterDate());
+            mTitle.setText(lDbChapter.getChapterTitle());
+            mDate.setText(lDbChapter.getChapterDate());
 
             if (mDownloadViewFlag)
             {
                 mDownloadBox.setVisibility(View.VISIBLE);
-                boolean lIsChecked = mDownloadList.contains(lChapter);
+                boolean lIsChecked = mDownloadList.contains(lDbChapter);
                 mDownloadBox.setImageDrawable(iconFactory(lIsChecked));
             }
             else
             {
-                if (MangaDB.getInstance().getChapter(lChapter.getUrl()) != null)
+                if (MangaDB.getInstance().getChapter(lDbChapter.getUrl()) != null)
                 {
                     mDownloadBox.setVisibility(View.VISIBLE);
                     mDownloadBox.setImageDrawable(mDrawableSeen);
@@ -359,27 +359,27 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         @OnClick(R.id.linearLayoutMangaInfoChapterRoot)
         public void onChapterRootClick()
         {
-            Chapter lChapter = mChapterData.get(getAdapterPosition() - getHeaderCount());
+            DbChapter lDbChapter = mDbChapterData.get(getAdapterPosition() - getHeaderCount());
             if (mDownloadViewFlag)
             {
-                boolean lIsChecked = mDownloadList.contains(lChapter);
+                boolean lIsChecked = mDownloadList.contains(lDbChapter);
                 if (lIsChecked)
                 {
-                    mDownloadList.remove(lChapter);
+                    mDownloadList.remove(lDbChapter);
                 }
                 else
                 {
-                    mDownloadList.add(lChapter);
+                    mDownloadList.add(lDbChapter);
                 }
 
                 mDownloadBox.setImageDrawable(iconFactory(!lIsChecked));
             }
             else
             {
-                MangaFeed.Companion.getApp().setCurrentChapters(mChapterData);
+                MangaFeed.Companion.getApp().setCurrentDbChapters(mDbChapterData);
                 MangaFeed.Companion.getApp()
                          .rxBus()
-                         .send(new ChapterSelectedEvent(mManga, lChapter.getChapterNumber() - 1));
+                         .send(new ChapterSelectedEvent(mDbManga, lDbChapter.getChapterNumber() - 1));
             }
         }
 
@@ -390,8 +390,8 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
             if (!mDownloadViewFlag)
             {
                 mDownloadList = new ArrayList<>();
-                mDownloadList.add(mChapterData.get(getAdapterPosition() - getHeaderCount()));
-                MangaFeed.Companion.getApp().rxBus().send(new ToggleDownloadViewEvent(mManga));
+                mDownloadList.add(mDbChapterData.get(getAdapterPosition() - getHeaderCount()));
+                MangaFeed.Companion.getApp().rxBus().send(new ToggleDownloadViewEvent(mDbManga));
 
                 return true;
             }
@@ -437,7 +437,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
     {
         if (isAll)
         {
-            mDownloadList = new ArrayList<>(mChapterData);
+            mDownloadList = new ArrayList<>(mDbChapterData);
         }
         else
         {
@@ -456,7 +456,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         mDownloadViewFlag = false;
         mDownloadList.clear();
         notifyDataSetChanged();
-        MangaFeed.Companion.getApp().rxBus().send(new ToggleDownloadViewEvent(mManga));
+        MangaFeed.Companion.getApp().rxBus().send(new ToggleDownloadViewEvent(mDbManga));
     }
 
     /***
@@ -495,7 +495,7 @@ public class MangaInfoChaptersAdapter extends RecyclerView.Adapter<RecyclerView.
         }
         else
         {
-            return mChapterData.indexOf(mDownloadList.get(0));
+            return mDbChapterData.indexOf(mDownloadList.get(0));
         }
     }
 

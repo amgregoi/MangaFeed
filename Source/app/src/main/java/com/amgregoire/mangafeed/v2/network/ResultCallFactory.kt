@@ -37,11 +37,11 @@ class ResultCall<T>(proxy: Call<T>) : CallDelegate<T, Result<T>>(proxy)
         {
             val body = response.body()
             if (body != null) Result.Success(body)
-            else Result.Failure<T>(NullPointerException(), code)
+            else Result.Failure<T>(NullPointerException("Response body was null"), code)
         }
         else
         {
-            Result.Failure<T>(NullPointerException(), code)
+            Result.Failure<T>(NullPointerException("Failed with error code: $code"), code)
         }
 
         return result

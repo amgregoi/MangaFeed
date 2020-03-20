@@ -1,6 +1,6 @@
 package com.amgregoire.mangafeed.Utils.BusEvents;
 
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbManga;
 
 /**
  * Created by Andy Gregoire on 3/13/2018.
@@ -18,10 +18,10 @@ import com.amgregoire.mangafeed.Models.Manga;
  */
 public class ToggleDownloadViewEvent
 {
-    public Manga manga;
+    public DbManga dbManga;
 
-    public ToggleDownloadViewEvent(Manga m)
+    public ToggleDownloadViewEvent(DbManga m)
     {
-        manga = m;
+        dbManga = m;
     }
 }

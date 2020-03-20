@@ -3,7 +3,7 @@ package com.amgregoire.mangafeed.UI.Presenters;
 import android.util.Log;
 
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbManga;
 import com.amgregoire.mangafeed.UI.Mappers.IHome;
 import com.amgregoire.mangafeed.Utils.BusEvents.SearchQueryChangeEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;
@@ -74,9 +74,9 @@ public class HomePresLibrary extends HomePresBase
                     }
                     else
                     {
-                        Manga manga = ((UpdateMangaItemViewEvent) o).manga;
-                        mAdapter.updateItem(manga, manga.isFollowing());
-                        MangaLogger.logInfo(TAG, "updated view", manga.getTitle());
+                        DbManga dbManga = ((UpdateMangaItemViewEvent) o).dbManga;
+                        mAdapter.updateItem(dbManga, dbManga.isFollowing());
+                        MangaLogger.logInfo(TAG, "updated view", dbManga.getTitle());
                     }
                 }
                 else if (o instanceof SearchQueryChangeEvent)

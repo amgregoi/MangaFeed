@@ -4,13 +4,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.os.Parcelable
-import androidx.recyclerview.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.amgregoire.mangafeed.Common.RecyclerViewSpaceDecoration
 import com.amgregoire.mangafeed.MangaFeed
-import com.amgregoire.mangafeed.Models.Manga
+import com.amgregoire.mangafeed.Models.DbManga
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.ioScope
@@ -67,13 +66,13 @@ abstract class CatalogBase : BaseFragment()
      * Implementation
      *
      *************************************************************************************/
-    private fun renderComplete(mangas: List<Manga>)
+    private fun renderComplete(mangases: List<DbManga>)
     {
         if (self.rvManga.adapter == null) context?.let {
             self.rvManga.addItemDecoration(RecyclerViewSpaceDecoration(ScreenUtil.dpToPx(it, 5)))
         }
 
-        val list = ArrayList(mangas)
+        val list = ArrayList(mangases)
         if (this !is RecentFragment) list.sortBy { it.title }
 
         self.rvManga.itemAnimator?.changeDuration = 0
@@ -136,14 +135,14 @@ abstract class CatalogBase : BaseFragment()
     sealed class State
     {
         object Loading : State()
-        data class Complete(val mangaList: List<Manga>) : State()
+        data class Complete(val dbMangaList: List<DbManga>) : State()
         data class Failed(val error: Error) : State()
     }
 
     private fun State.render(): Job = when (this)
     {
         is State.Loading -> uiScope.launch { renderLoading() }
-        is State.Complete -> uiScope.launch { renderComplete(mangaList) }
+        is State.Complete -> uiScope.launch { renderComplete(dbMangaList) }
         is State.Failed -> uiScope.launch { renderFailed(error) }
     }
 }

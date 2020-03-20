@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.Models.Chapter;
+import com.amgregoire.mangafeed.Models.DbChapter;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.Utils.BusEvents.DownloadEventUpdateComplete;
 import com.amgregoire.mangafeed.Utils.BusEvents.DownloadEventUpdatePageCount;
@@ -39,8 +39,8 @@ public class DownloadScheduleAdapter extends RecyclerView.Adapter<RecyclerView.V
     // Change then when decide on active download count, currently only do 1 at at ime.
     private int mDownloadSizeOffset = 3; // 3 == 1 downloading, 4 == 2 downloading etc..
 
-    private List<Chapter> mDownloading;
-    private List<Chapter> mQueue;
+    private List<DbChapter> mDownloading;
+    private List<DbChapter> mQueue;
 
 
     public DownloadScheduleAdapter()
@@ -224,12 +224,12 @@ public class DownloadScheduleAdapter extends RecyclerView.Adapter<RecyclerView.V
             position = position - mDownloadSizeOffset; // Account for first two headers, and first two items being downloaded
             try
             {
-                Chapter lChapter = mQueue.get(position);
+                DbChapter lDbChapter = mQueue.get(position);
 
                 mTotalPages.setText("?");
                 mCurrentPage.setText("0");
-                mChapterTitle.setText(lChapter.getChapterTitle());
-                mMangaUrl.setText(lChapter.getMangaTitle());
+                mChapterTitle.setText(lDbChapter.getChapterTitle());
+                mMangaUrl.setText(lDbChapter.getMangaTitle());
             }
             catch (Exception ex)
             {

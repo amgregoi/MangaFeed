@@ -1,12 +1,11 @@
 package com.amgregoire.mangafeed.v2.ui.info
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceBase
-import com.amgregoire.mangafeed.Models.Chapter
-import com.amgregoire.mangafeed.Models.Manga
+import com.amgregoire.mangafeed.Models.DbChapter
+import com.amgregoire.mangafeed.Models.DbManga
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.UI.Adapters.MangaInfoChaptersAdapter
 import com.amgregoire.mangafeed.Utils.MangaDB
@@ -27,10 +26,10 @@ import kotlinx.android.synthetic.main.item_manga_info_adapter_header2.view.*
  */
 
 class MangaInfoAdapter(
-        var manga: Manga,
+        var dbManga: DbManga,
         val source: SourceBase,
-        var chapters: List<Chapter> = listOf(),
-        val chapterSelected: (Manga, List<Chapter>, Chapter) -> Unit
+        var dbChapters: List<DbChapter> = listOf(),
+        val chapterSelected: (DbManga, List<DbChapter>, DbChapter) -> Unit
 ) : androidx.recyclerview.widget.RecyclerView.Adapter<MangaInfoAdapter.BaseViewHolder>()
 {
     private var data = arrayListOf<BaseData>()
@@ -45,18 +44,18 @@ class MangaInfoAdapter(
     {
         data = arrayListOf()
         data.add(BaseData.MangaData)
-        if (chapters.isEmpty()) data.add(BaseData.EmptyData)
+        if (dbChapters.isEmpty()) data.add(BaseData.EmptyData)
         else
         {
             data.add(BaseData.HeaderData)
-            chapters.forEach { chapter -> data.add(BaseData.ChapterData(chapter)) }
+            dbChapters.forEach { chapter -> data.add(BaseData.ChapterData(chapter)) }
         }
     }
 
-    fun updateInfo(manga: Manga, chapters: List<Chapter>)
+    fun updateInfo(dbManga: DbManga, dbChapters: List<DbChapter>)
     {
-        this.manga = manga
-        this.chapters = chapters
+        this.dbManga = dbManga
+        this.dbChapters = dbChapters
         setData()
         notifyDataSetChanged()
     }
@@ -132,20 +131,20 @@ class MangaInfoAdapter(
     {
         override fun onBind(position: Int)
         {
-            itemView.tvMangaTitle.text = manga.title
-            itemView.tvAlternate.text = manga.alternate
-            itemView.tvArtist.text = manga.artist
-            itemView.tvAuthor.text = manga.author
-            itemView.tvGenre.text = manga.genres
-            itemView.tvDescription.text = manga.description
-            itemView.tvStatus.text = manga.status
+            itemView.tvMangaTitle.text = dbManga.title
+            itemView.tvAlternate.text = dbManga.alternate
+            itemView.tvArtist.text = dbManga.artist
+            itemView.tvAuthor.text = dbManga.author
+            itemView.tvGenre.text = dbManga.genres
+            itemView.tvDescription.text = dbManga.description
+            itemView.tvStatus.text = dbManga.status
 
             setupImages()
         }
 
         private fun setupImages()
         {
-            val image = manga.image ?: run {
+            val image = dbManga.image ?: run {
                 itemView.ivMangaInfoBackground.setBackgroundResource(R.color.colorAccent)
                 itemView.ivMangaInfoBackground.setImageResource(R.drawable.manga_error)
                 return
@@ -198,7 +197,7 @@ class MangaInfoAdapter(
     {
         override fun onBind(position: Int)
         {
-            if (chapters.isEmpty()) itemView.tvChapterHeader.setText(R.string.manga_info_adapter_chapter_header_none)
+            if (dbChapters.isEmpty()) itemView.tvChapterHeader.setText(R.string.manga_info_adapter_chapter_header_none)
             else itemView.tvChapterHeader.setText(R.string.manga_info_adapter_chapter_header)
         }
     }
@@ -207,7 +206,7 @@ class MangaInfoAdapter(
     {
         override fun onBind(position: Int)
         {
-            val chapter = (data[position] as BaseData.ChapterData).chapter
+            val chapter = (data[position] as BaseData.ChapterData).dbChapter
 
             itemView.tvChapterTitle.text = chapter.chapterTitle
             itemView.tvChapterDate.text = chapter.chapterDate
@@ -217,7 +216,7 @@ class MangaInfoAdapter(
             else itemView.ivReadIndicator.visibility = View.GONE
 
             itemView.clParent.setOnClickListener{
-                chapterSelected(manga, chapters, chapter)
+                chapterSelected(dbManga, dbChapters, chapter)
             }
         }
     }
@@ -234,7 +233,7 @@ class MangaInfoAdapter(
         { MangaData(0), ChapterData(1), HeaderData(2), EmptyData(3) }
 
         object MangaData : BaseData()
-        data class ChapterData(val chapter: Chapter) : BaseData()
+        data class ChapterData(val dbChapter: DbChapter) : BaseData()
         object HeaderData : BaseData()
         object EmptyData : BaseData()
     }

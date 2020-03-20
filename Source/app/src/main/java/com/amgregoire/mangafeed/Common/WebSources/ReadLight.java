@@ -5,8 +5,8 @@ import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Common.RequestWrapper;
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceNovel;
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.Models.Chapter;
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbChapter;
+import com.amgregoire.mangafeed.Models.DbManga;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
@@ -68,10 +68,10 @@ public class ReadLight extends SourceNovel
     }
 
     @Override
-    public List<Manga> parseResponseToRecentList(String aResponseBody)
+    public List<DbManga> parseResponseToRecentList(String aResponseBody)
     {
 
-        List<Manga> lNovelList = new ArrayList<>();
+        List<DbManga> lNovelList = new ArrayList<>();
 
         try
         {
@@ -87,15 +87,15 @@ public class ReadLight extends SourceNovel
                 String lThumb = lMenuItems.select("div.novel-cover").select("img").attr("src");
                 lMangaTitle = lMangaTitle.replaceFirst(" Ch. \\d+", "");
 
-                lMangaUrl = lMangaUrl.replaceFirst(Manga.Companion.getLinkRegex(), "{" + SourceKey + "}");
-                Manga lManga = MangaDB.getInstance().getManga(lMangaUrl);
-                if (lManga == null)
+                lMangaUrl = lMangaUrl.replaceFirst(DbManga.Companion.getLinkRegex(), "{" + SourceKey + "}");
+                DbManga lDbManga = MangaDB.getInstance().getManga(lMangaUrl);
+                if (lDbManga == null)
                 {
-                    lManga = new Manga(lMangaTitle, lMangaUrl, SourceKey);
-                    lManga.setImage(lThumb);
-                    lManga = MangaDB.getInstance().putManga(lManga);
+                    lDbManga = new DbManga(lMangaTitle, lMangaUrl, SourceKey);
+                    lDbManga.setImage(lThumb);
+                    lDbManga = MangaDB.getInstance().putManga(lDbManga);
 
-                    updateMangaObservable(new RequestWrapper(lManga))
+                    updateMangaObservable(new RequestWrapper(lDbManga))
                             .subscribe
                                     (
                                             manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.getTitle()),
@@ -103,7 +103,7 @@ public class ReadLight extends SourceNovel
                                     );
                 }
 
-                lNovelList.add(lManga);
+                lNovelList.add(lDbManga);
             }
 
         }
@@ -118,7 +118,7 @@ public class ReadLight extends SourceNovel
     }
 
     @Override
-    public Manga parseResponseToManga(RequestWrapper request, String responseBody)
+    public DbManga parseResponseToManga(RequestWrapper request, String responseBody)
     {
         try
         {
@@ -132,8 +132,8 @@ public class ReadLight extends SourceNovel
                                                        .select("div.novel-detail-item");
 
 
-            Manga lManga = MangaDB.getInstance().getManga(request.getManga().getLink());
-            if (lManga == null) lManga = request.getManga();
+            DbManga lDbManga = MangaDB.getInstance().getManga(request.getManga().getLink());
+            if (lDbManga == null) lDbManga = request.getManga();
 
             String lImage = lContentLeft.select("div.novel-cover").select("img").attr("src");
 
@@ -165,16 +165,16 @@ public class ReadLight extends SourceNovel
                     default:
                         break;
                     case 1: //Genre
-                        lManga.setGenres(lDetails.toString());
+                        lDbManga.setGenres(lDetails.toString());
                         break;
                     case 4: //Author
-                        lManga.setAuthor(lDetails.toString());
+                        lDbManga.setAuthor(lDetails.toString());
                         break;
                     case 5: //Artist
-                        lManga.setArtist(lDetails.toString());
+                        lDbManga.setArtist(lDetails.toString());
                         break;
                     case 7: //Status
-                        lManga.setStatus(lDetails.toString());
+                        lDbManga.setStatus(lDetails.toString());
                         break;
                 }
 
@@ -208,20 +208,20 @@ public class ReadLight extends SourceNovel
                     default:
                         break;
                     case 1: //Description
-                        lManga.setDescription(lDetails.toString());
+                        lDbManga.setDescription(lDetails.toString());
                         break;
                     case 2: //Alt Names
-                        lManga.setAlternate(lDetails.toString());
+                        lDbManga.setAlternate(lDetails.toString());
                         break;
                 }
 
                 lDetails.setLength(0);
             }
 
-            lManga.setImage(lImage);
+            lDbManga.setImage(lImage);
 
-            MangaDB.getInstance().putManga(lManga);
-            return lManga;
+            MangaDB.getInstance().putManga(lDbManga);
+            return lDbManga;
         }
         catch (Exception aException)
         {
@@ -232,9 +232,9 @@ public class ReadLight extends SourceNovel
     }
 
     @Override
-    public List<Chapter> parseResponseToChapters(RequestWrapper request, String responseBody)
+    public List<DbChapter> parseResponseToChapters(RequestWrapper request, String responseBody)
     {
-        List<Chapter> lChapterList = new ArrayList<>();
+        List<DbChapter> lDbChapterList = new ArrayList<>();
 
         try
         {
@@ -249,7 +249,7 @@ public class ReadLight extends SourceNovel
             {
                 String lUrl = iChapter.attr("href");
                 String lChapterTitle = iChapter.text();
-                lChapterList.add(new Chapter(lUrl, request.getManga().getTitle(), lChapterTitle, "-", lCount, request.getManga().getLink(), SourceKey));
+                lDbChapterList.add(new DbChapter(lUrl, request.getManga().getTitle(), lChapterTitle, "-", lCount, request.getManga().getLink(), SourceKey));
                 lCount++;
             }
         }
@@ -258,8 +258,8 @@ public class ReadLight extends SourceNovel
             MangaLogger.logError(TAG, aException.getMessage());
         }
 
-        Collections.reverse(lChapterList); //Descending order
-        return lChapterList;
+        Collections.reverse(lDbChapterList); //Descending order
+        return lDbChapterList;
     }
 
     @Override
@@ -307,14 +307,14 @@ public class ReadLight extends SourceNovel
                             String name = item.select("a").first().text();
                             String url = item.select("a").first().attr("href");
 
-                            Manga lNewManga = new Manga(name, url, SourceKey);
-                            if (!lDatabase.containsManga(lNewManga))
+                            DbManga lNewDbManga = new DbManga(name, url, SourceKey);
+                            if (!lDatabase.containsManga(lNewDbManga))
                             {
-                                lNewManga = lDatabase.putManga(lNewManga);
+                                lNewDbManga = lDatabase.putManga(lNewDbManga);
                                 // update new entry info
                                 MangaFeed.Companion.getApp()
                                                    .getSourceByTag(TAG)
-                                                   .updateMangaObservable(new RequestWrapper(lNewManga))
+                                                   .updateMangaObservable(new RequestWrapper(lNewDbManga))
                                                    .subscribe(manga -> MangaLogger.logInfo(TAG, "Finished updating (" + TAG + ") " + manga.getTitle()),
                                                            throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable
                                                                    .getMessage()));

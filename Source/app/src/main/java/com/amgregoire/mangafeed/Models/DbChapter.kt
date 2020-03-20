@@ -9,7 +9,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 @Entity(tableName = "Chapter")
-class Chapter(
+class DbChapter(
         @PrimaryKey(autoGenerate = true)
         var _id: Int? = null,
 

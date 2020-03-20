@@ -4,8 +4,8 @@ package com.amgregoire.mangafeed.Common.WebSources;
 import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Common.RequestWrapper;
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceManga;
-import com.amgregoire.mangafeed.Models.Chapter;
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbChapter;
+import com.amgregoire.mangafeed.Models.DbManga;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
@@ -96,9 +96,9 @@ public class MangaEden extends SourceManga
     }
 
     @Override
-    public List<Manga> parseResponseToRecentList(final String responseBody)
+    public List<DbManga> parseResponseToRecentList(final String responseBody)
     {
-        List<Manga> lMangaList = new ArrayList<>();
+        List<DbManga> lDbMangaList = new ArrayList<>();
         Elements lMangaElements = Jsoup.parse(responseBody).select("body > li");
 
         for (Element iMangaBlock : lMangaElements)
@@ -109,20 +109,20 @@ public class MangaEden extends SourceManga
             String lTitle = iTitleElement.text();
             String lUrl = "https://www.mangaeden.com/api/manga/" + iUrlElement.id().substring(0, 24) + "/";
 
-            lUrl = lUrl.replaceFirst(Manga.Companion.getLinkRegex(), "{" + SourceKey + "}");
-            Manga lManga = MangaDB.getInstance().getManga(lUrl);
+            lUrl = lUrl.replaceFirst(DbManga.Companion.getLinkRegex(), "{" + SourceKey + "}");
+            DbManga lDbManga = MangaDB.getInstance().getManga(lUrl);
 
-            if (lManga != null)
+            if (lDbManga != null)
             {
-                lMangaList.add(lManga);
+                lDbMangaList.add(lDbManga);
             }
             else
             {
-                lManga = new Manga(lTitle, lUrl, SourceKey);
-                lMangaList.add(lManga);
-                MangaDB.getInstance().putManga(lManga);
+                lDbManga = new DbManga(lTitle, lUrl, SourceKey);
+                lDbMangaList.add(lDbManga);
+                MangaDB.getInstance().putManga(lDbManga);
 
-                updateMangaObservable(new RequestWrapper(lManga))
+                updateMangaObservable(new RequestWrapper(lDbManga))
                         .subscribe
                                 (
                                         manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.getTitle()),
@@ -133,15 +133,15 @@ public class MangaEden extends SourceManga
 
         MangaLogger.logInfo(TAG, "Finished parsing recent updates");
 
-        if (lMangaList.size() == 0)
+        if (lDbMangaList.size() == 0)
         {
             return null;
         }
-        return lMangaList;
+        return lDbMangaList;
     }
 
     @Override
-    public Manga parseResponseToManga(final RequestWrapper request, final String responseBody)
+    public DbManga parseResponseToManga(final RequestWrapper request, final String responseBody)
     {
         try
         {
@@ -161,18 +161,18 @@ public class MangaEden extends SourceManga
                 }
             }
 
-            Manga lNewManga = MangaDB.getInstance().getManga(request.getManga().getLink());
+            DbManga lNewDbManga = MangaDB.getInstance().getManga(request.getManga().getLink());
 
-            lNewManga.setArtist(lParsedJsonObject.getString("artist"));
-            lNewManga.setAuthor(lParsedJsonObject.getString("author"));
-            lNewManga.setDescription(lParsedJsonObject.getString("description").trim());
-            lNewManga.setGenres(lGenres);
-            lNewManga.setImage("https://cdn.mangaeden.com/mangasimg/" + lParsedJsonObject.getString("image"));
-            lNewManga.setInitialized(1);
+            lNewDbManga.setArtist(lParsedJsonObject.getString("artist"));
+            lNewDbManga.setAuthor(lParsedJsonObject.getString("author"));
+            lNewDbManga.setDescription(lParsedJsonObject.getString("description").trim());
+            lNewDbManga.setGenres(lGenres);
+            lNewDbManga.setImage("https://cdn.mangaeden.com/mangasimg/" + lParsedJsonObject.getString("image"));
+            lNewDbManga.setInitialized(1);
 
-            MangaDB.getInstance().putManga(lNewManga);
-            MangaLogger.logError(TAG, "Finished creating/update manga (" + lNewManga.getTitle() + ")");
-            return lNewManga;
+            MangaDB.getInstance().putManga(lNewDbManga);
+            MangaLogger.logError(TAG, "Finished creating/update manga (" + lNewDbManga.getTitle() + ")");
+            return lNewDbManga;
         }
         catch (Exception aException)
         {
@@ -182,16 +182,16 @@ public class MangaEden extends SourceManga
     }
 
     @Override
-    public List<Chapter> parseResponseToChapters(RequestWrapper request, String responseBody)
+    public List<DbChapter> parseResponseToChapters(RequestWrapper request, String responseBody)
     {
-        List<Chapter> lChapterList = null;
+        List<DbChapter> lDbChapterList = null;
 
         try
         {
             JSONObject lParsedJsonObject = new JSONObject(responseBody);
 
-            lChapterList = resolveChaptersFromParsedJson(lParsedJsonObject, request);
-            lChapterList = setNumberForChapterList(lChapterList);
+            lDbChapterList = resolveChaptersFromParsedJson(lParsedJsonObject, request);
+            lDbChapterList = setNumberForChapterList(lDbChapterList);
         }
         catch (JSONException aException)
         {
@@ -199,7 +199,7 @@ public class MangaEden extends SourceManga
         }
 
         MangaLogger.logInfo(TAG, "Finished parsing chapter list (" + request.getManga().getLink() + ")");
-        return lChapterList;
+        return lDbChapterList;
 
     }
 
@@ -247,9 +247,9 @@ public class MangaEden extends SourceManga
      * @return
      * @throws JSONException
      */
-    private List<Chapter> resolveChaptersFromParsedJson(JSONObject aParsedJson, RequestWrapper request) throws JSONException
+    private List<DbChapter> resolveChaptersFromParsedJson(JSONObject aParsedJson, RequestWrapper request) throws JSONException
     {
-        List<Chapter> lChapterList = new ArrayList<>();
+        List<DbChapter> lDbChapterList = new ArrayList<>();
 
         String lMangaTitle = aParsedJson.getString("title");
         JSONArray lChapterArrayNodes = aParsedJson.getJSONArray("chapters");
@@ -257,31 +257,31 @@ public class MangaEden extends SourceManga
         {
             JSONArray lCurrentChapterArray = lChapterArrayNodes.getJSONArray(i);
 
-            Chapter lCurrentChapter = constructChapterFromJSONArray(lCurrentChapterArray, request);
+            DbChapter lCurrentDbChapter = constructChapterFromJSONArray(lCurrentChapterArray, request);
 
-            lChapterList.add(lCurrentChapter);
+            lDbChapterList.add(lCurrentDbChapter);
         }
 
-        Collections.reverse(lChapterList);
-        return lChapterList;
+        Collections.reverse(lDbChapterList);
+        return lDbChapterList;
     }
 
     /***
      * This helper function sets the chapters index value.
      * Parent - parseResponseToChapters();
      *
-     * @param aChapterList
+     * @param aDbChapterList
      * @return
      */
-    private List<Chapter> setNumberForChapterList(List<Chapter> aChapterList)
+    private List<DbChapter> setNumberForChapterList(List<DbChapter> aDbChapterList)
     {
-        Collections.reverse(aChapterList);
-        for (int i = 0; i < aChapterList.size(); i++)
+        Collections.reverse(aDbChapterList);
+        for (int i = 0; i < aDbChapterList.size(); i++)
         {
-            aChapterList.get(i).setChapterNumber(i + 1);
+            aDbChapterList.get(i).setChapterNumber(i + 1);
         }
 
-        return aChapterList;
+        return aDbChapterList;
     }
 
     /***
@@ -292,16 +292,16 @@ public class MangaEden extends SourceManga
      * @return
      * @throws JSONException
      */
-    private Chapter constructChapterFromJSONArray(JSONArray aChapterNode, RequestWrapper request) throws JSONException
+    private DbChapter constructChapterFromJSONArray(JSONArray aChapterNode, RequestWrapper request) throws JSONException
     {
-        Chapter lNewChapter = new Chapter(request.getManga().getTitle(), request.getManga().getLink(), SourceKey);
+        DbChapter lNewDbChapter = new DbChapter(request.getManga().getTitle(), request.getManga().getLink(), SourceKey);
 
-        lNewChapter.setUrl("https://www.mangaeden.com/api/chapter/" + aChapterNode.getString(3) + "/");
-        lNewChapter.setChapterTitle(request.getManga().getTitle() + " " + aChapterNode.getDouble(0));
+        lNewDbChapter.setUrl("https://www.mangaeden.com/api/chapter/" + aChapterNode.getString(3) + "/");
+        lNewDbChapter.setChapterTitle(request.getManga().getTitle() + " " + aChapterNode.getDouble(0));
 
         Date lDate = new Date(aChapterNode.getLong(1) * 1000);
-        lNewChapter.setChapterDate(lDate.toString());
+        lNewDbChapter.setChapterDate(lDate.toString());
 
-        return lNewChapter;
+        return lNewDbChapter;
     }
 }

@@ -5,8 +5,7 @@ import com.amgregoire.mangafeed.MangaFeed.Companion.app
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.v2.model.domain.User
 import com.amgregoire.mangafeed.v2.ui.base.ViewModelBase
-import com.amgregoire.mangafeed.v2.usecase.LoginUseCase
-import com.amgregoire.mangafeed.v2.usecase.SignUpUseCase
+import com.amgregoire.mangafeed.v2.usecase.remote.SignUpUseCase
 
 class SignUpVM : ViewModelBase()
 {

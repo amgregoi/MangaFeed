@@ -6,10 +6,10 @@ import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Common.RequestWrapper;
 import com.amgregoire.mangafeed.Common.SyncStatusObject;
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.Models.Chapter;
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbChapter;
 import com.amgregoire.mangafeed.Utils.NetworkService;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
+import com.amgregoire.mangafeed.v2.model.domain.Manga;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.FutureTarget;
@@ -24,7 +24,6 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Headers;
-import okhttp3.RequestBody;
 
 public abstract class SourceBase
 {
@@ -77,7 +76,7 @@ public abstract class SourceBase
      * @param responseBody
      * @return
      */
-    public abstract List<Chapter> parseResponseToChapters(RequestWrapper request, String responseBody);
+    public abstract List<DbChapter> parseResponseToChapters(RequestWrapper request, String responseBody);
 
     /***
      * This function pareses the response body and returns a list of page urls for the images
@@ -133,7 +132,7 @@ public abstract class SourceBase
      * @param request
      * @return
      */
-    public Observable<List<Chapter>> getChapterListObservable(final RequestWrapper request)
+    public Observable<List<DbChapter>> getChapterListObservable(final RequestWrapper request)
     {
         return NetworkService.Companion.getPermanentInstance()
                                        .getResponseCustomHeaders(request.getManga().getFullUrl(), constructRequestHeaders())

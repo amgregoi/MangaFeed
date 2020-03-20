@@ -1,7 +1,7 @@
 package com.amgregoire.mangafeed.Utils;
 
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.Models.Chapter;
+import com.amgregoire.mangafeed.Models.DbChapter;
 import com.amgregoire.mangafeed.Utils.BusEvents.DownloadEventUpdateComplete;
 
 import java.util.ArrayList;
@@ -14,9 +14,9 @@ import java.util.List;
 public class DownloadScheduler
 {
     public final static String TAG = DownloadScheduler.class.getSimpleName();
-    public static List<Chapter> mQueue = new ArrayList<>();
+    public static List<DbChapter> mQueue = new ArrayList<>();
     public static List<DownloadManager> mDownloading = new ArrayList<>();
-    public static List<Chapter> mDownloading2 = new ArrayList<>();
+    public static List<DbChapter> mDownloading2 = new ArrayList<>();
 
     public static void initManager()
     {
@@ -27,9 +27,9 @@ public class DownloadScheduler
     /***
      * This function adds items to the download queue.
      *
-     * @param chapters
+     * @param dbChapters
      */
-    public static void addChaptersToQueue(List<Chapter> chapters)
+    public static void addChaptersToQueue(List<DbChapter> dbChapters)
     {
         if (mQueue == null)
         {
@@ -37,10 +37,10 @@ public class DownloadScheduler
         }
 
 //        mQueue.addAll(chapters);
-        for (Chapter chapter : chapters)
+        for (DbChapter dbChapter : dbChapters)
         {
-            chapter.setDownloadStatus(Chapter.Companion.getDOWNLOAD_STATUS_DOWNLOADING());
-            mQueue.add(MangaDB.getInstance().getChapter(chapter));
+            dbChapter.setDownloadStatus(DbChapter.Companion.getDOWNLOAD_STATUS_DOWNLOADING());
+            mQueue.add(MangaDB.getInstance().getChapter(dbChapter));
         }
 
         // keep downloading list size to 2

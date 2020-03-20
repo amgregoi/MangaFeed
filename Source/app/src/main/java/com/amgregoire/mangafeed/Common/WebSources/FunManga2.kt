@@ -6,8 +6,8 @@ import com.amgregoire.mangafeed.Common.RequestWrapper
 import com.amgregoire.mangafeed.Common.SyncStatusObject
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceManga
 import com.amgregoire.mangafeed.MangaFeed
-import com.amgregoire.mangafeed.Models.Chapter
-import com.amgregoire.mangafeed.Models.Manga
+import com.amgregoire.mangafeed.Models.DbChapter
+import com.amgregoire.mangafeed.Models.DbManga
 import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.Utils.MangaLogger
 import com.amgregoire.mangafeed.v2.service.Logger
@@ -55,9 +55,9 @@ class FunManga : SourceManga()
         return mGenres
     }
 
-    override fun parseResponseToRecentList(responseBody: String): List<Manga>?
+    override fun parseResponseToRecentList(responseBody: String): List<DbManga>?
     {
-        val lMangaList = ArrayList<Manga>()
+        val lMangaList = ArrayList<DbManga>()
 
         try
         {
@@ -78,18 +78,18 @@ class FunManga : SourceManga()
                         lMangaUrl += "/" //add ending slash to url if missing
                     }
 
-                    lMangaUrl = lMangaUrl.replaceFirst(Manga.LinkRegex.toRegex(), "{$SourceKey}")
-                    var lManga: Manga? = MangaDB.getInstance().getManga(lMangaUrl)
-                    if (lManga != null)
+                    lMangaUrl = lMangaUrl.replaceFirst(DbManga.LinkRegex.toRegex(), "{$SourceKey}")
+                    var lDbManga: DbManga? = MangaDB.getInstance().getManga(lMangaUrl)
+                    if (lDbManga != null)
                     {
-                        lMangaList.add(lManga)
+                        lMangaList.add(lDbManga)
                     }
                     else
                     {
-                        lManga = MangaDB.getInstance().putManga(Manga(lMangaTitle, lMangaUrl, SourceKey))
-                        lMangaList.add(lManga)
+                        lDbManga = MangaDB.getInstance().putManga(DbManga(lMangaTitle, lMangaUrl, SourceKey))
+                        lMangaList.add(lDbManga)
 
-                        updateMangaObservable(RequestWrapper(lManga))
+                        updateMangaObservable(RequestWrapper(lDbManga))
                                 .subscribe(
                                         { manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title) },
                                         { throwable ->
@@ -116,7 +116,7 @@ class FunManga : SourceManga()
         else lMangaList
     }
 
-    override fun parseResponseToManga(request: RequestWrapper, responseBody: String): Manga
+    override fun parseResponseToManga(request: RequestWrapper, responseBody: String): DbManga
     {
         val lHtml = Jsoup.parse(responseBody)
 
@@ -180,7 +180,7 @@ class FunManga : SourceManga()
         return MangaDB.getInstance().getManga(request.manga.link)
     }
 
-    override fun parseResponseToChapters(request: RequestWrapper, responseBody: String): List<Chapter>
+    override fun parseResponseToChapters(request: RequestWrapper, responseBody: String): List<DbChapter>
     {
         val lParsedDocument = Jsoup.parse(responseBody)
 
@@ -233,10 +233,10 @@ class FunManga : SourceManga()
     }
 
 
-    private fun convertCatalogPageToMangaList(response: String): List<Manga>
+    private fun convertCatalogPageToMangaList(response: String): List<DbManga>
     {
         Logger.error("Starting local catalog", "")
-        val result = ArrayList<Manga>()
+        val result = ArrayList<DbManga>()
 
         val lDatabase = MangaDB.getInstance()
         val lParsedDocument = Jsoup.parse(response)
@@ -254,11 +254,11 @@ class FunManga : SourceManga()
             //                Logger.info("Added new item -> " + newManga.title)
             //                result.add(newManga)
             //            }
-            result.add(Manga(name, url, SourceKey))
+            result.add(DbManga(name, url, SourceKey))
         }
 
         val links = result.map { m -> m.link }.chunked(200)
-        val existing = arrayListOf<Manga>()
+        val existing = arrayListOf<DbManga>()
 
         for (list in links)
         {
@@ -294,7 +294,7 @@ class FunManga : SourceManga()
                     val name = link.text()
                     val url = link.attr("href") + "/"
 
-                    var newManga = Manga(name, url, SourceKey)
+                    var newManga = DbManga(name, url, SourceKey)
                     if (!lDatabase.containsManga(newManga))
                     {
                         newManga = lDatabase.putManga(newManga)
@@ -336,9 +336,9 @@ class FunManga : SourceManga()
      * @param parsedDocument
      * @return
      */
-    private fun resolveChaptersFromParsedDocument(parsedDocument: Document, request: RequestWrapper): List<Chapter>
+    private fun resolveChaptersFromParsedDocument(parsedDocument: Document, request: RequestWrapper): List<DbChapter>
     {
-        val lChapterList = ArrayList<Chapter>()
+        val lChapterList = ArrayList<DbChapter>()
         val lChapterElements = parsedDocument.select("ul.chapter-list").select("li")
         var lNumChapters = lChapterElements.size
 
@@ -352,7 +352,7 @@ class FunManga : SourceManga()
             lChapterTitle = iChapterElement.select("span").first().text()
             lChapterDate = iChapterElement.select("span")[1].text()
 
-            lChapterList.add(Chapter(lChapterUrl, request.manga.title, lChapterTitle, lChapterDate, lNumChapters, request.manga
+            lChapterList.add(DbChapter(lChapterUrl, request.manga.title, lChapterTitle, lChapterDate, lNumChapters, request.manga
                     .link, SourceKey))
 
             lNumChapters--

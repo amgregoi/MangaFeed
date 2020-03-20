@@ -3,8 +3,6 @@ package com.amgregoire.mangafeed.v2.ui.info
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.appcompat.widget.PopupMenu
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -69,17 +67,17 @@ class MangaInfoFragment : BaseFragment()
 
             if (self.rvMangaInfo.adapter != null)
             {
-                (self.rvMangaInfo.adapter as MangaInfoAdapter).updateInfo(mangaInfo.manga, mangaInfo.chapters)
+                (self.rvMangaInfo.adapter as MangaInfoAdapter).updateInfo(mangaInfo.dbManga, mangaInfo.dbChapters)
                 return@Observer
             }
 
-            mangaInfoViewModel.setFollowStatus(mangaInfo.manga.following)
+            mangaInfoViewModel.setFollowStatus(mangaInfo.dbManga.following)
 
             self.rvMangaInfo.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
             self.rvMangaInfo.adapter = MangaInfoAdapter(
-                    manga = mangaInfo.manga,
+                    dbManga = mangaInfo.dbManga,
                     source = MangaFeed.app.currentSource,
-                    chapters = mangaInfo.chapters,
+                    dbChapters = mangaInfo.dbChapters,
                     chapterSelected = { manga, chapters, chapter ->
                         val parent = activity ?: return@MangaInfoAdapter
                         readerViewModel?.updateReaderInfo(manga, chapters, chapter, true)
@@ -113,7 +111,7 @@ class MangaInfoFragment : BaseFragment()
     override fun updateParentSettings()
     {
         val parent = activity ?: return
-        (parent as ToolbarMap).setTitle(mangaInfoViewModel.manga.title)
+        (parent as ToolbarMap).setTitle(mangaInfoViewModel.dbManga.title)
         (parent as ToolbarMap).setNavigationIcon(ResourceFactory.getNavigationIcon(NavigationType.Close))
         (parent as ToolbarMap).setOptionsMenu(R.menu.menu_empty)
     }
@@ -171,9 +169,9 @@ class MangaInfoFragment : BaseFragment()
                     val parent = activity ?: return@setOnNavigationItemSelectedListener true
 
                     val adapter = (self.rvMangaInfo.adapter as? MangaInfoAdapter) ?: return@setOnNavigationItemSelectedListener true
-                    val manga = adapter.manga
-                    val chapters = adapter.chapters
-                    val chapter = adapter.chapters.firstOrNull { chapter -> chapter.url == manga.recentChapter } ?: chapters[chapters.size-1]
+                    val manga = adapter.dbManga
+                    val chapters = adapter.dbChapters
+                    val chapter = adapter.dbChapters.firstOrNull { chapter -> chapter.url == manga.recentChapter } ?: chapters[chapters.size-1]
 
                     readerViewModel?.updateReaderInfo(manga, chapters, chapter, true)
 

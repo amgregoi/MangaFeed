@@ -3,13 +3,11 @@ package com.amgregoire.mangafeed.v2.ui.read
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.viewpager.widget.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.amgregoire.mangafeed.Models.Chapter
-import com.amgregoire.mangafeed.Models.Manga
+import com.amgregoire.mangafeed.Models.DbChapter
+import com.amgregoire.mangafeed.Models.DbManga
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.UI.Adapters.ImagePagerAdapter
 import com.amgregoire.mangafeed.UI.Widgets.GestureViewPager
@@ -55,7 +53,7 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener
 
         readerViewModel?.chapterInfo?.observe(parent, Observer { info ->
             info ?: return@Observer
-            if (info.chapter.url != chapter.url) return@Observer
+            if (info.dbChapter.url != chapter.url) return@Observer
 
             self.viewPagerReaderChapter.currentItem = info.currentPage
         })
@@ -95,7 +93,7 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener
         readerViewModel?.incrementChapter()
     }
 
-    private fun setup(chapter: Chapter, refreshing: Boolean = false)
+    private fun setup(dbChapter: DbChapter, refreshing: Boolean = false)
     {
         val parent = activity ?: return
 
@@ -103,8 +101,8 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener
 
         if (self.viewPagerReaderChapter.adapter == null || refreshing)
         {
-            Logger.error("Getting contents for: ${chapter.chapterTitle}")
-            readerViewModel?.getChapterContents(chapter = chapter, chapterContent = { contents, chapter, isManga ->
+            Logger.error("Getting contents for: ${dbChapter.chapterTitle}")
+            readerViewModel?.getChapterContents(dbChapter = dbChapter, chapterContent = { contents, chapter, isManga ->
 
                 if (readerViewModel?.isCurrentChapter(chapter) == true) readerViewModel?.setUIStateShow()
 
@@ -146,12 +144,12 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener
         val POSITION_KEY = TAG + "POSITION"
         val MANGA_KEY = TAG + "MANGA"
 
-        fun newInstance(isFollowing: Boolean, position: Int, manga: Manga): androidx.fragment.app.Fragment
+        fun newInstance(isFollowing: Boolean, position: Int, dbManga: DbManga): androidx.fragment.app.Fragment
         {
             val lBundle = Bundle()
             lBundle.putBoolean(FOLLOWING_KEY, isFollowing)
             lBundle.putInt(POSITION_KEY, position)
-            lBundle.putParcelable(MANGA_KEY, manga)
+            lBundle.putParcelable(MANGA_KEY, dbManga)
 
             val lFragment = ChapterFragment()
             lFragment.arguments = lBundle

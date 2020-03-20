@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.amgregoire.mangafeed.UI.Adapters.SearchRecyclerAdapter;
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbManga;
 import com.amgregoire.mangafeed.UI.Mappers.IHome;
 import com.amgregoire.mangafeed.Utils.BusEvents.SearchQueryChangeEvent;
 import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;
@@ -72,9 +72,9 @@ public abstract class HomePresBase implements IHome.HomeBasePres
                     }
                     else
                     {
-                        Manga manga = lEvent.manga;
-                        mAdapter.updateItem(manga);
-                        MangaLogger.logInfo(TAG, "updated view", manga.getTitle());
+                        DbManga dbManga = lEvent.dbManga;
+                        mAdapter.updateItem(dbManga);
+                        MangaLogger.logInfo(TAG, "updated view", dbManga.getTitle());
                     }
                 }
                 else if (o instanceof SearchQueryChangeEvent)
@@ -122,39 +122,39 @@ public abstract class HomePresBase implements IHome.HomeBasePres
     /***
      * This function updates the Recycler views with new/updated content.
      *
-     * @param mangaList
+     * @param dbMangaList
      */
-    public void updateMangaGridView(List<Manga> mangaList)
+    public void updateMangaGridView(List<DbManga> dbMangaList)
     {
         try
         {
             if (mMap.getContext() != null)
             {
-                if (mangaList != null)
+                if (dbMangaList != null)
                 {
-                    mangaList = new ArrayList<>(mangaList);
+                    dbMangaList = new ArrayList<>(dbMangaList);
                     if (!(this instanceof HomePresRecent))
                     {
-                        Collections.sort(mangaList, (emp1, emp2) -> emp1.getTitle()
-                                                                        .compareToIgnoreCase(emp2.getTitle()));
+                        Collections.sort(dbMangaList, (emp1, emp2) -> emp1.getTitle()
+                                                                          .compareToIgnoreCase(emp2.getTitle()));
                     }
                 }
                 else
                 {
                     // failed to update list, show refresh view,
-                    mangaList = new ArrayList<>();
+                    dbMangaList = new ArrayList<>();
                 }
 
                 if (mAdapter == null)
                 {
                     mLayoutManager = new GridLayoutManager(mMap.getContext(), 3);
-                    mAdapter = new SearchRecyclerAdapter(mangaList);
+                    mAdapter = new SearchRecyclerAdapter(dbMangaList);
                     mAdapter.setHasStableIds(true);
                     mMap.registerAdapter(mAdapter, mLayoutManager);
                 }
                 else
                 {
-                    mAdapter.updateOriginalData(mangaList);
+                    mAdapter.updateOriginalData(dbMangaList);
                 }
 
                 mMap.stopRefresh();

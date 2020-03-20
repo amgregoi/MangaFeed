@@ -38,16 +38,16 @@ interface UserApi
      *
      */
     @POST("/users/login")
-    fun postLogin(@Body requestBody: UserLoginRequest): Call<Result<LoginResponse>>
+    fun postSignIn(@Body requestBody: UserSignInRequest): Call<Result<LoginResponse>>
 
-    data class UserLoginRequest(val email: String, val password: String)
+    data class UserSignInRequest(val email: String, val password: String)
 
 
     /***
      *
      */
     @POST("/users/logout")
-    fun postLogout(@Body requestBody: UserLogoutRequest): Call<Result<String>>
+    fun postSignOut(@Body requestBody: UserLogoutRequest): Call<Result<String>>
 
     data class UserLogoutRequest(val accessToken: String)
 

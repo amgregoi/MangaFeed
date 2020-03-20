@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbManga;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.Utils.BusEvents.MangaSelectedEvent;
 import com.squareup.picasso.Picasso;
@@ -37,13 +37,13 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 {
     public final static String TAG = SearchRecyclerAdapter.class.getSimpleName();
 
-    private ArrayList<Manga> mOriginalData = null;
-    private ArrayList<Manga> mFilteredData = null;
+    private ArrayList<DbManga> mOriginalData = null;
+    private ArrayList<DbManga> mFilteredData = null;
     private TextFilter mFilter = new TextFilter();
 
     private boolean mIsOfflineFlag = false;
 
-    public SearchRecyclerAdapter(List<Manga> data)
+    public SearchRecyclerAdapter(List<DbManga> data)
     {
         mOriginalData = new ArrayList<>(data);
         mFilteredData = new ArrayList<>(data);
@@ -60,11 +60,11 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position)
     {
-        Manga lManga = mFilteredData.get(position);
+        DbManga lDbManga = mFilteredData.get(position);
         ViewHolderManga lHolder = (ViewHolderManga) holder;
 
-        lHolder.setViews(lManga);
-        lHolder.loadImage(lManga);
+        lHolder.setViews(lDbManga);
+        lHolder.loadImage(lDbManga);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
      * @param position
      * @return
      */
-    public Manga getItem(int position)
+    public DbManga getItem(int position)
     {
         return mFilteredData.get(position);
     }
@@ -100,38 +100,38 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     /***
      * This function updates the adapter original data, and notifies the adapter it needs to update views.
      *
-     * @param mangaList
+     * @param dbMangaList
      */
-    public void updateOriginalData(List<Manga> mangaList)
+    public void updateOriginalData(List<DbManga> dbMangaList)
     {
-        mOriginalData = new ArrayList<>(mangaList);
-        mFilteredData = new ArrayList<>(mangaList);
+        mOriginalData = new ArrayList<>(dbMangaList);
+        mFilteredData = new ArrayList<>(dbMangaList);
         notifyDataSetChanged();
     }
 
     /***
      * This function notifies the adapter that a manga object has been interacted with and needs to be updated in case its state has changed.
      *
-     * @param aManga
+     * @param aDbManga
      */
-    public void updateItem(Manga aManga)
+    public void updateItem(DbManga aDbManga)
     {
-        if (aManga == null)
+        if (aDbManga == null)
         {
             return;
         }
 
-        int lFilterPos = mFilteredData.indexOf(aManga);
-        int lOriginalPos = mOriginalData.indexOf(aManga);
+        int lFilterPos = mFilteredData.indexOf(aDbManga);
+        int lOriginalPos = mOriginalData.indexOf(aDbManga);
 
         if (lOriginalPos >= 0)
         {
-            mOriginalData.set(lOriginalPos, aManga);
+            mOriginalData.set(lOriginalPos, aDbManga);
         }
 
         if (lFilterPos >= 0)
         {
-            mFilteredData.set(lFilterPos, aManga);
+            mFilteredData.set(lFilterPos, aDbManga);
 
             notifyItemChanged(lFilterPos);
         }
@@ -141,24 +141,24 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
      * This function notifies the adapter that a manga object has been interacted with and needs to be updated, this function is used for items
      * in the Library fragment.
      *
-     * @param aManga
+     * @param aDbManga
      * @param isAddingFlag
      */
-    public void updateItem(Manga aManga, boolean isAddingFlag)
+    public void updateItem(DbManga aDbManga, boolean isAddingFlag)
     {
-        if (isAddingFlag && !mOriginalData.contains(aManga))
+        if (isAddingFlag && !mOriginalData.contains(aDbManga))
         {
-            mOriginalData.add(aManga);
-            mFilteredData.add(aManga);
+            mOriginalData.add(aDbManga);
+            mFilteredData.add(aDbManga);
             Collections.sort(mFilteredData, (emp1, emp2) -> emp1.getTitle()
                                                                 .compareToIgnoreCase(emp2.getTitle()));
             Collections.sort(mOriginalData, (emp1, emp2) -> emp1.getTitle()
                                                                 .compareToIgnoreCase(emp2.getTitle()));
         }
-        else if (!isAddingFlag && mOriginalData.contains(aManga))
+        else if (!isAddingFlag && mOriginalData.contains(aDbManga))
         {
-            mOriginalData.remove(aManga);
-            mFilteredData.remove(aManga);
+            mOriginalData.remove(aDbManga);
+            mFilteredData.remove(aDbManga);
         }
 
         notifyDataSetChanged();
@@ -184,7 +184,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
      *
      * @param filterType item status used as a filter.
      */
-    public void filterByStatus(MangaEnums.FilterStatus filterType)
+    public void filterByStatus(MangaEnums.FilterType filterType)
     {
         mFilter.filterByStatus(filterType);
         mFilter.filter(mFilter.mLastQuery);
@@ -251,28 +251,28 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         /***
          * this function sets the item views to their correct state.
          *
-         * @param manga
+         * @param dbManga
          */
-        public void setViews(Manga manga)
+        public void setViews(DbManga dbManga)
         {
-            int status = manga.getFollowing();
+            int status = dbManga.getFollowing();
 
             mFooter.setBackgroundColor(backGroundFactory(status));
             mTitle.setBackgroundColor(backGroundFactory(status));
             mTitle.setTextColor(textColorFactory(status));
-            mTitle.setText(manga.toString());
+            mTitle.setText(dbManga.toString());
         }
 
         /***
          * This function loads the image for the adapter item.
          *
-         * @param manga
+         * @param dbManga
          */
-        public void loadImage(Manga manga)
+        public void loadImage(DbManga dbManga)
         {
-            if (manga.getImage() != null && !manga.getImage().isEmpty())
+            if (dbManga.getImage() != null && !dbManga.getImage().isEmpty())
             {
-                Picasso.get().load(manga.getImage())
+                Picasso.get().load(dbManga.getImage())
                        .error(mError)
                        .placeholder(mPlaceHolder)
                        .resize(200, 400) // resize image before placing in target to fix laggy scrolling
@@ -305,13 +305,13 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         {
             switch (status)
             {
-                case Manga.FOLLOW_READING:
+                case DbManga.FOLLOW_READING:
                     return mPrimary;
-                case Manga.FOLLOW_COMPLETE:
+                case DbManga.FOLLOW_COMPLETE:
                     return mGreen;
-                case Manga.FOLLOW_ON_HOLD:
+                case DbManga.FOLLOW_ON_HOLD:
                     return mRed;
-                case Manga.FOLLOW_PLAN_TO_READ:
+                case DbManga.FOLLOW_PLAN_TO_READ:
                     return mGray;
                 default:
                     return mWhite;
@@ -346,7 +346,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     public class TextFilter extends Filter
     {
         private CharSequence mLastQuery = "";
-        private MangaEnums.FilterStatus mLastFilter = MangaEnums.FilterStatus.NONE;
+        private MangaEnums.FilterType mLastFilter = MangaEnums.FilterType.NONE;
 
         @Override
         protected FilterResults performFiltering(CharSequence aFilterText)
@@ -355,20 +355,20 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             String lFilter = aFilterText.toString().toLowerCase();
             FilterResults lResult = new FilterResults();
 
-            final ArrayList<Manga> lBaseData = mOriginalData;
+            final ArrayList<DbManga> lBaseData = mOriginalData;
 
             int lCount = lBaseData.size();
-            final ArrayList<Manga> lFilteredList = new ArrayList<>(lCount);
+            final ArrayList<DbManga> lFilteredList = new ArrayList<>(lCount);
 
             String lFilterableString;
-            Manga lManga;
+            DbManga lDbManga;
             for (int iIndex = 0; iIndex < lCount; iIndex++)
             {
-                lManga = lBaseData.get(iIndex);
+                lDbManga = lBaseData.get(iIndex);
 
                 //Filter by Title and Alternate titles
-                lFilterableString = lManga.toString();
-                if (lManga.getAlternate() != null)
+                lFilterableString = lDbManga.toString();
+                if (lDbManga.getAlternate() != null)
                 {
                     lFilterableString += ", " + lBaseData.get(iIndex).getAlternate();
                 }
@@ -377,20 +377,20 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 if (lFilterableString.toLowerCase().contains(lFilter))
                 {
                     //Filter Type NONE
-                    if (mLastFilter == MangaEnums.FilterStatus.NONE)
+                    if (mLastFilter == MangaEnums.FilterType.NONE)
                     {
                         lFilteredList.add(lBaseData.get(iIndex));
                     }
                     //Filter TYPE READING, COMPLETE, AND ON_HOLD
-                    else if (mLastFilter == MangaEnums.FilterStatus.FOLLOWING)
+                    else if (mLastFilter == MangaEnums.FilterType.FOLLOWING)
                     {
-                        if (lManga.getFollowing() > 0)
+                        if (lDbManga.getFollowing() > 0)
                         {
                             lFilteredList.add(lBaseData.get(iIndex));
                         }
                     }
                     //Filter Type SPECIFIC
-                    else if (lManga.getFollowing() == mLastFilter.getValue())
+                    else if (lDbManga.getFollowing() == mLastFilter.getValue())
                     {
                         lFilteredList.add(lBaseData.get(iIndex));
                     }
@@ -408,7 +408,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         @Override
         protected void publishResults(CharSequence aFilterText, FilterResults aFilterResult)
         {
-            mFilteredData = (ArrayList<Manga>) aFilterResult.values;
+            mFilteredData = (ArrayList<DbManga>) aFilterResult.values;
             notifyDataSetChanged();
         }
 
@@ -417,7 +417,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
          *
          * @param aFilterType
          */
-        public void filterByStatus(MangaEnums.FilterStatus aFilterType)
+        public void filterByStatus(MangaEnums.FilterType aFilterType)
         {
             mLastFilter = aFilterType;
         }

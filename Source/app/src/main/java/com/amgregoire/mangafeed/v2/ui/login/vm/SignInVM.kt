@@ -4,14 +4,12 @@ import androidx.lifecycle.MutableLiveData
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.v2.model.domain.User
-import com.amgregoire.mangafeed.v2.ui.base.FragmentNavMap
-import com.amgregoire.mangafeed.v2.ui.base.NotificationMap
 import com.amgregoire.mangafeed.v2.ui.base.ViewModelBase
-import com.amgregoire.mangafeed.v2.usecase.LoginUseCase
+import com.amgregoire.mangafeed.v2.usecase.remote.SignInUseCase
 
 class SignInVM : ViewModelBase()
 {
-    private val signInUserCase = LoginUseCase()
+    private val signInUserCase = SignInUseCase()
     private val emailRegex = MangaFeed.app.getString(R.string.email_regex).toRegex()
     private val passwordRegex = MangaFeed.app.getString(R.string.password_regex).toRegex()
 

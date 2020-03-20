@@ -11,7 +11,7 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * Created by Andy Gregoire on 3/8/2018.
  */
-
+@Deprecated("V1")
 public class HomePresCatalog extends HomePresBase
 {
     public final static String TAG = HomePresCatalog.class.getSimpleName();

@@ -308,7 +308,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
             else if (o instanceof MangaSelectedEvent)
             {
                 MangaSelectedEvent lEvent = (MangaSelectedEvent) o;
-                Fragment lMangaFragment = MangaInfoFragment.newInstance(lEvent.manga, lEvent.isOffline);
+                Fragment lMangaFragment = MangaInfoFragment.newInstance(lEvent.dbManga, lEvent.isOffline);
 
                 getSupportFragmentManager().beginTransaction()
                                            .add(R.id.frameLayoutMasterContainer, lMangaFragment, MangaInfoFragment.TAG)
@@ -327,7 +327,7 @@ public class NavigationActivity extends AppCompatActivity implements WifiBroadca
             else if (o instanceof ChapterSelectedEvent)
             {
                 ChapterSelectedEvent lEvent = (ChapterSelectedEvent) o;
-                Fragment lReaderFragment = ReaderFragment.newInstance(lEvent.manga, lEvent.position);
+                Fragment lReaderFragment = ReaderFragment.newInstance(lEvent.dbManga, lEvent.position);
                 getSupportFragmentManager().beginTransaction()
                                            .add(R.id.frameLayoutMasterContainer, lReaderFragment, ReaderFragment.TAG)
                                            .addToBackStack(MangaInfoFragment.TAG)

@@ -26,7 +26,7 @@ import android.widget.TextView;
 
 import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbManga;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.BackHandledFragment;
 import com.amgregoire.mangafeed.UI.Mappers.IReader;
@@ -70,10 +70,10 @@ public class ReaderFragment extends BackHandledFragment implements IReader.Reade
     private ToolbarTimerService mToolBarService;
     private ServiceConnection mConnection;
 
-    public static Fragment newInstance(Manga manga, int position)
+    public static Fragment newInstance(DbManga dbManga, int position)
     {
         Bundle lBundle = new Bundle();
-        lBundle.putParcelable(MANGA_KEY, manga);
+        lBundle.putParcelable(MANGA_KEY, dbManga);
         lBundle.putInt(POSITION_KEY, position);
 
         Fragment lFragment = new ReaderFragment();

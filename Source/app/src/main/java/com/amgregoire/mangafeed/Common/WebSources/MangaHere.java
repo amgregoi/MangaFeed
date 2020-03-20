@@ -4,8 +4,8 @@ package com.amgregoire.mangafeed.Common.WebSources;
 import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.Common.RequestWrapper;
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceManga;
-import com.amgregoire.mangafeed.Models.Chapter;
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbChapter;
+import com.amgregoire.mangafeed.Models.DbManga;
 import com.amgregoire.mangafeed.Utils.MangaDB;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 
@@ -91,9 +91,9 @@ public class MangaHere extends SourceManga
         return mGenres;
     }
 
-    public List<Manga> parseResponseToRecentList(final String aResponseBody)
+    public List<DbManga> parseResponseToRecentList(final String aResponseBody)
     {
-        List<Manga> lMangaList = new ArrayList<>();
+        List<DbManga> lDbMangaList = new ArrayList<>();
 
         Document lParsedDocument = Jsoup.parse(aResponseBody);
         Elements lMangaElements = lParsedDocument.select("ul.manga-list-4-list.line").select("p.manga-list-4-item-title");
@@ -105,17 +105,17 @@ public class MangaHere extends SourceManga
             String lMangaUrl = iWholeElement.select("a").attr("href");
 
             lMangaUrl = "{" + SourceKey + "}" + lMangaUrl;
-            Manga lManga = MangaDB.getInstance().getManga(lMangaUrl);
-            if (lManga != null)
+            DbManga lDbManga = MangaDB.getInstance().getManga(lMangaUrl);
+            if (lDbManga != null)
             {
-                lMangaList.add(lManga);
+                lDbMangaList.add(lDbManga);
             }
             else
             {
-                lManga = new Manga(lMangaTitle, lMangaUrl, SourceKey);
-                lMangaList.add(lManga);
-                MangaDB.getInstance().putManga(lManga);
-                updateMangaObservable(new RequestWrapper(lManga))
+                lDbManga = new DbManga(lMangaTitle, lMangaUrl, SourceKey);
+                lDbMangaList.add(lDbManga);
+                MangaDB.getInstance().putManga(lDbManga);
+                updateMangaObservable(new RequestWrapper(lDbManga))
                         .subscribe
                                 (
                                         manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.getTitle()),
@@ -127,15 +127,15 @@ public class MangaHere extends SourceManga
 
         MangaLogger.logInfo(TAG, " Finished parsing recent updates");
 
-        if (lMangaList.size() == 0)
+        if (lDbMangaList.size() == 0)
         {
             return null;
         }
-        return lMangaList;
+        return lDbMangaList;
     }
 
     @Override
-    public Manga parseResponseToManga(final RequestWrapper request, final String responseBody)
+    public DbManga parseResponseToManga(final RequestWrapper request, final String responseBody)
     {
         Document lHtml = Jsoup.parse(responseBody);
         Elements lUsefulSection = lHtml.select("div.detail-info");
@@ -162,28 +162,28 @@ public class MangaHere extends SourceManga
         if (!lGenres.isEmpty()) lGenres = lGenres.substring(0, lGenres.length() - 2);
 
 
-        Manga lNewManga = MangaDB.getInstance().getManga(request.getManga().getLink());
-        lNewManga.setImage(lImage);
-        lNewManga.setDescription(lDescription);
-        lNewManga.setGenres(lGenres);
-        lNewManga.setSource(SourceKey);
-        lNewManga.setLink(request.getManga().getLink());
+        DbManga lNewDbManga = MangaDB.getInstance().getManga(request.getManga().getLink());
+        lNewDbManga.setImage(lImage);
+        lNewDbManga.setDescription(lDescription);
+        lNewDbManga.setGenres(lGenres);
+        lNewDbManga.setSource(SourceKey);
+        lNewDbManga.setLink(request.getManga().getLink());
 
 
-        MangaDB.getInstance().putManga(lNewManga);
-        MangaLogger.logInfo(TAG, "Finished creating/update manga (" + lNewManga.getTitle() + ")");
+        MangaDB.getInstance().putManga(lNewDbManga);
+        MangaLogger.logInfo(TAG, "Finished creating/update manga (" + lNewDbManga.getTitle() + ")");
         return MangaDB.getInstance().getManga(request.getManga().getLink());
     }
 
     @Override
-    public List<Chapter> parseResponseToChapters(RequestWrapper request, String resposneBody)
+    public List<DbChapter> parseResponseToChapters(RequestWrapper request, String resposneBody)
     {
         Document lParsedDocument = Jsoup.parse(resposneBody);
         Elements lUpdates = lParsedDocument.select("ul.detail-main-list");
         lParsedDocument = Jsoup.parse(lUpdates.toString());
-        List<Chapter> lChapterList = resolveChaptersFromParsedDocument(lParsedDocument, request);
+        List<DbChapter> lDbChapterList = resolveChaptersFromParsedDocument(lParsedDocument, request);
 
-        return lChapterList;
+        return lDbChapterList;
     }
 
     @Override
@@ -220,9 +220,9 @@ public class MangaHere extends SourceManga
      * @param parsedDocument
      * @return
      */
-    private List<Chapter> resolveChaptersFromParsedDocument(final Document parsedDocument, final RequestWrapper request)
+    private List<DbChapter> resolveChaptersFromParsedDocument(final Document parsedDocument, final RequestWrapper request)
     {
-        List<Chapter> lChapterList = new ArrayList<>();
+        List<DbChapter> lDbChapterList = new ArrayList<>();
         Elements lChapterElements = parsedDocument.getElementsByTag("li");
         int lNumChapters = lChapterElements.size();
 
@@ -234,14 +234,14 @@ public class MangaHere extends SourceManga
 
             lChapterUrl = MangaEnums.Source.valueOf(SourceKey).getBaseUrl() + lChapterUrl;
 
-            Chapter lCurChapter = new Chapter(lChapterUrl, request.getManga().getTitle(), lChapterTitle, lChapterDate, lNumChapters, request.getManga()
-                                                                                                                                            .getLink(), SourceKey);
+            DbChapter lCurDbChapter = new DbChapter(lChapterUrl, request.getManga().getTitle(), lChapterTitle, lChapterDate, lNumChapters, request.getManga()
+                                                                                                                                                  .getLink(), SourceKey);
             lNumChapters--;
 
-            lChapterList.add(lCurChapter);
+            lDbChapterList.add(lCurDbChapter);
         }
 
         MangaLogger.logInfo(TAG, " Finished parsing chapter list (" + request.getManga().getLink() + ")");
-        return lChapterList;
+        return lDbChapterList;
     }
 }

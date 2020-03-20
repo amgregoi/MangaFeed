@@ -1,6 +1,6 @@
 package com.amgregoire.mangafeed.Utils.BusEvents;
 
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbManga;
 
 /**
  * Created by Andy Gregoire on 3/12/2018.
@@ -18,12 +18,12 @@ import com.amgregoire.mangafeed.Models.Manga;
  */
 public class MangaSelectedEvent
 {
-    public Manga manga;
+    public DbManga dbManga;
     public boolean isOffline;
 
-    public MangaSelectedEvent(Manga m, boolean offline)
+    public MangaSelectedEvent(DbManga m, boolean offline)
     {
-        manga = m;
+        dbManga = m;
         isOffline = offline;
     }
 }

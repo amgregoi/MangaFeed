@@ -19,7 +19,7 @@ import android.view.ViewGroup;
 
 import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.Models.Manga;
+import com.amgregoire.mangafeed.Models.DbManga;
 import com.amgregoire.mangafeed.R;
 import com.amgregoire.mangafeed.UI.Activities.NavigationActivity;
 import com.amgregoire.mangafeed.UI.Adapters.MangaInfoChaptersAdapter;
@@ -61,10 +61,10 @@ public class MangaInfoFragment extends BaseFragment implements IManga.MangaMap
 
     private IManga.MangaPres mPresenter;
 
-    public static Fragment newInstance(Manga manga, boolean offline)
+    public static Fragment newInstance(DbManga dbManga, boolean offline)
     {
         Bundle lBundle = new Bundle();
-        lBundle.putParcelable(MANGA_KEY, manga);
+        lBundle.putParcelable(MANGA_KEY, dbManga);
         lBundle.putBoolean(OFFLINE_KEY, offline);
 
         Fragment lFragment = new MangaInfoFragment();
@@ -346,19 +346,19 @@ public class MangaInfoFragment extends BaseFragment implements IManga.MangaMap
                             switch (popupItem.getItemId())
                             {
                                 case R.id.menuFollowStatusReading:
-                                    lStatus = Manga.FOLLOW_READING;
+                                    lStatus = DbManga.FOLLOW_READING;
                                     break;
                                 case R.id.menuFollowStatusCompleted:
-                                    lStatus = Manga.FOLLOW_COMPLETE;
+                                    lStatus = DbManga.FOLLOW_COMPLETE;
                                     break;
                                 case R.id.menuFollowStatusOnHold:
-                                    lStatus = Manga.FOLLOW_ON_HOLD;
+                                    lStatus = DbManga.FOLLOW_ON_HOLD;
                                     break;
                                 case R.id.menuFollowStatusPlanToRead:
-                                    lStatus = Manga.FOLLOW_PLAN_TO_READ;
+                                    lStatus = DbManga.FOLLOW_PLAN_TO_READ;
                                     break;
                                 default:
-                                    lStatus = Manga.UNFOLLOW;
+                                    lStatus = DbManga.UNFOLLOW;
                                     break;
                             }
 

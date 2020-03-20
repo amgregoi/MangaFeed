@@ -14,7 +14,7 @@ public class MangaEnums
     /***
      * This enum is for the various manga filter status'
      */
-    public enum FilterStatus
+    public enum FilterType
     {
         NONE(0),
 
@@ -28,7 +28,7 @@ public class MangaEnums
 
         private int mValue;
 
-        FilterStatus(int aValue)
+        FilterType(int aValue)
         {
             mValue = aValue;
         }

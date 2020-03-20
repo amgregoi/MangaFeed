@@ -20,7 +20,7 @@
 
         <activity
             android:name=".v2.ui.LoginActivity"
-            android:theme="@style/AppTheme"
+            android:theme="@style/SplashTheme"
             android:windowSoftInputMode="adjustPan">
 
             <intent-filter>
