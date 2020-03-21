@@ -9,7 +9,7 @@ interface ChapterDao
     @get:Query("SELECT * FROM Chapter")
     val all: List<DbChapter>
 
-    @Query("SELECT * FROM Chapter where _id LIKE :chapterId")
+    @Query("SELECT * FROM Chapter where id LIKE :chapterId")
     fun findById(chapterId: Int): DbChapter
 
     @Query("SELECT DISTINCT * FROM Chapter where url LIKE :url")

@@ -9,6 +9,7 @@ import com.amgregoire.mangafeed.Models.DbChapter
 import com.amgregoire.mangafeed.Models.DbManga
 import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.Utils.MangaLogger
+import com.amgregoire.mangafeed.v2.model.domain.Manga
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.jsoup.Jsoup
@@ -23,7 +24,6 @@ class Wuxia : SourceNovel()
 
     private val SourceKey = "Wuxia"
     private val mBaseUrl = "https://www.wuxiaworld.com"
-
 
     override fun getSourceName(): String
     {
@@ -50,10 +50,10 @@ class Wuxia : SourceNovel()
         return arrayOf()
     }
 
-    override fun parseResponseToRecentList(aResponseBody: String): List<DbManga>
+    override fun parseResponseToRecentList(aResponseBody: String): List<Manga>
     {
 
-        val lNovelList = ArrayList<DbManga>()
+        val lNovelList = ArrayList<Manga>()
 
         try
         {
@@ -65,23 +65,28 @@ class Wuxia : SourceNovel()
                 var lMangaUrl = URL + lNovel.select("td").first().select("span.title").select("a").attr("href")
                 val lMangaTitle = lNovel.select("td").first().select("span.title").select("a").text()
 
-                lMangaUrl = lMangaUrl.replaceFirst(DbManga.LinkRegex.toRegex(), "{$SourceKey}")
-                var lDbManga: DbManga? = MangaDB.getInstance().getManga(lMangaUrl)
-                if (lDbManga == null)
+                lMangaUrl = lMangaUrl.replaceFirst(DbManga.LinkRegex.toRegex(), "")
+                if (lMangaUrl[lMangaUrl.length - 1] != '/')
                 {
-                    lDbManga = DbManga(lMangaTitle, lMangaUrl, SourceKey)
-                    MangaDB.getInstance().putManga(lDbManga)
+                    lMangaUrl += "/" //add ending slash to url if missing
+                }
 
-                    updateMangaObservable(RequestWrapper(lDbManga))
+                var manga: Manga? = localMangaRepository.getManga(lMangaUrl)
+                if (manga == null)
+                {
+                    val dbManga = DbManga(lMangaTitle, lMangaUrl, SourceKey)
+                    manga = localMangaRepository.putManga(dbManga) ?: continue
+
+                    updateMangaObservable(RequestWrapper(manga))
                             .subscribe(
-                                    { manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.title) },
+                                    { manga -> MangaLogger.logInfo(TAG, "Finished updating " + manga.name) },
                                     { throwable -> MangaLogger.logError(TAG, "Problem updating: " + throwable.message) }
                             )
                 }
 
-                if (!lNovelList.contains(lDbManga))
+                if (!lNovelList.contains(manga))
                 {
-                    lNovelList.add(lDbManga)
+                    lNovelList.add(manga)
                 }
             }
 
@@ -96,7 +101,7 @@ class Wuxia : SourceNovel()
         return lNovelList
     }
 
-    override fun parseResponseToManga(request: RequestWrapper, responseBody: String): DbManga?
+    override fun parseResponseToManga(request: RequestWrapper, responseBody: String): Manga?
     {
         try
         {
@@ -105,7 +110,9 @@ class Wuxia : SourceNovel()
             val lContentLeft = lParsedDocument.select("div.media.media-novel-index").select("div.media-left")
             val lContentRight = lParsedDocument.select("div.media.media-novel-index").select("div.media-body")
 
-            val lManga = MangaDB.getInstance().getManga(request.manga.link)
+            val lManga = localMangaRepository.getManga(request.manga.link, request.manga.source) ?: kotlin.run {
+                return localMangaRepository.putManga(request.manga)
+            }
             val lImage = lContentLeft.select("img.media-object").attr("src")
 
             val lDetails = StringBuilder()
@@ -136,7 +143,7 @@ class Wuxia : SourceNovel()
 
             lManga.image = lImage
 
-            MangaDB.getInstance().putManga(lManga)
+            localMangaRepository.updateManga(lManga)
             return lManga
         }
         catch (aException: Exception)
@@ -164,7 +171,7 @@ class Wuxia : SourceNovel()
             {
                 val lUrl = URL + iChapter.attr("href")
                 val lChapterTitle = iChapter.text()
-                lChapterList.add(DbChapter(lUrl, request.manga.title, lChapterTitle, "-", lCount, request.manga.link, SourceKey))
+                lChapterList.add(DbChapter(lUrl, request.manga.name, lChapterTitle, "-", lCount, request.manga.link, SourceKey))
                 lCount++
             }
         }
@@ -216,9 +223,9 @@ class Wuxia : SourceNovel()
 
     }
 
-    private fun convertCatalogPageToMangaList(response: String): List<DbManga>
+    private fun convertCatalogPageToMangaList(response: String): List<Manga>
     {
-        val result = arrayListOf<DbManga>()
+        val result = arrayListOf<Manga>()
         val lDatabase = MangaDB.getInstance()
         val lParsedDocument = Jsoup.parse(response)
         val lItemGroups = lParsedDocument.select("ul.media-list.genres-list").select("li.media")
@@ -228,7 +235,14 @@ class Wuxia : SourceNovel()
 
             val lImage = group.select("div.media-left").select("img.media-object").attr("href")
             val lTitle = group.select("div.media-body").select("div.media-heading").select("a").text()
-            val lLink = URL + group.select("div.media-body").select("div.media-heading").select("a").attr("href")
+            var lLink = URL + group.select("div.media-body").select("div.media-heading").select("a").attr("href")
+
+            lLink = lLink.replaceFirst(DbManga.LinkRegex.toRegex(), "")
+            if (lLink[lLink.length - 1] != '/')
+            {
+                lLink += "/" //add ending slash to url if missing
+            }
+
             val lDescription = StringBuilder()
 
             val lDesc = group.select("div.media-body").select("p")
@@ -239,12 +253,12 @@ class Wuxia : SourceNovel()
             }
 
             var lNewManga = DbManga(lTitle, lLink, SourceKey)
-            if (!lDatabase.containsManga(lNewManga))
+            if (!localMangaRepository.containsManga(lLink, sourceName))
             {
                 lNewManga.image = lImage
                 lNewManga.description = lDescription.toString()
-                lNewManga = lDatabase.putManga(lNewManga)
-                result.add(lNewManga)
+                val manga = localMangaRepository.putManga(lNewManga) ?: continue
+                result.add(manga)
             }
         }
 

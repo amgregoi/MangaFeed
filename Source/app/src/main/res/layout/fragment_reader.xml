@@ -9,7 +9,7 @@
     android:orientation="vertical"
     android:focusable="true">
 
-    <com.amgregoire.mangafeed.UI.Widgets.NoScrollViewPager
+    <com.amgregoire.mangafeed.v2.widget.NoScrollViewPager
         android:id="@+id/noScrollViewPagerReader"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

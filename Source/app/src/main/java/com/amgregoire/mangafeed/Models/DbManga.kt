@@ -1,11 +1,10 @@
 package com.amgregoire.mangafeed.Models
 
 import android.os.Parcelable
+import androidx.annotation.Nullable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.amgregoire.mangafeed.Common.MangaEnums
-import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.Utils.MangaFeedRest
 import com.amgregoire.mangafeed.Utils.MangaLogger
 import com.amgregoire.mangafeed.Utils.SharedPrefs
@@ -16,10 +15,12 @@ import kotlinx.android.parcel.Parcelize
 import org.json.JSONObject
 
 @Parcelize
-@Entity(tableName = "Manga")
+@Entity(tableName = "Manga", primaryKeys = ["link", "source"])
 class DbManga(
-        @PrimaryKey(autoGenerate = true)
-        var _id: Int = 0,
+
+        @Nullable
+        @ColumnInfo(name = "id")
+        var id: String? = null,
 
         @ColumnInfo(name = "title")
         var title: String,
@@ -72,7 +73,7 @@ class DbManga(
             url: String,
             source: String
     ) : this(
-            _id = 0,
+            id = null,
             title = title,
             image = "",
             link = url.replaceFirst(LinkRegex.toRegex(), "{$source}"),
@@ -93,14 +94,6 @@ class DbManga(
         return title
     }
 
-    fun updateFollowing(value: Int): Int
-    {
-        following = value
-        MangaDB.getInstance().putManga(this)
-        updateFollowItem()
-        return following
-    }
-
     override fun equals(obj: Any?): Boolean
     {
         var lCompare = false
@@ -119,8 +112,7 @@ class DbManga(
 
     override fun hashCode(): Int
     {
-        if (_id == 0) return this.hashCode()
-        return _id
+        return id.hashCode()
     }
 
     /***
@@ -159,15 +151,6 @@ class DbManga(
     {
         val TAG = "MANGA"
         var LinkRegex = "(http)*s*:\\/\\/www.[a-zA-Z]*.(com|net|org|cc)"
-
-        fun mangaToFormattedUrl(dbManga:DbManga) = dbManga.link.replaceFirst(LinkRegex.toRegex(), "{${dbManga.source}}")
-        fun urlSourceToFormattedUrl(url:String, source: String) = url.replaceFirst(LinkRegex.toRegex(), "{${source}}")
-
-        const val UNFOLLOW = 0
-        const val FOLLOW_READING = 1
-        const val FOLLOW_COMPLETE = 2
-        const val FOLLOW_ON_HOLD = 3
-        const val FOLLOW_PLAN_TO_READ = 4
     }
 
 }

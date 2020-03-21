@@ -30,7 +30,7 @@ android {
 
         debug {
             applicationIdSuffix ".debug"
-            buildConfigField 'String', 'BASE_URL', '"https://86f91e3a.ngrok.io/"'
+            buildConfigField 'String', 'BASE_URL', '"https://85189699.ngrok.io/"'
         }
     }
     compileOptions {

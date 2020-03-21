@@ -9,31 +9,34 @@ import androidx.lifecycle.ViewModelProvider
 import com.amgregoire.mangafeed.Common.RequestWrapper
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.Models.DbChapter
-import com.amgregoire.mangafeed.Models.DbManga
 import com.amgregoire.mangafeed.R
-import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.enums.FollowType
+import com.amgregoire.mangafeed.v2.model.domain.Manga
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.Logger
-import com.amgregoire.mangafeed.v2.ui.catalog.enum.FollowType
+import com.amgregoire.mangafeed.v2.usecase.UpdateMangaUseCase
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
 
-class MangaInfoViewModelFactory(private var app: Application, var dbManga: DbManga) : ViewModelProvider.Factory
+class MangaInfoViewModelFactory(private var app: Application, var manga: Manga) : ViewModelProvider.Factory
 {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T
     {
-        return MangaInfoViewModel(app, dbManga) as T
+        return MangaInfoViewModel(app, manga) as T
     }
 }
 
-data class MangaInfo(val dbManga: DbManga, val dbChapters: List<DbChapter>)
+data class MangaInfo(val manga: Manga, val dbChapters: List<DbChapter>)
+
 data class MangaInfoBottomNav(val followText: Int, val followIcon: Int, val startText: Int)
 
-class MangaInfoViewModel(val app: Application, var dbManga: DbManga) : AndroidViewModel(app)
+class MangaInfoViewModel(val app: Application, var manga: Manga) : AndroidViewModel(app)
 {
     private val subscribers = CompositeDisposable()
+
+    private val updateMangaUseCase = UpdateMangaUseCase()
 
     val state = MutableLiveData<State>()
     val mangaInfo = MutableLiveData<MangaInfo>()
@@ -47,14 +50,13 @@ class MangaInfoViewModel(val app: Application, var dbManga: DbManga) : AndroidVi
     }
 
     fun setFollowStatus(followType: FollowType) = ioScope.launch {
-        val startText = if (!dbManga.recentChapter.isNullOrEmpty()) R.string.text_continue
+        val startText = if (manga.recentChapter.isNotEmpty()) R.string.text_continue
         else R.string.text_start
 
         uiScope.launch { mangaInfoBottomNav.value = MangaInfoBottomNav(followType.stringRes, followType.drawableRes, startText) }
 
-        dbManga.updateFollowing(followType.value)
-        if (followType == FollowType.Unfollow) dbManga.recentChapter = null
-        MangaDB.getInstance().putManga(dbManga)
+        if (manga.followType == followType) return@launch
+        updateMangaUseCase.updateMangaFollowStatus(manga, followType)
     }
 
     fun setFollowStatus(followType: Int) = ioScope.launch {
@@ -77,15 +79,16 @@ class MangaInfoViewModel(val app: Application, var dbManga: DbManga) : AndroidVi
         {
             val source = MangaFeed.app.currentSource
             subscribers.add(
-                    source.updateMangaObservable(RequestWrapper(dbManga))
+                    source.updateMangaObservable(RequestWrapper(manga))
                             .subscribe(
                                     { newManga ->
-                                        dbManga = newManga
-                                        mangaInfo.value = MangaInfo(dbManga, chapters)
+                                        manga = newManga
+                                        mangaInfo.value = MangaInfo(manga, chapters)
+                                        updateMangaUseCase.updateManga(manga)
                                         state.value = State.Complete
                                     },
                                     { throwable ->
-                                        mangaInfo.value = MangaInfo(dbManga, chapters)
+                                        mangaInfo.value = MangaInfo(manga, chapters)
                                         state.value = State.Complete
                                         Logger.error(throwable)
                                     }
@@ -109,16 +112,16 @@ class MangaInfoViewModel(val app: Application, var dbManga: DbManga) : AndroidVi
         {
             val source = MangaFeed.app.currentSource
             subscribers.add(
-                    source.getChapterListObservable(RequestWrapper(dbManga))
+                    source.getChapterListObservable(RequestWrapper(manga))
                             .subscribe(
                                     { chapters ->
                                         MangaFeed.app.currentDbChapters = chapters
                                         this.chapters = chapters
-                                        mangaInfo.value = MangaInfo(dbManga, chapters)
+                                        mangaInfo.value = MangaInfo(manga, chapters)
                                     },
                                     { throwable ->
                                         Logger.error(throwable)
-                                        mangaInfo.value = MangaInfo(dbManga, chapters)
+                                        mangaInfo.value = MangaInfo(manga, chapters)
                                     }
                             )
             )

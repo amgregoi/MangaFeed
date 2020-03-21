@@ -3,7 +3,7 @@ package com.amgregoire.mangafeed.v2.ui.read
 import android.util.SparseArray
 import android.view.ViewGroup
 import com.amgregoire.mangafeed.Models.DbChapter
-import com.amgregoire.mangafeed.Models.DbManga
+import com.amgregoire.mangafeed.v2.model.domain.Manga
 import java.lang.ref.WeakReference
 
 /**
@@ -14,7 +14,7 @@ class ChapterPagerAdapter(
         private val manager: androidx.fragment.app.FragmentManager,
         private val dbChapterList: List<DbChapter>,
         private val isFollowing: Boolean,
-        private val dbManga: DbManga
+        private val manga: Manga
 ) : androidx.fragment.app.FragmentStatePagerAdapter(manager)
 {
     private val mFragmentRefs = SparseArray<WeakReference<androidx.fragment.app.Fragment>>()
@@ -29,7 +29,7 @@ class ChapterPagerAdapter(
         }
         else
         {
-            val chapterFragment = ChapterFragment.newInstance(isFollowing, position, dbManga)
+            val chapterFragment = ChapterFragment.newInstance(isFollowing, position)
             mFragmentRefs.put(position, WeakReference(chapterFragment))
             chapterFragment
         }

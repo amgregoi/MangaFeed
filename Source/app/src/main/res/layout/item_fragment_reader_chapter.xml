@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="?attr/background_color2">
 
-    <com.amgregoire.mangafeed.UI.Widgets.GestureViewPager
+    <com.amgregoire.mangafeed.v2.widget.GestureViewPager
         android:id="@+id/viewPagerReaderChapter"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -6,6 +6,7 @@ import android.content.res.Resources
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.SharedPrefs
 import com.amgregoire.mangafeed.v2.extension.lastFragment
@@ -14,7 +15,6 @@ import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.base.BaseNavigationActivity
 import com.amgregoire.mangafeed.v2.ui.login.WelcomeFragment
 import com.amgregoire.mangafeed.v2.ui.main.MFragment
-import com.amgregoire.mangafeed.v2.usecase.local.GetLocalUserUserCase
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_login.flContainer
 import kotlinx.android.synthetic.main.activity_m.vMenuCover
@@ -22,7 +22,9 @@ import kotlinx.android.synthetic.main.activity_m.vMenuCover
 
 class LoginActivity : BaseNavigationActivity()
 {
-    val getUser = GetLocalUserUserCase()
+    private val user = MangaFeed.app.user
+    private val isSignedIn = MangaFeed.app.isSignedIn
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -30,7 +32,7 @@ class LoginActivity : BaseNavigationActivity()
 
         toolbar.title = getString(R.string.empty)
 
-        if (getUser.user() != null || getUser.isGuest())
+        if (user != null || isSignedIn)
         {
             startActivity(MActivity.newInstance(this))
         }

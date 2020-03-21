@@ -60,7 +60,6 @@ class EmptyState @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
 
         buttonAction.setOnClickListener(OnClickListener {
-            Logger.error("############### Someone clicked on me")
         })
         attributes.recycle()
     }

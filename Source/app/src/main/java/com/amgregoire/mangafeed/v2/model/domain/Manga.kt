@@ -1,29 +1,44 @@
 package com.amgregoire.mangafeed.v2.model.domain
 
-import com.amgregoire.mangafeed.v2.ui.catalog.enum.FollowType
+import com.amgregoire.mangafeed.v2.enums.FollowType
+import com.amgregoire.mangafeed.v2.enums.Source
 
 data class Manga(
-        val id:String,
+        var id: String?,
         val name: String,
-        val description: String,
-        val link: String,
-        val alternateNames: String,
-        val artists: String,
-        val authors: String,
-        val genres: String,
-        val source: String,
-        val followType: FollowType
+        var link: String,
+        var description: String,
+        var image: String,
+        var alternateNames: String,
+        var artists: String,
+        var authors: String,
+        var genres: String,
+        var source: String,
+        var status: String,
+        var followType: FollowType,
+        var recentChapter: String,
+        var requiresUpdate: Boolean
 )
 {
+    val isFollowing: Boolean
+        get() = followType.value > 0
+
+    fun getUrl(): String
+    {
+        val source = Source.getSourceByName(source)
+        return source.baseUrl + link
+    }
+
     override fun equals(other: Any?): Boolean
     {
-        if(other !is Manga) return false
-        if(other.id == id) return true
+        if (other !is Manga) return false
+        if (other.link == link && other.source == source) return true
         return false
     }
 
     override fun hashCode(): Int
     {
-        return id.hashCode()
+        return "$source:$link".hashCode()
     }
+
 }

@@ -5,23 +5,24 @@ import android.os.Parcelable;
 
 import com.amgregoire.mangafeed.Models.DbChapter;
 import com.amgregoire.mangafeed.Models.DbManga;
+import com.amgregoire.mangafeed.v2.model.domain.Manga;
 
 
-public class RequestWrapper implements Parcelable
+public class RequestWrapper
 {
     public static final String TAG = RequestWrapper.class.getSimpleName();
 
-    private DbManga mDbManga;
+    private Manga manga;
     private DbChapter mDbChapter;
 
     /***
      * Request Wrapper Constructor
      *
-     * @param aDbManga
+     * @param manga
      */
-    public RequestWrapper(DbManga aDbManga)
+    public RequestWrapper(Manga manga)
     {
-        mDbManga = aDbManga;
+        this.manga = manga;
     }
 
     /***
@@ -34,11 +35,6 @@ public class RequestWrapper implements Parcelable
         mDbChapter = aDbChapter;
     }
 
-    private RequestWrapper(Parcel aIn)
-    {
-        mDbManga = aIn.readParcelable(ClassLoader.getSystemClassLoader());
-    }
-
     /***
      * This function returns the manga item source
      *
@@ -46,43 +42,16 @@ public class RequestWrapper implements Parcelable
      */
     public String getSource()
     {
-        return mDbManga.getSource();
+        return manga.getSource();
     }
 
-    public DbManga getManga()
+    public Manga getManga()
     {
-        return mDbManga;
+        return manga;
     }
 
     public DbChapter getChapter()
     {
         return mDbChapter;
     }
-
-    @Override
-    public int describeContents()
-    {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel aOut, int aFlags)
-    {
-        aOut.writeParcelable(mDbManga, 0);
-    }
-
-    public static final Parcelable.Creator<RequestWrapper> CREATOR = new Parcelable.Creator<RequestWrapper>()
-    {
-        @Override
-        public RequestWrapper createFromParcel(Parcel aInputParcel)
-        {
-            return new RequestWrapper(aInputParcel);
-        }
-
-        @Override
-        public RequestWrapper[] newArray(int aSize)
-        {
-            return new RequestWrapper[aSize];
-        }
-    };
 }

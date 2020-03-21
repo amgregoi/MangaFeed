@@ -11,8 +11,8 @@ interface MangaDao
     @get:Query("SELECT * FROM Manga")
     val all: List<DbManga>
 
-    @Query("SELECT * FROM Manga where _id LIKE :mangaId")
-    fun findById(mangaId: Int): DbManga
+    @Query("SELECT * FROM Manga where id LIKE :mangaId")
+    fun findById(mangaId: String): DbManga
 
     @Query("SELECT * FROM Manga where link LIKE :url AND source LIKE :source")
     fun findByUrl(url: String, source: String): DbManga
@@ -36,7 +36,7 @@ interface MangaDao
     fun countUsers(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg dbManga: DbManga)
+    fun insertAll(vararg dbDbManga: DbManga)
 
     @Delete
     fun delete(user: DbManga)

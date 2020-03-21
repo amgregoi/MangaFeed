@@ -1,6 +1,7 @@
 package com.amgregoire.mangafeed.v2.model.domain
 
-import com.amgregoire.mangafeed.v2.ui.catalog.enum.FollowType
+import com.amgregoire.mangafeed.v2.enums.FollowType
+
 
 class UserLibrary(
         val library: ArrayList<Manga>

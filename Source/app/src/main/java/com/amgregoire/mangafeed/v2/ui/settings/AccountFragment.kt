@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.R
-import com.amgregoire.mangafeed.UI.Fragments.AccountFragmentSettings
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.base.FragmentNavMap
 import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap

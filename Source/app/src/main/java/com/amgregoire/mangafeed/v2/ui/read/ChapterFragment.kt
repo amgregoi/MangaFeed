@@ -7,15 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.amgregoire.mangafeed.Models.DbChapter
-import com.amgregoire.mangafeed.Models.DbManga
 import com.amgregoire.mangafeed.R
-import com.amgregoire.mangafeed.UI.Adapters.ImagePagerAdapter
-import com.amgregoire.mangafeed.UI.Widgets.GestureViewPager
 import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.model.domain.Manga
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
+import com.amgregoire.mangafeed.v2.widget.GestureViewPager
 import kotlinx.android.synthetic.main.item_fragment_reader_chapter.view.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -142,14 +141,12 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener
         val TAG = ChapterFragment::class.java.simpleName
         val FOLLOWING_KEY = TAG + "FOLLOWING"
         val POSITION_KEY = TAG + "POSITION"
-        val MANGA_KEY = TAG + "MANGA"
 
-        fun newInstance(isFollowing: Boolean, position: Int, dbManga: DbManga): androidx.fragment.app.Fragment
+        fun newInstance(isFollowing: Boolean, position: Int): androidx.fragment.app.Fragment
         {
             val lBundle = Bundle()
             lBundle.putBoolean(FOLLOWING_KEY, isFollowing)
             lBundle.putInt(POSITION_KEY, position)
-            lBundle.putParcelable(MANGA_KEY, dbManga)
 
             val lFragment = ChapterFragment()
             lFragment.arguments = lBundle

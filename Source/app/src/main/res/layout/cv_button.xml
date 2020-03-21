@@ -8,10 +8,11 @@
 
     <View
         android:id="@+id/viewButton"
-        style="@style/Homebase.Widget.Button.Blue"
+        android:background="@drawable/button_solid"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:text="@string/placeholder"
+        android:elevation="0dp"
         android:textAlignment="center"
         android:clickable="false"
         app:layout_constraintEnd_toEndOf="parent"

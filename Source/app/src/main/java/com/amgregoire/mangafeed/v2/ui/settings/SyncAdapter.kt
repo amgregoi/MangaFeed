@@ -8,6 +8,7 @@ import com.amgregoire.mangafeed.Models.DbManga
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.model.domain.Manga
 import com.amgregoire.mangafeed.v2.service.Logger
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.item_sync_sources.view.*
@@ -62,7 +63,7 @@ class SyncAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<SyncAdapte
             {
                 val source = sources[adapterPosition].source
                 itemView.tvCount.visibility = View.VISIBLE
-                val mangaList = arrayListOf<DbManga>()
+                val mangaList = arrayListOf<Manga>()
 
                 ioScope.launch {
                     val disp = source.updateLocalCatalogV2()?.subscribe(

@@ -65,6 +65,7 @@ class HomeFragment2 : BaseFragment()
         val parent = activity ?: return
         (parent as ToolbarMap).showSpinner()
         (parent as ToolbarMap).setOptionsMenu(R.menu.menu_toolbar_filter)
+        (self.viewPagerHome.adapter as? CatalogViewPagerAdapter)?.updateItems()
     }
 
     private fun setupViewPager()

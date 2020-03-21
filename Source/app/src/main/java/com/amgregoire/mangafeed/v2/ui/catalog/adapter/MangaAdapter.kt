@@ -7,12 +7,13 @@ import android.widget.Filter
 import android.widget.ImageView
 import com.amgregoire.mangafeed.Common.MangaEnums
 import com.amgregoire.mangafeed.Common.WebSources.Base.SourceBase
-import com.amgregoire.mangafeed.Models.DbManga
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.NetworkService
 import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.ScaleImageViewTarget
+import com.amgregoire.mangafeed.v2.enums.FollowType
+import com.amgregoire.mangafeed.v2.model.domain.Manga
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
 import com.bumptech.glide.GenericTransitionOptions
@@ -23,7 +24,6 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.item_manga.view.*
 import kotlinx.coroutines.launch
-import java.util.*
 
 
 /**
@@ -31,12 +31,13 @@ import java.util.*
  */
 
 class MangaAdapter(
-        private var data: ArrayList<DbManga>,
+        private var data: ArrayList<Manga>,
         private var source: SourceBase,
-        private var itemSelected: (DbManga) -> Unit
+        private val isLibrary: Boolean,
+        private var itemSelected: (Manga) -> Unit
 ) : androidx.recyclerview.widget.RecyclerView.Adapter<MangaAdapter.MangaViewHolder>()
 {
-    private var filteredData: ArrayList<DbManga> = ArrayList(data)
+    private var filteredData: ArrayList<Manga> = ArrayList(data)
     private val filter = TextFilter()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MangaViewHolder
@@ -72,7 +73,7 @@ class MangaAdapter(
      * @param position
      * @return
      */
-    fun getItem(position: Int): DbManga
+    fun getItem(position: Int): Manga
     {
         return filteredData[position]
     }
@@ -80,12 +81,12 @@ class MangaAdapter(
     /***
      * This function updates the adapter original data, and notifies the adapter it needs to update views.
      *
-     * @param dbMangaList
+     * @param mangaList
      */
-    fun updateOriginalData(dbMangaList: List<DbManga>)
+    fun updateOriginalData(mangaList: List<Manga>)
     {
-        data = ArrayList(dbMangaList)
-        filteredData = ArrayList(dbMangaList)
+        data = ArrayList(mangaList)
+        filteredData = ArrayList(mangaList)
         filter.filter(filter.queryFilter)
         notifyDataSetChanged()
     }
@@ -93,21 +94,42 @@ class MangaAdapter(
     /***
      * This function notifies the adapter that a manga object has been interacted with and needs to be updated in case its state has changed.
      *
-     * @param dbManga
+     * @param manga
      */
-    fun updateItem(dbManga: DbManga) = ioScope.launch {
-        val filterPosition = filteredData.indexOf(dbManga)
-        val dataPosition = data.indexOf(dbManga)
+    fun updateItem(manga: Manga) = ioScope.launch {
+        val filterPosition = filteredData.indexOf(manga)
+        val dataPosition = data.indexOf(manga)
 
         if (dataPosition >= 0)
         {
-            data[dataPosition] = dbManga
+            data[dataPosition] = manga
         }
 
         if (filterPosition >= 0)
         {
-            filteredData[filterPosition] = dbManga
-            uiScope.launch { notifyItemChanged(filterPosition) }
+            uiScope.launch {
+                filteredData[filterPosition] = manga
+                notifyItemChanged(filterPosition)
+            }
+        }
+
+
+        if (isLibrary && manga.followType == FollowType.Unfollow)
+        {
+            uiScope.launch {
+                data.removeAt(dataPosition)
+                filteredData.removeAt(filterPosition)
+                notifyItemRemoved(filterPosition)
+            }
+        }
+        else if (isLibrary && dataPosition < 0)
+        {
+            uiScope.launch {
+                data.add(manga)
+                data.sortBy { it.name }
+                filteredData = ArrayList(data)
+                notifyDataSetChanged()
+            }
         }
     }
 
@@ -115,21 +137,21 @@ class MangaAdapter(
      * This function notifies the adapter that a manga object has been interacted with and needs to be updated, this function is used for items
      * in the Library fragment.
      *
-     * @param aDbManga
+     * @param manga
      * @param isAddingFlag
      */
-    fun updateItem(aDbManga: DbManga, isAddingFlag: Boolean) = ioScope.launch {
-        if (isAddingFlag && !data.contains(aDbManga))
+    fun updateItem(manga: Manga, isAddingFlag: Boolean) = ioScope.launch {
+        if (isAddingFlag && !data.contains(manga))
         {
-            data.add(aDbManga)
-            filteredData.add(aDbManga)
-            filteredData.sortedBy { manga -> manga.title }
+            data.add(manga)
+            filteredData.add(manga)
+            filteredData.sortedBy { manga -> manga.name }
 
         }
-        else if (!isAddingFlag && data.contains(aDbManga))
+        else if (!isAddingFlag && data.contains(manga))
         {
-            data.remove(aDbManga)
-            filteredData.remove(aDbManga)
+            data.remove(manga)
+            filteredData.remove(manga)
         }
 
         uiScope.launch { notifyDataSetChanged() }
@@ -158,14 +180,14 @@ class MangaAdapter(
         fun onBind(position: Int)
         {
             val manga = filteredData[position]
-            val status = manga.following
+            val status = manga.followType.value
 
             val bgColor = itemView.context.resources.getColor(backGroundFactory(status))
             val textColor = itemView.context.resources.getColor(textColorFactory(status))
 
             itemView.tvMangaTitle.setBackgroundColor(bgColor)
             itemView.tvMangaTitle.setTextColor(textColor)
-            itemView.tvMangaTitle.text = manga.title
+            itemView.tvMangaTitle.text = manga.name
 
             loadImage(manga)
 
@@ -184,15 +206,11 @@ class MangaAdapter(
             itemView.cvParent.layoutParams = params
         }
 
-        private fun loadImage(dbManga: DbManga)
+        private fun loadImage(manga: Manga)
         {
             itemView.ivManga.scaleType = ImageView.ScaleType.CENTER
 
-            val imageUrl = dbManga.image ?: run {
-                itemView.ivManga.setImageResource(R.drawable.manga_error)
-                Glide.with(itemView.context).clear(itemView.ivManga)
-                return
-            }
+            val imageUrl = manga.image
 
             if (imageUrl.isEmpty())
             {
@@ -228,12 +246,12 @@ class MangaAdapter(
             }
         }
 
-        private fun backGroundFactory(status: Int): Int = when (status)
+        private fun backGroundFactory(status: Int): Int = when (FollowType.getTypeFromValue(status))
         {
-            DbManga.FOLLOW_READING -> R.color.colorPrimary
-            DbManga.FOLLOW_COMPLETE -> R.color.manga_green
-            DbManga.FOLLOW_ON_HOLD -> R.color.manga_red
-            DbManga.FOLLOW_PLAN_TO_READ -> R.color.manga_gray
+            FollowType.Reading -> R.color.colorPrimary
+            FollowType.Completed -> R.color.manga_green
+            FollowType.On_Hold -> R.color.manga_red
+            FollowType.Plan_to_Read -> R.color.manga_gray
             else ->
             {
                 val attrs = intArrayOf(R.attr.background_color)
@@ -279,11 +297,11 @@ class MangaAdapter(
         {
             queryFilter = query.toString()
 
-            val result = arrayListOf<DbManga>()
+            val result = arrayListOf<Manga>()
 
             data.forEach { manga ->
-                if (manga.title.contains(queryFilter, true)) result.add(manga)
-                else if (manga.alternate?.contains(queryFilter, true) == true) result.add(manga)
+                if (manga.name.contains(queryFilter, true)) result.add(manga)
+                else if (manga.alternateNames.contains(queryFilter, true)) result.add(manga)
             }
 
             if (statusFilter != MangaEnums.FilterType.NONE)
@@ -292,8 +310,8 @@ class MangaAdapter(
                 result.forEach { manga ->
                     when (statusFilter)
                     {
-                        MangaEnums.FilterType.FOLLOWING -> if (!manga.isFollowing) result.remove(manga)
-                        else -> if (manga.following != statusFilter.value) result.remove(manga)
+                        MangaEnums.FilterType.FOLLOWING -> if (manga.followType.value > 0) result.remove(manga)
+                        else -> if (manga.followType.value != statusFilter.value) result.remove(manga)
                     }
                 }
             }
@@ -306,7 +324,7 @@ class MangaAdapter(
 
         override fun publishResults(aFilterText: CharSequence, aFilterResult: FilterResults)
         {
-            filteredData = aFilterResult.values as ArrayList<DbManga>
+            filteredData = aFilterResult.values as ArrayList<Manga>
             uiScope.launch { notifyDataSetChanged() }
         }
 

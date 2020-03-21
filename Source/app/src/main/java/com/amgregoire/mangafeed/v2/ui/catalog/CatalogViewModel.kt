@@ -7,14 +7,13 @@ import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.enums.FilterType
 import com.amgregoire.mangafeed.v2.model.domain.Manga
-import com.amgregoire.mangafeed.v2.repository.local.LocalCatalogRepository
-import com.amgregoire.mangafeed.v2.usecase.local.GetRecentsUseCase
+import com.amgregoire.mangafeed.v2.repository.local.LocalMangaRepository
+import com.amgregoire.mangafeed.v2.usecase.GetRecentsUseCase
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class CatalogViewModel(
-        private val catalogRepository: LocalCatalogRepository = LocalCatalogRepository()
+        private val catalogRepository: LocalMangaRepository = LocalMangaRepository()
 ) : ViewModel()
 {
     private val subscribers = CompositeDisposable()
@@ -23,7 +22,7 @@ class CatalogViewModel(
     val library = MutableLiveData<List<Manga>>()
     val all = MutableLiveData<List<Manga>>()
 
-    val lastItem = MutableLiveData<Manga>()
+    var lastItem: Manga? = null
     val queryFilter = MutableLiveData<String>()
 
     val source = MutableLiveData<SourceBase>()
@@ -69,15 +68,6 @@ class CatalogViewModel(
 
     fun retrieveRecentList() = ioScope.launch {
         GetRecentsUseCase().retrieveRecentList { result -> recent.value = result }
-    }
-
-    fun setLastItem(manga: Manga) = ioScope.launch {
-        isLastItemComplete = false
-
-        uiScope.launch { lastItem.value = manga }
-
-        delay(750)
-        isLastItemComplete = true
     }
 
     override fun onCleared()

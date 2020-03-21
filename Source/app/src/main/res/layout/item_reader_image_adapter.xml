@@ -23,7 +23,7 @@
         app:mButtonText="Refresh"
         app:mSecondaryText="Something went wrong loading this page, trying refreshing or try again later." />
 
-    <com.amgregoire.mangafeed.UI.Widgets.GestureImageView
+    <com.amgregoire.mangafeed.v2.widget.GestureImageView
         android:id="@+id/gestureImageViewReaderChapter"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -40,7 +40,7 @@
         android:scrollbars="vertical"
         android:visibility="gone">
 
-        <com.amgregoire.mangafeed.UI.Widgets.GestureTextView
+        <com.amgregoire.mangafeed.v2.widget.GestureTextView
             android:id="@+id/gestureTextViewReaderChapter"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -1,19 +1,20 @@
 package com.amgregoire.mangafeed.v2.ui.catalog.fragment
 
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.amgregoire.mangafeed.Common.RecyclerViewSpaceDecoration
 import com.amgregoire.mangafeed.MangaFeed
-import com.amgregoire.mangafeed.Models.DbManga
 import com.amgregoire.mangafeed.R
-import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.model.domain.Manga
+import com.amgregoire.mangafeed.v2.repository.local.LocalMangaRepository
+import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.base.FragmentNavMap
@@ -28,6 +29,8 @@ import kotlin.properties.Delegates
 
 abstract class CatalogBase : BaseFragment()
 {
+    private val localMangaRepository = LocalMangaRepository()
+
     private var rvSavedState: Parcelable? = null
     protected val catalogViewModel by lazy {
         val parent = activity ?: return@lazy null
@@ -61,34 +64,47 @@ abstract class CatalogBase : BaseFragment()
         })
     }
 
+    override fun updateParentSettings()
+    {
+        super.updateParentSettings()
+
+        catalogViewModel?.lastItem?.let {
+            localMangaRepository.getManga(it.link, it.source)?.let {
+                Logger.error("#########!!!!!!!!!!!!!!!!!####### Updating item")
+                (self.rvManga.adapter as? MangaAdapter)?.updateItem(it)
+            }
+        }
+    }
+
     /**************************************************************************************
      *
      * Implementation
      *
      *************************************************************************************/
-    private fun renderComplete(mangases: List<DbManga>)
+    private fun renderComplete(mangases: List<Manga>)
     {
         if (self.rvManga.adapter == null) context?.let {
             self.rvManga.addItemDecoration(RecyclerViewSpaceDecoration(ScreenUtil.dpToPx(it, 5)))
         }
 
         val list = ArrayList(mangases)
-        if (this !is RecentFragment) list.sortBy { it.title }
+        if (this !is RecentFragment) list.sortBy { it.name }
 
         self.rvManga.itemAnimator?.changeDuration = 0
         self.rvManga.layoutManager = androidx.recyclerview.widget.GridLayoutManager(context, 3)
         self.rvManga.adapter = MangaAdapter(
                 data = list,
+                isLibrary = (this is LibraryFragment),
                 source = MangaFeed.app.currentSource,
                 itemSelected = { manga ->
                     ioScope.launch {
                         if (catalogViewModel?.isLastItemComplete == true)
                         {
-                            //                            catalogViewModel?.setLastItem(manga)
+                            catalogViewModel?.lastItem = manga
                             rvSavedState = self.rvManga.layoutManager?.onSaveInstanceState()
 
                             val parent = activity ?: return@launch
-                            val fragment = MangaInfoFragment.newInstance(manga._id, false)
+                            val fragment = MangaInfoFragment.newInstance(manga.link, manga.source, false)
                             (parent as FragmentNavMap).addFragment(fragment, MangaInfoFragment.TAG, R.anim.slide_out_bottom, R.anim.slide_out_to_left, R.anim.slide_in_from_left, R.anim.slide_in_bottom)
                         }
                     }
@@ -100,13 +116,6 @@ abstract class CatalogBase : BaseFragment()
 
 
         self.emptyStateRecent.hide()
-
-        val parent = activity ?: return
-        catalogViewModel?.lastItem?.observe(parent, Observer { manga ->
-            manga ?: return@Observer
-            val updatedManga = MangaDB.getInstance().getManga(manga._id)
-            (self.rvManga.adapter as? MangaAdapter)?.updateItem(updatedManga)
-        })
     }
 
     override fun onPause()
@@ -135,7 +144,7 @@ abstract class CatalogBase : BaseFragment()
     sealed class State
     {
         object Loading : State()
-        data class Complete(val dbMangaList: List<DbManga>) : State()
+        data class Complete(val dbMangaList: List<Manga>) : State()
         data class Failed(val error: Error) : State()
     }
 

@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.amgregoire.mangafeed.UI.Widgets.NoScrollViewPager
+        <com.amgregoire.mangafeed.v2.widget.NoScrollViewPager
             android:id="@+id/vpReader"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

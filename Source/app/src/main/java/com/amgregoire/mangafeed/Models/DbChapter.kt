@@ -1,17 +1,16 @@
 package com.amgregoire.mangafeed.Models
 
 import android.os.Parcelable
-
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
+import java.util.*
 
 @Parcelize
-@Entity(tableName = "Chapter")
+@Entity(tableName = "Chapter", primaryKeys = ["url", "source", "mangaUrl"])
 class DbChapter(
-        @PrimaryKey(autoGenerate = true)
-        var _id: Int? = null,
+        @ColumnInfo(name = "id")
+        var id: String?,
 
         @ColumnInfo(name = "url")
         var url: String,
@@ -23,7 +22,7 @@ class DbChapter(
         var mangaTitle: String,
 
         @ColumnInfo(name = "mangaUrl")
-        var mangaUrl: String?,
+        var mangaUrl: String,
 
         @ColumnInfo(name = "chapterTitle")
         var chapterTitle: String,
@@ -48,7 +47,7 @@ class DbChapter(
     var mDownloadChecked = false
 
     constructor() : this(
-            _id = null,
+            id = null,
             url = "",
             chapterDate = "",
             mangaTitle = "",
@@ -61,13 +60,13 @@ class DbChapter(
             source = "Unknown"
     )
 
-    constructor(title: String, url: String, source: String)
+    constructor(title: String, url: String, mangaUrl: String, source: String)
             : this(
-            _id = null,
+            id = null,
             url = url,
             chapterDate = "",
             mangaTitle = title,
-            mangaUrl = "",
+            mangaUrl = mangaUrl,
             chapterTitle = title,
             chapterNumber = 0,
             currentPage = 0,
@@ -78,7 +77,7 @@ class DbChapter(
 
     constructor(chUrl: String, mangaTitle: String, chTitle: String, date: String, chNum: Int, mangaUrl: String, source: String)
             : this(
-            _id = null,
+            id = null,
             url = chUrl,
             chapterDate = date,
             mangaTitle = mangaTitle,
@@ -93,7 +92,7 @@ class DbChapter(
 
     constructor(chUrl: String, mangaTitle: String, chTitle: String, date: String, mangaUrl: String, source: String)
             : this(
-            _id = null,
+            id = null,
             url = chUrl,
             chapterDate = date,
             mangaTitle = mangaTitle,
@@ -114,9 +113,5 @@ class DbChapter(
     companion object
     {
         val TAG = "CHAPTER"
-
-        val DOWNLOAD_STATUS_NONE = 0
-        val DOWNLOAD_STATUS_DOWNLOADING = 1
-        val DOWNLOAD_STATUS_FINISHED = 2
     }
 }

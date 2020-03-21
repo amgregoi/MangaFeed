@@ -16,7 +16,7 @@ import android.view.animation.AccelerateInterpolator
 import com.amgregoire.mangafeed.Common.MangaEnums
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.R
-import com.amgregoire.mangafeed.UI.Services.ToolbarTimerService
+import com.amgregoire.mangafeed.v2.service.ToolbarTimerService
 import com.amgregoire.mangafeed.Utils.MangaLogger
 import com.amgregoire.mangafeed.Utils.SharedPrefs
 import com.amgregoire.mangafeed.v2.NavigationType
@@ -101,9 +101,9 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
                 activity ?: return@Observer
 
                 initViews()
-                setupToolbar(info.dbManga.title)
+                setupToolbar(info.manga.name)
                 self.vpReader.offscreenPageLimit = 1
-                if (self.vpReader.adapter == null) self.vpReader.adapter = ChapterPagerAdapter(childFragmentManager, info.dbChapters, info.dbManga.isFollowing, info.dbManga)
+                if (self.vpReader.adapter == null) self.vpReader.adapter = ChapterPagerAdapter(childFragmentManager, info.dbChapters, info.manga.isFollowing, info.manga)
                 if (MangaFeed.app.currentSourceType == MangaEnums.SourceType.NOVEL) self.vpReader.setPagingEnabled(true)
 
                 val position = readerVm.getCurrentPosition()

@@ -1,12 +1,9 @@
 package com.amgregoire.mangafeed.v2.ui.main
 
 //import com.amgregoire.mangafeed.UI.Fragments.AccountFragment
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
 import android.util.SparseArray
-import com.amgregoire.mangafeed.UI.Fragments.DownloadsFragment
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
+import com.amgregoire.mangafeed.v2.ui.download.DownloadFragment
 import com.amgregoire.mangafeed.v2.ui.settings.AccountFragment
 import java.lang.ref.WeakReference
 
@@ -20,7 +17,7 @@ class NavAdapter(manager: androidx.fragment.app.FragmentManager) : androidx.frag
         val fragment = when (position)
         {
             0 -> HomeFragment2.newInstance()
-            1 -> DownloadsFragment.newInstance()
+            1 -> DownloadFragment.newInstance()
             else -> AccountFragment.newInstance()
         }
 

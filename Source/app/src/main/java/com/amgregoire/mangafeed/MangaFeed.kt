@@ -24,14 +24,16 @@ import com.amgregoire.mangafeed.v2.extension.fromJson
 import com.amgregoire.mangafeed.v2.extension.toJson
 import com.amgregoire.mangafeed.v2.model.domain.User
 import com.amgregoire.mangafeed.v2.model.domain.UserLibrary
+import com.amgregoire.mangafeed.v2.repository.local.LocalMangaRepository
 import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.LoginActivity
-import com.amgregoire.mangafeed.v2.usecase.remote.GetRemoteUserUseCase
-import com.amgregoire.mangafeed.v2.usecase.remote.SignOutUseCase
+import com.amgregoire.mangafeed.v2.usecase.GetUserUseCase
+import com.amgregoire.mangafeed.v2.usecase.SignOutUseCase
 import com.bumptech.glide.request.target.ViewTarget
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
@@ -81,6 +83,19 @@ class MangaFeed : Application()
         }
 
     var userLibrary: UserLibrary? = null
+        set(value)
+        {
+            ioScope.launch {
+                val localMangaRepository = LocalMangaRepository()
+                value?.library?.forEach {
+                    localMangaRepository.getManga(it.link, it.source)?.apply { this.id = it.id }
+                            ?.let {
+                                localMangaRepository.putManga(it)
+                            }
+                }
+            }
+            field = value
+        }
 
     fun cookiePreferences() = when (currentSource.sourceName)
     {
@@ -228,10 +243,9 @@ class MangaFeed : Application()
     private fun updateUser()
     {
         user ?: return
-        GetRemoteUserUseCase().user { result ->
+        GetUserUseCase().user { result ->
             result ?: return@user // TODO :: Determine what to do if failed to get user
             user = result.user
-            userLibrary = result.userLibrary
             // TODO :: Use case to sync local database?
             // Maybe have a pop up if there are inconsistencies ?
         }

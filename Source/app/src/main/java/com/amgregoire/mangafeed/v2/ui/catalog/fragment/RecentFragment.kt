@@ -1,7 +1,6 @@
 package com.amgregoire.mangafeed.v2.ui.catalog.fragment
 
 import androidx.lifecycle.Observer
-import androidx.fragment.app.Fragment
 import com.amgregoire.mangafeed.R
 import kotlinx.android.synthetic.main.fragment_catalog.view.*
 
@@ -31,6 +30,6 @@ class RecentFragment : CatalogBase()
 
     companion object
     {
-        fun newInstance(): androidx.fragment.app.Fragment = RecentFragment()
+        fun newInstance() = RecentFragment()
     }
 }

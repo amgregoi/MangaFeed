@@ -7,9 +7,10 @@ import com.amgregoire.mangafeed.Common.WebSources.Base.SourceBase
 import com.amgregoire.mangafeed.Models.DbChapter
 import com.amgregoire.mangafeed.Models.DbManga
 import com.amgregoire.mangafeed.R
-import com.amgregoire.mangafeed.UI.Adapters.MangaInfoChaptersAdapter
 import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.Utils.NetworkService
+import com.amgregoire.mangafeed.v2.model.domain.Manga
+import com.amgregoire.mangafeed.v2.repository.local.LocalChapterRepository
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.Glide
@@ -26,14 +27,14 @@ import kotlinx.android.synthetic.main.item_manga_info_adapter_header2.view.*
  */
 
 class MangaInfoAdapter(
-        var dbManga: DbManga,
+        var manga: Manga,
         val source: SourceBase,
         var dbChapters: List<DbChapter> = listOf(),
-        val chapterSelected: (DbManga, List<DbChapter>, DbChapter) -> Unit
+        val chapterSelected: (Manga, List<DbChapter>, DbChapter) -> Unit
 ) : androidx.recyclerview.widget.RecyclerView.Adapter<MangaInfoAdapter.BaseViewHolder>()
 {
     private var data = arrayListOf<BaseData>()
-
+    private val localChapterRepository = LocalChapterRepository()
 
     init
     {
@@ -52,9 +53,9 @@ class MangaInfoAdapter(
         }
     }
 
-    fun updateInfo(dbManga: DbManga, dbChapters: List<DbChapter>)
+    fun updateInfo(manga: Manga, dbChapters: List<DbChapter>)
     {
-        this.dbManga = dbManga
+        this.manga = manga
         this.dbChapters = dbChapters
         setData()
         notifyDataSetChanged()
@@ -131,26 +132,26 @@ class MangaInfoAdapter(
     {
         override fun onBind(position: Int)
         {
-            itemView.tvMangaTitle.text = dbManga.title
-            itemView.tvAlternate.text = dbManga.alternate
-            itemView.tvArtist.text = dbManga.artist
-            itemView.tvAuthor.text = dbManga.author
-            itemView.tvGenre.text = dbManga.genres
-            itemView.tvDescription.text = dbManga.description
-            itemView.tvStatus.text = dbManga.status
+            itemView.tvMangaTitle.text = manga.name
+            itemView.tvAlternate.text = manga.alternateNames
+            itemView.tvArtist.text = manga.artists
+            itemView.tvAuthor.text = manga.authors
+            itemView.tvGenre.text = manga.genres
+            itemView.tvDescription.text = manga.description
+            itemView.tvStatus.text = manga.status
 
             setupImages()
         }
 
         private fun setupImages()
         {
-            val image = dbManga.image ?: run {
+            val image = manga.image ?: run {
                 itemView.ivMangaInfoBackground.setBackgroundResource(R.color.colorAccent)
                 itemView.ivMangaInfoBackground.setImageResource(R.drawable.manga_error)
                 return
             }
 
-            if(image.isEmpty())
+            if (image.isEmpty())
             {
                 itemView.ivMangaInfoBackground.setBackgroundResource(R.color.colorAccent)
                 itemView.ivMangaInfoBackground.setImageResource(R.drawable.manga_error)
@@ -211,12 +212,13 @@ class MangaInfoAdapter(
             itemView.tvChapterTitle.text = chapter.chapterTitle
             itemView.tvChapterDate.text = chapter.chapterDate
 
-            val hasRead = MangaDB.getInstance().getChapter(chapter) != null
-            if(hasRead) itemView.ivReadIndicator.visibility = View.VISIBLE
+
+            val hasRead = localChapterRepository.getChapter(chapter) != null
+            if (hasRead) itemView.ivReadIndicator.visibility = View.VISIBLE
             else itemView.ivReadIndicator.visibility = View.GONE
 
-            itemView.clParent.setOnClickListener{
-                chapterSelected(dbManga, dbChapters, chapter)
+            itemView.clParent.setOnClickListener {
+                chapterSelected(manga, dbChapters, chapter)
             }
         }
     }
@@ -240,6 +242,6 @@ class MangaInfoAdapter(
 
     companion object
     {
-        val TAG = MangaInfoChaptersAdapter::class.java.simpleName
+        val TAG: String = MangaInfoAdapter::class.java.simpleName
     }
 }

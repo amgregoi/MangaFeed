@@ -10,6 +10,7 @@ import com.amgregoire.mangafeed.Models.DbChapter;
 import com.amgregoire.mangafeed.Utils.NetworkService;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
 import com.amgregoire.mangafeed.v2.model.domain.Manga;
+import com.amgregoire.mangafeed.v2.repository.local.LocalMangaRepository;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.FutureTarget;
@@ -28,6 +29,8 @@ import okhttp3.Headers;
 public abstract class SourceBase
 {
     private String TAG = SourceBase.class.getSimpleName();
+
+    protected LocalMangaRepository localMangaRepository = new LocalMangaRepository();
 
     public abstract boolean requiresCloudFlare();
 
@@ -135,7 +138,7 @@ public abstract class SourceBase
     public Observable<List<DbChapter>> getChapterListObservable(final RequestWrapper request)
     {
         return NetworkService.Companion.getPermanentInstance()
-                                       .getResponseCustomHeaders(request.getManga().getFullUrl(), constructRequestHeaders())
+                                       .getResponseCustomHeaders(request.getManga().getUrl(), constructRequestHeaders())
                                        .flatMap(aResponse -> NetworkService.Companion.mapResponseToString(aResponse))
                                        .flatMap(aResponseBody -> Observable.just(parseResponseToChapters(request, aResponseBody)))
                                        .subscribeOn(Schedulers.computation())
@@ -152,7 +155,7 @@ public abstract class SourceBase
     public Observable<Manga> updateMangaObservable(final RequestWrapper request)
     {
         return NetworkService.Companion.getPermanentInstance()
-                                       .getResponseCustomHeaders(request.getManga().getFullUrl(), constructRequestHeaders())
+                                       .getResponseCustomHeaders(request.getManga().getUrl(), constructRequestHeaders())
                                        .flatMap(aResponse -> NetworkService.Companion.mapResponseToString(aResponse))
                                        .flatMap(aResponseBody -> Observable.just(parseResponseToManga(request, aResponseBody)))
                                        .subscribeOn(Schedulers.computation())

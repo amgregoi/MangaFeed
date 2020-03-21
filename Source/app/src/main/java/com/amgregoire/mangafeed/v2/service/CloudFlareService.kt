@@ -24,13 +24,11 @@ class CloudFlareService
         val cookiePrefs = MangaFeed.app.cookiePreferences()
         if (isValidCookie(cookiePrefs))
         {
-            Logger.error("######################## Using old cookies")
             val oldCookies = cookiePrefs.cookies!!
             cookies.invoke(oldCookies.toList())
         }
         else
         {
-            Logger.error("~~~~~~~~~~~~~~~~~~~~~~~ Using new cookies")
             getCookies(url, userAgent) { newCookies ->
                 cookies.invoke(newCookies)
             }

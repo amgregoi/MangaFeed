@@ -1,22 +1,22 @@
 package com.amgregoire.mangafeed.v2.ui.info
 
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.appcompat.widget.PopupMenu
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.R
-import com.amgregoire.mangafeed.Utils.MangaDB
 import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.NavigationType
 import com.amgregoire.mangafeed.v2.ResourceFactory
+import com.amgregoire.mangafeed.v2.enums.FollowType
+import com.amgregoire.mangafeed.v2.repository.local.LocalMangaRepository
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.base.FragmentNavMap
-import com.amgregoire.mangafeed.v2.ui.catalog.enum.FollowType
 import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
 import com.amgregoire.mangafeed.v2.ui.read.ReaderFragment
 import com.amgregoire.mangafeed.v2.ui.read.ReaderViewModel
@@ -30,14 +30,16 @@ import kotlinx.coroutines.launch
 
 class MangaInfoFragment : BaseFragment()
 {
+    private val localMangaRepository = LocalMangaRepository()
+
     private val readerViewModel: ReaderViewModel? by lazy {
         val parent = activity ?: return@lazy null
         ViewModelProviders.of(parent).get(ReaderViewModel::class.java)
     }
 
     private val mangaInfoViewModel by lazy {
-        val manga = MangaDB.getInstance().getManga(arguments!!.getInt(MANGA_KEY))
-        ViewModelProviders.of(this, MangaInfoViewModelFactory(MangaFeed.app, manga)).get(MangaInfoViewModel::class.java)
+        val manga = localMangaRepository.getManga(arguments!!.getString(MANGA_LINK_KEY), arguments!!.getString(MANGA_SOURCE_KEY)) ?: return@lazy null
+        ViewModelProviders.of(this, MangaInfoViewModelFactory(MangaFeed.app, manga!!)).get(MangaInfoViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
@@ -53,7 +55,7 @@ class MangaInfoFragment : BaseFragment()
         updateParentSettings()
         setupBottomNav()
 
-        mangaInfoViewModel.state.observe(this, Observer { state ->
+        mangaInfoViewModel?.state?.observe(this, Observer { state ->
             when (state)
             {
                 is MangaInfoViewModel.State.Complete -> uiScope.launch { renderComplete() }
@@ -62,31 +64,31 @@ class MangaInfoFragment : BaseFragment()
             }
         })
 
-        mangaInfoViewModel.mangaInfo.observe(this, Observer { mangaInfo ->
+        mangaInfoViewModel?.mangaInfo?.observe(this, Observer { mangaInfo ->
             mangaInfo ?: return@Observer
 
             if (self.rvMangaInfo.adapter != null)
             {
-                (self.rvMangaInfo.adapter as MangaInfoAdapter).updateInfo(mangaInfo.dbManga, mangaInfo.dbChapters)
+                (self.rvMangaInfo.adapter as MangaInfoAdapter).updateInfo(mangaInfo.manga, mangaInfo.dbChapters)
                 return@Observer
             }
 
-            mangaInfoViewModel.setFollowStatus(mangaInfo.dbManga.following)
+            mangaInfoViewModel?.setFollowStatus(mangaInfo.manga.followType)
 
             self.rvMangaInfo.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
             self.rvMangaInfo.adapter = MangaInfoAdapter(
-                    dbManga = mangaInfo.dbManga,
+                    manga = mangaInfo.manga,
                     source = MangaFeed.app.currentSource,
                     dbChapters = mangaInfo.dbChapters,
                     chapterSelected = { manga, chapters, chapter ->
                         val parent = activity ?: return@MangaInfoAdapter
                         readerViewModel?.updateReaderInfo(manga, chapters, chapter, true)
-                        (parent as FragmentNavMap).addFragmentParent(ReaderFragment.newInstance(), this,ReaderFragment.TAG)
+                        (parent as FragmentNavMap).addFragmentParent(ReaderFragment.newInstance(), this, ReaderFragment.TAG)
                     }
             )
         })
 
-        mangaInfoViewModel.mangaInfoBottomNav.observe(this, Observer { bottomNavInfo ->
+        mangaInfoViewModel?.mangaInfoBottomNav?.observe(this, Observer { bottomNavInfo ->
             bottomNavInfo ?: return@Observer
 
             val item = self.bottomNavMangaInfo.menu.findItem(R.id.menuMangaInfoBottomContinueReading)
@@ -99,19 +101,20 @@ class MangaInfoFragment : BaseFragment()
 
         self.swipeRefreshMangaInfo.setOnRefreshListener {
             self.swipeRefreshMangaInfo.isRefreshing = false
-            mangaInfoViewModel.refresh()
+            mangaInfoViewModel?.refresh()
         }
 
         self.emptyStateMangaInfo.setButtonClickListener(View.OnClickListener {
             self.swipeRefreshMangaInfo.isRefreshing = false
-            mangaInfoViewModel.refresh()
+            mangaInfoViewModel?.refresh()
         })
     }
 
     override fun updateParentSettings()
     {
         val parent = activity ?: return
-        (parent as ToolbarMap).setTitle(mangaInfoViewModel.dbManga.title)
+        mangaInfoViewModel?.manga?.name?.let {  (parent as ToolbarMap).setTitle(it)}
+//        (parent as ToolbarMap).setTitle(mangaInfoViewModel.manga.name)
         (parent as ToolbarMap).setNavigationIcon(ResourceFactory.getNavigationIcon(NavigationType.Close))
         (parent as ToolbarMap).setOptionsMenu(R.menu.menu_empty)
     }
@@ -150,11 +153,11 @@ class MangaInfoFragment : BaseFragment()
                     popMenu.setOnMenuItemClickListener { popupItem ->
                         when (popupItem.itemId)
                         {
-                            R.id.menuFollowStatusReading -> mangaInfoViewModel.setFollowStatus(FollowType.Reading)
-                            R.id.menuFollowStatusCompleted -> mangaInfoViewModel.setFollowStatus(FollowType.Completed)
-                            R.id.menuFollowStatusOnHold -> mangaInfoViewModel.setFollowStatus(FollowType.On_Hold)
-                            R.id.menuFollowStatusPlanToRead -> mangaInfoViewModel.setFollowStatus(FollowType.Plan_to_Read)
-                            else -> mangaInfoViewModel.setFollowStatus(FollowType.Unfollow)
+                            R.id.menuFollowStatusReading -> mangaInfoViewModel?.setFollowStatus(FollowType.Reading)
+                            R.id.menuFollowStatusCompleted -> mangaInfoViewModel?.setFollowStatus(FollowType.Completed)
+                            R.id.menuFollowStatusOnHold -> mangaInfoViewModel?.setFollowStatus(FollowType.On_Hold)
+                            R.id.menuFollowStatusPlanToRead -> mangaInfoViewModel?.setFollowStatus(FollowType.Plan_to_Read)
+                            else -> mangaInfoViewModel?.setFollowStatus(FollowType.Unfollow)
                         }
                         true
                     }
@@ -169,9 +172,9 @@ class MangaInfoFragment : BaseFragment()
                     val parent = activity ?: return@setOnNavigationItemSelectedListener true
 
                     val adapter = (self.rvMangaInfo.adapter as? MangaInfoAdapter) ?: return@setOnNavigationItemSelectedListener true
-                    val manga = adapter.dbManga
+                    val manga = adapter.manga
                     val chapters = adapter.dbChapters
-                    val chapter = adapter.dbChapters.firstOrNull { chapter -> chapter.url == manga.recentChapter } ?: chapters[chapters.size-1]
+                    val chapter = adapter.dbChapters.firstOrNull { chapter -> chapter.url == manga.recentChapter } ?: chapters[chapters.size - 1]
 
                     readerViewModel?.updateReaderInfo(manga, chapters, chapter, true)
 
@@ -186,13 +189,15 @@ class MangaInfoFragment : BaseFragment()
     companion object
     {
         val TAG = MangaInfoFragment::class.java.simpleName
-        val MANGA_KEY = TAG + "MANGA"
+        val MANGA_LINK_KEY = TAG + "LINK"
+        val MANGA_SOURCE_KEY = TAG + "SOURCE"
         val OFFLINE_KEY = TAG + "OFFLINE"
 
-        fun newInstance(mangaId: Int, offline: Boolean): androidx.fragment.app.Fragment
+        fun newInstance(link: String, source: String, offline: Boolean): androidx.fragment.app.Fragment
         {
             val lBundle = Bundle()
-            lBundle.putInt(MANGA_KEY, mangaId)
+            lBundle.putString(MANGA_LINK_KEY, link)
+            lBundle.putString(MANGA_SOURCE_KEY, source)
             lBundle.putBoolean(OFFLINE_KEY, offline)
 
             val lFragment = MangaInfoFragment()
