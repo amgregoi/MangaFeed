@@ -40,4 +40,8 @@ interface MangaDao
 
     @Delete
     fun delete(user: DbManga)
+
+    @Query("UPDATE Manga SET following = 0 WHERE following > 0")
+    fun resetLibrary()
+
 }

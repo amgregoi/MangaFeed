@@ -10,8 +10,8 @@ import com.amgregoire.mangafeed.v2.database.AppDatabase
 import com.amgregoire.mangafeed.v2.enums.FilterType
 import com.amgregoire.mangafeed.v2.enums.FollowType
 import com.amgregoire.mangafeed.v2.model.domain.Manga
-import com.amgregoire.mangafeed.v2.model.mappers.MangaToDbMangaMapper
 import com.amgregoire.mangafeed.v2.model.mappers.DbMangaToMangaMapper
+import com.amgregoire.mangafeed.v2.model.mappers.MangaToDbMangaMapper
 import kotlinx.coroutines.launch
 
 class LocalMangaRepository(
@@ -95,5 +95,13 @@ class LocalMangaRepository(
                 .map { mangaMapper.map(it) }
 
         uiScope.launch { result(manga) }
+    }
+
+    /***
+     * This function resets the local database, and sets all following flags to 0.
+     *
+     */
+    fun resetLibrary() = ioScope.launch {
+        database.mangaDao().resetLibrary()
     }
 }

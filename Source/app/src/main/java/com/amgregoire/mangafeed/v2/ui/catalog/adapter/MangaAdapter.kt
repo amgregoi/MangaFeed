@@ -113,16 +113,16 @@ class MangaAdapter(
             }
         }
 
-
-        if (isLibrary && manga.followType == FollowType.Unfollow)
+        if (isLibrary && dataPosition >= 0 && manga.followType == FollowType.Unfollow)
         {
+            if (dataPosition < 0 && dataPosition > data.size) return@launch
             uiScope.launch {
                 data.removeAt(dataPosition)
                 filteredData.removeAt(filterPosition)
                 notifyItemRemoved(filterPosition)
             }
         }
-        else if (isLibrary && dataPosition < 0)
+        else if (isLibrary && dataPosition < 0 && manga.followType != FollowType.Unfollow)
         {
             uiScope.launch {
                 data.add(manga)

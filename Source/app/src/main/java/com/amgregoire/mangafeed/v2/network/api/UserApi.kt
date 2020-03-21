@@ -24,7 +24,7 @@ interface UserApi
      *
      */
     @GET("/users")
-    fun getUser(): Call<Result<ApiUser>>
+    fun getUser(): Call<Result<LoginResponse>>
 
     /***
      *

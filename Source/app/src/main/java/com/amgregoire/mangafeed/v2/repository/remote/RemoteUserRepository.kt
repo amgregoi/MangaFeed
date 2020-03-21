@@ -1,5 +1,6 @@
 package com.amgregoire.mangafeed.v2.repository.remote
 
+import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.model.domain.User
@@ -32,7 +33,7 @@ class RemoteUserRepository(
         val res = try
         {
             userApi.getUser().result {
-                FullUser(mapUser(it), mapUserLibrary(it))
+                FullUser(mapUser(it), mapUserLibrary(it.user))
             }
         }
         catch (ex: Exception)
@@ -55,6 +56,7 @@ class RemoteUserRepository(
         {
             val loginRequest = UserApi.UserSignInRequest(email, password)
             userApi.postSignIn(loginRequest).result {
+                MangaFeed.app.userLibrary = mapUserLibrary(it.user)
                 mapUser(it)
             }
         }

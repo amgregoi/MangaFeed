@@ -403,21 +403,4 @@ public class MangaDB extends SQLiteOpenHelper
             }
         });
     }
-
-    /***
-     * This function resets the local database, and sets all following flags to 0.
-     *
-     */
-    public void resetLibrary()
-    {
-        ContentValues cv = new ContentValues();
-        cv.put("following", 0);
-
-        SQLiteDatabase lDb = getWritableDatabase();
-        lDb.update("Manga", cv, "NOT following = ?", new String[]{"0"});
-        lDb.close();
-
-        MangaFeed.Companion.getApp().rxBus().send(new UpdateMangaItemViewEvent());
-    }
-
 }

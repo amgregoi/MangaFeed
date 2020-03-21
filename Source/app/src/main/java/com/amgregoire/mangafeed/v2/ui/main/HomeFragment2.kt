@@ -2,27 +2,22 @@ package com.amgregoire.mangafeed.v2.ui.main
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.constraintlayout.widget.ConstraintLayout
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout
-import androidx.appcompat.widget.SearchView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.amgregoire.mangafeed.R
-import com.amgregoire.mangafeed.v2.service.AttrService
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import com.amgregoire.mangafeed.v2.service.Logger
-import com.amgregoire.mangafeed.v2.ui.catalog.CatalogViewModel
+import com.amgregoire.mangafeed.v2.ui.catalog.vm.CatalogVM
 import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
-import kotlinx.android.synthetic.main.content_bottom_filter.view.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
 
 class HomeFragment2 : BaseFragment()
 {
     private val catalogViewModel by lazy {
         val parent = activity ?: return@lazy null
-        ViewModelProviders.of(parent).get(CatalogViewModel::class.java)
+        ViewModelProviders.of(parent).get(CatalogVM::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?

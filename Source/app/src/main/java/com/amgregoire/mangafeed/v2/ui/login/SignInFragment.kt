@@ -78,10 +78,7 @@ class SignInFragment : BaseFragment()
     {
         self.loading.hide()
         MangaFeed.app.user = user
-
-        context?.let {
-            startActivity(MActivity.newInstance(it))
-        }
+        MangaFeed.app.startMainActivityAfterSetup()
     }
 
     companion object

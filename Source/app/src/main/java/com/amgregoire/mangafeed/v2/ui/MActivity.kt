@@ -21,7 +21,7 @@ import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.base.BaseNavigationActivity
-import com.amgregoire.mangafeed.v2.ui.catalog.CatalogViewModel
+import com.amgregoire.mangafeed.v2.ui.catalog.vm.CatalogVM
 import com.amgregoire.mangafeed.v2.ui.main.MFragment
 import kotlinx.android.synthetic.main.activity_m.*
 import kotlinx.android.synthetic.main.widget_toolbar_2.*
@@ -30,11 +30,8 @@ import kotlinx.coroutines.launch
 
 class MActivity : BaseNavigationActivity()
 {
-    val catalogViewModel by lazy {
-        ViewModelProviders.of(this).get(CatalogViewModel::class.java)
-    }
-
-    val mainFragment: MFragment by lazy { MFragment.newInstance() }
+    private val sourceVM by lazy { ViewModelProviders.of(this).get(CatalogVM::class.java) }
+    private val mainFragment: MFragment by lazy { MFragment.newInstance() }
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -130,8 +127,7 @@ class MActivity : BaseNavigationActivity()
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
             {
                 val newSource = MangaEnums.Source.values()[position]
-                SharedPrefs.setSavedSource(newSource.name)
-                catalogViewModel.setSource(newSource.source)
+                sourceVM.setSource(newSource.source)
                 Logger.error("${newSource} selected")
             }
         }

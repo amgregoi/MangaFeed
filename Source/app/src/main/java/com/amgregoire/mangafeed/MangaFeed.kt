@@ -27,6 +27,7 @@ import com.amgregoire.mangafeed.v2.model.domain.UserLibrary
 import com.amgregoire.mangafeed.v2.repository.local.LocalMangaRepository
 import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.LoginActivity
+import com.amgregoire.mangafeed.v2.ui.MActivity
 import com.amgregoire.mangafeed.v2.usecase.GetUserUseCase
 import com.amgregoire.mangafeed.v2.usecase.SignOutUseCase
 import com.bumptech.glide.request.target.ViewTarget
@@ -83,19 +84,6 @@ class MangaFeed : Application()
         }
 
     var userLibrary: UserLibrary? = null
-        set(value)
-        {
-            ioScope.launch {
-                val localMangaRepository = LocalMangaRepository()
-                value?.library?.forEach {
-                    localMangaRepository.getManga(it.link, it.source)?.apply { this.id = it.id }
-                            ?.let {
-                                localMangaRepository.putManga(it)
-                            }
-                }
-            }
-            field = value
-        }
 
     fun cookiePreferences() = when (currentSource.sourceName)
     {
@@ -183,7 +171,27 @@ class MangaFeed : Application()
 
         this.user = null
         this.userLibrary = null
+        userPreferences.clear()
+
+        LocalMangaRepository().resetLibrary()
         startActivity(LoginActivity.newInstance(this))
+    }
+
+    fun startMainActivityAfterSetup()
+    {
+        ioScope.launch {
+            val localMangaRepository = LocalMangaRepository()
+            userLibrary?.library?.forEach {
+                localMangaRepository.getManga(it.link, it.source)?.apply {
+                    this.id = it.id
+                    this.followType = it.followType
+                }?.let { manga ->
+                    Logger.error("Update manga -> ${manga.name}")
+                    localMangaRepository.putManga(manga)
+                }
+            }
+            uiScope.launch { startActivity(MActivity.newInstance(app)) }
+        }
     }
 
     /***
@@ -242,12 +250,10 @@ class MangaFeed : Application()
 
     private fun updateUser()
     {
-        user ?: return
         GetUserUseCase().user { result ->
             result ?: return@user // TODO :: Determine what to do if failed to get user
             user = result.user
-            // TODO :: Use case to sync local database?
-            // Maybe have a pop up if there are inconsistencies ?
+            userLibrary = result.userLibrary
         }
     }
 
