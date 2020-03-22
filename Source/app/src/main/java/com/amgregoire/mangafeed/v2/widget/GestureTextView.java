@@ -36,7 +36,7 @@ public class GestureTextView extends AppCompatTextView implements GestureDetecto
         return super.onTouchEvent(event);
     }
 
-    public void setUserGesureListener(GestureViewPager.UserGestureListener singleTapListener)
+    public void setUserGestureListener(GestureViewPager.UserGestureListener singleTapListener)
     {
         mUserGestureListener = singleTapListener;
     }

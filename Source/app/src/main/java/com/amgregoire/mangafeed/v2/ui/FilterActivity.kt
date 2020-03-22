@@ -7,60 +7,69 @@ import android.os.Bundle
 import android.transition.Fade
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
+import android.widget.EditText
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProviders
-import com.amgregoire.mangafeed.Common.MangaEnums
-import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.R
-import com.amgregoire.mangafeed.Utils.NetworkService
 import com.amgregoire.mangafeed.Utils.SharedPrefs
-import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.NavigationType
+import com.amgregoire.mangafeed.v2.ResourceFactory
 import com.amgregoire.mangafeed.v2.extension.lastFragment
-import com.amgregoire.mangafeed.v2.service.CloudFlareService
+import com.amgregoire.mangafeed.v2.service.AttrService
+import com.amgregoire.mangafeed.v2.service.KeyboardUtil
 import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.base.BaseNavigationActivity
-import com.amgregoire.mangafeed.v2.ui.catalog.vm.CatalogVM
+import com.amgregoire.mangafeed.v2.ui.filter.FilterFragment
+import com.amgregoire.mangafeed.v2.ui.filter.FilterVM
 import com.amgregoire.mangafeed.v2.ui.main.MFragment
-import kotlinx.android.synthetic.main.activity_m.*
-import kotlinx.android.synthetic.main.widget_toolbar_2.*
-import kotlinx.coroutines.launch
+import kotlinx.android.synthetic.main.activity_filter.*
+import kotlinx.android.synthetic.main.widget_toolbar_2.toolbar
+import kotlinx.android.synthetic.main.widget_toolbar_filter.*
 
 
-class MActivity : BaseNavigationActivity()
+class FilterActivity : BaseNavigationActivity()
 {
-    private val sourceVM by lazy { ViewModelProviders.of(this).get(CatalogVM::class.java) }
-    private val mainFragment: MFragment by lazy { MFragment.newInstance() }
-
+    private val filterVM by lazy { ViewModelProviders.of(this).get(FilterVM::class.java) }
+    private val filterFragment: FilterFragment by lazy { FilterFragment.newInstance() }
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-
-        val source = MangaFeed.app.currentSource
-        if (source.requiresCloudFlare())
-        {
-            CloudFlareService().getCookies(source.baseUrl, NetworkService.defaultUserAgent) {
-                uiScope.launch { setupView() }
-            }
-        }
-        else setupView()
+        setupView()
     }
 
     private fun setupView()
     {
-        setContentView(R.layout.activity_m)
+        setContentView(R.layout.activity_filter)
         setSupportActionBar(toolbar)
 
-        setupToolbarSpinner()
-
-        mainFragment.enterTransition = Fade(Fade.MODE_IN)
+        filterFragment.enterTransition = Fade(Fade.MODE_IN)
         supportFragmentManager.beginTransaction()
-                .setPrimaryNavigationFragment(mainFragment)
-                .add(flContainer.id, mainFragment, MFragment.TAG)
+                .setPrimaryNavigationFragment(filterFragment)
+                .add(flContainer.id, filterFragment, MFragment.TAG)
                 .commit()
 
         setupBackStackListener()
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener
+        {
+            override fun onQueryTextSubmit(query: String?) = false
+
+            override fun onQueryTextChange(newText: String?): Boolean
+            {
+                filterVM.updateQuery(newText)
+                return true
+            }
+        })
+
+        val txtSearch = searchView.findViewById(R.id.search_src_text) as EditText
+        val color = getColor(AttrService.getAttrColor(this, R.attr.text_color))
+        txtSearch.setHintTextColor(color)
+        txtSearch.setTextColor(color)
+
+        searchView.requestFocus()
+        KeyboardUtil.show(this)
+        setNavigationIcon(ResourceFactory.getNavigationIcon(NavigationType.Close))
     }
 
     override fun setNavigationIcon(iconResource: Int?)
@@ -76,7 +85,6 @@ class MActivity : BaseNavigationActivity()
         {
             null -> Logger.debug("null menu item")
             android.R.id.home -> onBackPressed()
-            R.id.menuHomeSearch -> Logger.debug("Need to implement search + filter fragment")
             else -> Logger.debug("Unknown menu item selected -> $item -> ${item.menuInfo}")
         }
 
@@ -91,8 +99,9 @@ class MActivity : BaseNavigationActivity()
         {
             if (manager.backStackEntryCount == 1)
             {
-                setNavigationIcon(null)
-                mainFragment.updateParentSettings()
+                searchView.requestFocus()
+                KeyboardUtil.show(this)
+                filterFragment.updateParentSettings()
             }
 
             manager.lastFragment()?.let { fragment ->
@@ -117,25 +126,6 @@ class MActivity : BaseNavigationActivity()
         }
     }
 
-    private fun setupToolbarSpinner()
-    {
-        toolbarSpinner.adapter = ArrayAdapter(this, R.layout.item_source_spinner, MangaEnums.Source.values())
-        toolbarSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
-        {
-            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
-
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
-            {
-                val newSource = MangaEnums.Source.values()[position]
-                sourceVM.setSource(newSource.source)
-                Logger.error("${newSource} selected")
-            }
-        }
-
-        val position = MangaEnums.Source.getPosition(MangaFeed.app.currentSource.sourceName)
-        toolbarSpinner.setSelection(position)
-    }
-
     override fun getTheme(): Resources.Theme
     {
         val theme = super.getTheme()
@@ -148,11 +138,6 @@ class MActivity : BaseNavigationActivity()
 
     companion object
     {
-        fun newInstance(context: Context) = Intent(context, MActivity::class.java)
-                .apply {
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                }
+        fun newInstance(context: Context) = Intent(context, FilterActivity::class.java)
     }
 }

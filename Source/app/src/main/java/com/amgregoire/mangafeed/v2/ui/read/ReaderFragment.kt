@@ -56,7 +56,6 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
             val binder = service as ToolbarTimerService.LocalBinder
             mToolBarService = binder.service
             mToolBarService?.setToolbarListener(this@ReaderFragment)
-            //            delayedAction(8000) { mToolBarService?.startTimer() }
         }
 
         override fun onServiceDisconnected(aComponent: ComponentName)
@@ -169,6 +168,12 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
             readerViewModel?.decrementChapter()
             mToolBarService?.restartTimer()
         }
+
+        imageViewReaderRefresh
+        imageViewReaderRefresh.setOnClickListener {
+            (self.vpReader.adapter as? ChapterPagerAdapter)?.updateItemAt(self.vpReader.currentItem)
+        }
+
     }
 
     fun initViews()

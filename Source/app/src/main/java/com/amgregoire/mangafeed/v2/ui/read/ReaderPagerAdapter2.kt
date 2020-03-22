@@ -17,7 +17,7 @@ class ChapterPagerAdapter(
         private val manga: Manga
 ) : androidx.fragment.app.FragmentStatePagerAdapter(manager)
 {
-    private val mFragmentRefs = SparseArray<WeakReference<androidx.fragment.app.Fragment>>()
+    private val mFragmentRefs = SparseArray<WeakReference<ChapterFragment>>()
 
     override fun getItem(position: Int): androidx.fragment.app.Fragment?
     {
@@ -33,6 +33,11 @@ class ChapterPagerAdapter(
             mFragmentRefs.put(position, WeakReference(chapterFragment))
             chapterFragment
         }
+    }
+
+    fun updateItemAt(position: Int)
+    {
+         mFragmentRefs.get(position)?.get()?.refreshAllPages()
     }
 
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any)

@@ -15,7 +15,7 @@ import com.amgregoire.mangafeed.v2.model.mappers.MangaToDbMangaMapper
 import kotlinx.coroutines.launch
 
 class LocalMangaRepository(
-        private val mangaMapper: DbMangaToMangaMapper = DbMangaToMangaMapper(),
+        private val dbMangaToMangaMapper: DbMangaToMangaMapper = DbMangaToMangaMapper(),
         private val database: AppDatabase = MangaDB.getInstance().database
 )
 {
@@ -46,13 +46,13 @@ class LocalMangaRepository(
     fun getManga(link: String): Manga?
     {
         val dbManga = database.mangaDao().findByUrl(link, currentSource.sourceName) ?: return null
-        return mangaMapper.map(dbManga)
+        return dbMangaToMangaMapper.map(dbManga)
     }
 
     fun getManga(link: String, source: String): Manga?
     {
         val dbManga = database.mangaDao().findByUrl(link, source) ?: return null
-        return mangaMapper.map(dbManga)
+        return dbMangaToMangaMapper.map(dbManga)
     }
 
     fun containsManga(link: String, source: String): Boolean
@@ -62,7 +62,7 @@ class LocalMangaRepository(
 
     fun getExistingManga(urlList: List<String>, source: String): List<Manga>
     {
-        return database.mangaDao().test(source, urlList).map { mangaMapper.map(it) }
+        return database.mangaDao().test(source, urlList).map { dbMangaToMangaMapper.map(it) }
     }
 
 
@@ -75,10 +75,10 @@ class LocalMangaRepository(
         val manga =
                 if (filter == FilterType.NONE) database.mangaDao()
                         .findFollowed(SharedPrefs.getSavedSource())
-                        .map { mangaMapper.map(it) }
+                        .map { dbMangaToMangaMapper.map(it) }
                 else database.mangaDao()
                         .findFollowedWithFilter(SharedPrefs.getSavedSource(), filter.value)
-                        .map { mangaMapper.map(it) }
+                        .map { dbMangaToMangaMapper.map(it) }
 
         uiScope.launch { result(manga) }
     }
@@ -92,7 +92,7 @@ class LocalMangaRepository(
     fun getCatalogList(result: (List<Manga>) -> Unit) = ioScope.launch {
         val manga = database.mangaDao()
                 .findAllBySource(SharedPrefs.getSavedSource())
-                .map { mangaMapper.map(it) }
+                .map { dbMangaToMangaMapper.map(it) }
 
         uiScope.launch { result(manga) }
     }
@@ -103,5 +103,13 @@ class LocalMangaRepository(
      */
     fun resetLibrary() = ioScope.launch {
         database.mangaDao().resetLibrary()
+    }
+
+    fun getUpdateMangaList(mangaList: List<Manga>?): List<Manga>?
+    {
+        val source = mangaList?.firstOrNull()?.source ?: return null
+        val links = mangaList.map { it.link }
+
+        return database.mangaDao().queryObjects(source, links).map { dbMangaToMangaMapper.map(it) }
     }
 }

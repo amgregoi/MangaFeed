@@ -7,6 +7,7 @@
     android:layout_alignParentTop="true"
     android:background="?attr/background_color"
     android:elevation="2dp"
+    app:navigationIcon="@drawable/nav_close_white"
     android:minHeight="?attr/actionBarSize"
     app:layout_constraintTop_toTopOf="parent"
     app:titleTextColor="?attr/background_color">
@@ -24,24 +25,16 @@
         android:textColor="?attr/accent1"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
-    <Spinner
-        android:id="@+id/toolbarSpinner"
-        android:layout_width="wrap_content"
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
+        style="@style/Fable.Widget.SearchView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="@android:color/transparent"
-        android:gravity="start"
-        android:backgroundTint="?attr/text_color"
-        android:overlapAnchor="false"
-        android:dropDownSelector="?attr/text_color"
-        android:dropDownWidth="match_parent"
-        android:fontFamily="sans-serif"
-        android:lineSpacingExtra="12sp"
-        android:textColor="?attr/accent1"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:visibility="visible" />
+        app:iconifiedByDefault="false"
+        app:queryHint="Search"
+        app:searchIcon="@null" />
+
 
 </androidx.appcompat.widget.Toolbar>

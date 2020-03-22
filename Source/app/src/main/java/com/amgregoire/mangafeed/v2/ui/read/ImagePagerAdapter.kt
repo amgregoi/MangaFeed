@@ -12,7 +12,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.core.widget.NestedScrollView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
+import androidx.viewpager.widget.PagerAdapter
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.v2.widget.GestureImageView
 import com.amgregoire.mangafeed.v2.widget.GestureTextView
@@ -38,11 +41,11 @@ import java.io.ByteArrayOutputStream
  */
 
 class ImagePagerAdapter(
-        val parent: androidx.fragment.app.Fragment,
-        val context: androidx.fragment.app.FragmentActivity,
+        val parent: Fragment,
+        val context: FragmentActivity,
         var data: List<String>,
         private val listener: GestureViewPager.UserGestureListener? = null
-) : androidx.viewpager.widget.PagerAdapter()
+) : PagerAdapter()
 {
 
     private val readerViewModel: ReaderViewModel by lazy {
@@ -85,7 +88,7 @@ class ImagePagerAdapter(
         val lView = LayoutInflater.from(context).inflate(R.layout.item_reader_image_adapter, container, false)
         val mNovel: GestureTextView = lView.findViewById(R.id.gestureTextViewReaderChapter)
         val mContainer: NestedScrollView = lView.findViewById(R.id.scrollViewTextContainer)
-        mNovel.setUserGesureListener(listener)
+        mNovel.setUserGestureListener(listener)
 
         mNovel.visibility = View.VISIBLE
         mContainer.visibility = View.VISIBLE

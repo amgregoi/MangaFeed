@@ -7,12 +7,18 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import com.amgregoire.mangafeed.R
+import com.amgregoire.mangafeed.v2.extension.gone
+import com.amgregoire.mangafeed.v2.extension.visible
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
 import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_m.*
 import kotlinx.android.synthetic.main.widget_toolbar_2.*
+import kotlinx.android.synthetic.main.widget_toolbar_2.toolbar
+import kotlinx.android.synthetic.main.widget_toolbar_2.toolbarTitle
+import kotlinx.android.synthetic.main.widget_toolbar_filter.*
 
 /**
  * Created by amgregoi on 1/24/19.
@@ -28,7 +34,7 @@ interface StatusBarMap
 
 interface FragmentNavMap
 {
-    fun startMenuFragment(fragment: androidx.fragment.app.Fragment, tag: String)
+    fun startMenuFragment(fragment: Fragment, tag: String)
 
     fun hideMenuCover()
 
@@ -36,15 +42,17 @@ interface FragmentNavMap
 
     fun popBackStack(tag: String, popInclusive: Boolean)
 
-    fun replaceFragment(fragment: androidx.fragment.app.Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
+    fun replaceFragment(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 
-    fun replaceFragmentParent(fragment: androidx.fragment.app.Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
+    fun replaceFragmentParent(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 
-    fun addFragment(fragment: androidx.fragment.app.Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
+    fun addFragment(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 
-    fun addFragment(fragment: androidx.fragment.app.Fragment, prevFragment: androidx.fragment.app.Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
+    fun addFragment(fragment: Fragment, prevFragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 
-    fun addFragmentParent(fragment: androidx.fragment.app.Fragment, prevFragment: androidx.fragment.app.Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
+    fun addFragmentParent(fragment: Fragment, prevFragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
+
+    fun addFragmentParent(fragment: Fragment, tag: String, enter: Int = R.anim.slide_in_from_right, exit: Int = R.anim.slide_out_to_left, popEnter: Int = R.anim.slide_in_from_left, popExit: Int = R.anim.slide_out_to_right)
 }
 
 interface NotificationMap
@@ -59,7 +67,7 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
 
     protected var mMenuId = 0
 
-    override fun replaceFragment(fragment: androidx.fragment.app.Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
+    override fun replaceFragment(fragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
     {
         supportFragmentManager.beginTransaction()
                 .setPrimaryNavigationFragment(fragment)
@@ -69,7 +77,7 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
                 .commit()
     }
 
-    override fun replaceFragmentParent(fragment: androidx.fragment.app.Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
+    override fun replaceFragmentParent(fragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
     {
         supportFragmentManager.beginTransaction()
                 .setPrimaryNavigationFragment(fragment)
@@ -79,7 +87,7 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
                 .commit()
     }
 
-    override fun addFragment(fragment: androidx.fragment.app.Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
+    override fun addFragment(fragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
     {
         supportFragmentManager.beginTransaction()
                 .setPrimaryNavigationFragment(fragment)
@@ -89,7 +97,7 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
                 .commit()
     }
 
-    override fun addFragment(fragment: androidx.fragment.app.Fragment, prevFragment: androidx.fragment.app.Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
+    override fun addFragment(fragment: Fragment, prevFragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
     {
         supportFragmentManager.beginTransaction()
                 .setPrimaryNavigationFragment(fragment)
@@ -101,7 +109,7 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
     }
 
 
-    override fun addFragmentParent(fragment: androidx.fragment.app.Fragment, prevFragment: androidx.fragment.app.Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
+    override fun addFragmentParent(fragment: Fragment, prevFragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
     {
         supportFragmentManager.beginTransaction()
                 .setPrimaryNavigationFragment(fragment)
@@ -112,7 +120,17 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
                 .commit()
     }
 
-    override fun startMenuFragment(fragment: androidx.fragment.app.Fragment, tag: String)
+    override fun addFragmentParent(fragment: Fragment, tag: String, enter: Int, exit: Int, popEnter: Int, popExit: Int)
+    {
+        supportFragmentManager.beginTransaction()
+                .setPrimaryNavigationFragment(fragment)
+                .setCustomAnimations(enter, exit, popEnter, popExit)
+                .add(flParent.id, fragment, tag)
+                .addToBackStack(tag)
+                .commit()
+    }
+
+    override fun startMenuFragment(fragment: Fragment, tag: String)
     {
         vMenuCover.visibility = View.VISIBLE
         supportFragmentManager.beginTransaction()
@@ -147,23 +165,31 @@ abstract class BaseNavigationActivity : AppCompatActivity(), FragmentNavMap, Too
     override fun setTitle(title: String)
     {
         if (toolbar == null) return
-        toolbar.setTitle(null)
+        toolbar.title = null
 
-        toolbarLogo.visibility = View.GONE
-        toolbarSpinner.visibility = View.GONE
+        searchView?.gone()
+        toolbarSpinner?.gone()
         toolbarTitle.text = title
-        toolbarTitle.visibility = View.VISIBLE
+        toolbarTitle.visible()
     }
 
     override fun showSpinner()
     {
         if (toolbar == null) return
 
-        toolbar.setTitle(null)
+        toolbar.title = null
 
-        toolbarTitle.visibility = View.GONE
-        toolbarLogo.visibility = View.GONE
-        toolbarSpinner.visibility = View.VISIBLE
+        toolbarTitle.gone()
+        toolbarSpinner?.visible()
+    }
+
+    override fun showSearchView()
+    {
+        toolbar ?: return
+
+        toolbarTitle.gone()
+        toolbarSpinner?.gone()
+        searchView?.visible()
     }
 
     override fun setNavigationIcon(drawableId: Int?)

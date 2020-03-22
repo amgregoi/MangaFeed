@@ -27,7 +27,7 @@ import com.amgregoire.mangafeed.v2.model.domain.UserLibrary
 import com.amgregoire.mangafeed.v2.repository.local.LocalMangaRepository
 import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.LoginActivity
-import com.amgregoire.mangafeed.v2.ui.MActivity
+import com.amgregoire.mangafeed.v2.ui.MainActivity
 import com.amgregoire.mangafeed.v2.usecase.GetUserUseCase
 import com.amgregoire.mangafeed.v2.usecase.SignOutUseCase
 import com.bumptech.glide.request.target.ViewTarget
@@ -190,7 +190,7 @@ class MangaFeed : Application()
                     localMangaRepository.putManga(manga)
                 }
             }
-            uiScope.launch { startActivity(MActivity.newInstance(app)) }
+            uiScope.launch { startActivity(MainActivity.newInstance(app)) }
         }
     }
 

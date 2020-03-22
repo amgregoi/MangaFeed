@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.R
-import com.amgregoire.mangafeed.v2.ui.MActivity
+import com.amgregoire.mangafeed.v2.ui.MainActivity
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.base.FragmentNavMap
 import com.amgregoire.mangafeed.v2.ui.login.vm.SignUpVM
@@ -43,7 +43,7 @@ class WelcomeFragment : BaseFragment()
         buttonGuest.setClickListener(View.OnClickListener {
             val parent = activity ?: return@OnClickListener
             MangaFeed.app.isSignedIn = true // Manually set sign in status for guests
-            startActivity(MActivity.newInstance(parent))
+            startActivity(MainActivity.newInstance(parent))
         })
 
     }

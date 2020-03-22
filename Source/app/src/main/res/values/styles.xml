@@ -78,6 +78,11 @@
         <item name="android:textStyle">normal</item>
     </style>
 
+    <style name="Fable.Widget.SearchView" parent="Widget.AppCompat.SearchView">
+        <item name="android:editTextColor">?attr/text_color</item>
+        <item name="android:textColorHint">?attr/text_color</item>
+    </style>
+
 
     <!--
 

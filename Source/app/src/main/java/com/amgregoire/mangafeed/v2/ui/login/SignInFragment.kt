@@ -11,9 +11,7 @@ import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.v2.NavigationType
 import com.amgregoire.mangafeed.v2.ResourceFactory
 import com.amgregoire.mangafeed.v2.model.domain.User
-import com.amgregoire.mangafeed.v2.ui.MActivity
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
-import com.amgregoire.mangafeed.v2.ui.base.FragmentNavMap
 import com.amgregoire.mangafeed.v2.ui.base.NotificationMap
 import com.amgregoire.mangafeed.v2.ui.login.vm.SignInVM
 import com.amgregoire.mangafeed.v2.ui.map.ToolbarMap

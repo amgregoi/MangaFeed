@@ -114,7 +114,6 @@ class MangaInfoFragment : BaseFragment()
     {
         val parent = activity ?: return
         mangaInfoViewModel?.manga?.name?.let {  (parent as ToolbarMap).setTitle(it)}
-//        (parent as ToolbarMap).setTitle(mangaInfoViewModel.manga.name)
         (parent as ToolbarMap).setNavigationIcon(ResourceFactory.getNavigationIcon(NavigationType.Close))
         (parent as ToolbarMap).setOptionsMenu(R.menu.menu_empty)
     }

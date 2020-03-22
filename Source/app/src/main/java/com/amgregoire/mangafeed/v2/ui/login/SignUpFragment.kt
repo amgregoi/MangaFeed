@@ -11,7 +11,7 @@ import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.v2.NavigationType
 import com.amgregoire.mangafeed.v2.ResourceFactory
 import com.amgregoire.mangafeed.v2.model.domain.User
-import com.amgregoire.mangafeed.v2.ui.MActivity
+import com.amgregoire.mangafeed.v2.ui.MainActivity
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.base.NotificationMap
 import com.amgregoire.mangafeed.v2.ui.login.vm.SignUpVM
@@ -80,7 +80,7 @@ class SignUpFragment : BaseFragment()
         MangaFeed.app.user = user
 
         context?.let {
-            startActivity(MActivity.newInstance(it))
+            startActivity(MainActivity.newInstance(it))
         }
     }
 

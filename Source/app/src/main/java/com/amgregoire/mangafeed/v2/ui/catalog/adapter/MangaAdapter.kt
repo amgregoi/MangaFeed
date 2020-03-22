@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
  */
 
 class MangaAdapter(
-        private var data: ArrayList<Manga>,
+        var data: ArrayList<Manga>,
         private var source: SourceBase,
         private val isLibrary: Boolean,
         private var itemSelected: (Manga) -> Unit
@@ -39,6 +39,12 @@ class MangaAdapter(
 {
     private var filteredData: ArrayList<Manga> = ArrayList(data)
     private val filter = TextFilter()
+
+    init
+    {
+        setHasStableIds(true)
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MangaViewHolder
     {
@@ -58,12 +64,14 @@ class MangaAdapter(
 
     override fun getItemId(position: Int): Long
     {
-        return filteredData[position].link.hashCode().toLong()
+        val item = filteredData[position]
+        return "${item.source}_${item.link}".hashCode().toLong()
     }
 
     override fun onViewRecycled(holder: MangaViewHolder)
     {
         super.onViewRecycled(holder)
+        //        Glide.with(holder.itemView.context).clear(holder.itemView.ivManga)
         //        holder.recycleImage()
     }
 
@@ -83,12 +91,27 @@ class MangaAdapter(
      *
      * @param mangaList
      */
-    fun updateOriginalData(mangaList: List<Manga>)
+    fun replaceOriginalData(mangaList: List<Manga>)
     {
         data = ArrayList(mangaList)
         filteredData = ArrayList(mangaList)
         filter.filter(filter.queryFilter)
         notifyDataSetChanged()
+    }
+
+    fun updateUnsortedData(mangaList: List<Manga>)
+    {
+        mangaList.forEach {
+            val index = filteredData.indexOf(it)
+            val old = filteredData[index]
+            if (old.followType != it.followType)
+            {
+                filteredData[index] = it
+                notifyItemChanged(index)
+            }
+        }
+
+        data = filteredData
     }
 
     /***
@@ -324,8 +347,12 @@ class MangaAdapter(
 
         override fun publishResults(aFilterText: CharSequence, aFilterResult: FilterResults)
         {
-            filteredData = aFilterResult.values as ArrayList<Manga>
-            uiScope.launch { notifyDataSetChanged() }
+            val newData = aFilterResult.values as ArrayList<Manga>
+            if (newData != filteredData)
+            {
+                filteredData = newData
+                uiScope.launch { notifyDataSetChanged() }
+            }
         }
 
         /***

@@ -2,22 +2,21 @@ package com.amgregoire.mangafeed.v2.custom
 
 import android.animation.Animator
 import android.content.Context
-import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
+import android.view.GestureDetector.OnDoubleTapListener
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnClickListener
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.SharedPrefs
-import com.amgregoire.mangafeed.ioScope
-import com.amgregoire.mangafeed.uiScope
-import com.amgregoire.mangafeed.v2.service.Logger
+import com.amgregoire.mangafeed.v2.widget.GestureViewPager
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.cv_empty_state.view.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class EmptyState @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
-    : ConstraintLayout(context, attrs, defStyleAttr)
+    : ConstraintLayout(context, attrs, defStyleAttr), OnDoubleTapListener
 {
     private var compositeDisposable = CompositeDisposable()
     private var hasButton: Boolean = false
@@ -75,7 +74,7 @@ class EmptyState @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
             fun reset()
             {
-                constraintParent.visibility = View.GONE
+                hideImmediate()
                 constraintParent.alpha = 1f
             }
         }
@@ -83,25 +82,17 @@ class EmptyState @JvmOverloads constructor(context: Context, attrs: AttributeSet
         constraintParent.animate().setListener(listener).alpha(0f).duration = 500
     }
 
-    fun setLoadTimeout(delayDurationMs: Long)
-    {
-        ioScope.launch {
-            delay(delayDurationMs)
-
-            if (!progressBarLoading.isHidden() && constraintParent.visibility == View.VISIBLE)
-            {
-                uiScope.launch { hideLoader(true) }
-            }
-        }
-    }
-
     fun hideImmediate()
     {
+        isClickable = false
+        isFocusable = false
         constraintParent.visibility = View.GONE
     }
 
     fun show()
     {
+        isClickable = true
+        isFocusable = true
         constraintParent.visibility = View.VISIBLE
     }
 
@@ -169,5 +160,20 @@ class EmptyState @JvmOverloads constructor(context: Context, attrs: AttributeSet
     {
         super.onDetachedFromWindow()
         compositeDisposable.dispose()
+    }
+
+    /***
+     * Gesture Listener
+     */
+    var userGestureListener: GestureViewPager.UserGestureListener? = null
+
+    override fun onDoubleTap(e: MotionEvent?): Boolean = false
+
+    override fun onDoubleTapEvent(e: MotionEvent?): Boolean = false
+
+    override fun onSingleTapConfirmed(e: MotionEvent?): Boolean
+    {
+        userGestureListener?.onSingleTap()
+        return false
     }
 }

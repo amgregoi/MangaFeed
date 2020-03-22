@@ -2,6 +2,7 @@ package com.amgregoire.mangafeed.v2.database
 
 import androidx.room.*
 import com.amgregoire.mangafeed.Models.DbManga
+import com.amgregoire.mangafeed.v2.model.domain.Manga
 
 
 @Dao
@@ -27,16 +28,19 @@ interface MangaDao
     fun findFollowed(source: String): List<DbManga>
 
     @Query("SELECT * FROM Manga where source LIKE :source AND following LIKE :followStatus")
-    fun findFollowedWithFilter(source: String, followStatus:Int): List<DbManga>
+    fun findFollowedWithFilter(source: String, followStatus: Int): List<DbManga>
 
     @Query("SELECT * FROM Manga where source LIKE :source AND link IN (:urls)")
-    fun test(source: String, urls:List<String>): List<DbManga>
+    fun test(source: String, urls: List<String>): List<DbManga>
 
     @Query("SELECT COUNT(*) from Manga")
     fun countUsers(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg dbDbManga: DbManga)
+
+    @Query("SELECT * FROM Manga WHERE source LIKE :source AND link IN (:links)")
+    fun queryObjects(source: String, links: List<String>): List<DbManga>
 
     @Delete
     fun delete(user: DbManga)

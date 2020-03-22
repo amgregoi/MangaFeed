@@ -77,7 +77,7 @@ class AllFragment : CatalogBase()
 
                         val parent = activity ?: return@launch
                         val fragment = MangaInfoFragment.newInstance(manga.link, manga.source, false)
-                        (parent as FragmentNavMap).addFragment(fragment, MangaInfoFragment.TAG, R.anim.slide_out_bottom, R.anim.slide_out_to_left, R.anim.slide_in_from_left, R.anim.slide_in_bottom)
+                        (parent as FragmentNavMap).addFragment(fragment, MangaInfoFragment.TAG, R.anim.slide_up_from_bottom, R.anim.slide_out_to_left, R.anim.slide_in_from_left, R.anim.slide_down_from_top)
                     }
                 }
         )

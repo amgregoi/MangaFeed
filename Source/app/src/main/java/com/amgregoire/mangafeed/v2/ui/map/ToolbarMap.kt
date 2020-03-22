@@ -1,10 +1,18 @@
 package com.amgregoire.mangafeed.v2.ui.map
 
-interface ToolbarMap
+
+interface ToolbarSpinnerMap
+{
+    fun showSpinner()
+}
+
+interface ToolbarSearchViewMap
+{
+    fun showSearchView()
+}
+interface ToolbarMap : ToolbarSpinnerMap, ToolbarSearchViewMap
 {
     fun setTitle(title:String)
-
-    fun showSpinner()
 
     fun setNavigationIcon(iconResource:Int?)
 

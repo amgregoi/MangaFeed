@@ -15,11 +15,6 @@ import kotlinx.android.synthetic.main.fragment_home.view.*
 
 class HomeFragment2 : BaseFragment()
 {
-    private val catalogViewModel by lazy {
-        val parent = activity ?: return@lazy null
-        ViewModelProviders.of(parent).get(CatalogVM::class.java)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         self = inflater.inflate(R.layout.fragment_home, null)

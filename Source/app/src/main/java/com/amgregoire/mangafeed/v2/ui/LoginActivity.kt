@@ -34,7 +34,7 @@ class LoginActivity : BaseNavigationActivity()
 
         if (user != null || isSignedIn)
         {
-            startActivity(MActivity.newInstance(this))
+            startActivity(MainActivity.newInstance(this))
         }
         else setupView()
     }
