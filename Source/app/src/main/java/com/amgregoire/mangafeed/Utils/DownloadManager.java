@@ -19,8 +19,6 @@ import com.amgregoire.mangafeed.Models.DbManga;
 import com.amgregoire.mangafeed.Utils.BusEvents.DownloadEventUpdateComplete;
 import com.amgregoire.mangafeed.Utils.BusEvents.DownloadEventUpdatePageCount;
 import com.amgregoire.mangafeed.v2.repository.local.LocalMangaRepository;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.FileOutputStream;

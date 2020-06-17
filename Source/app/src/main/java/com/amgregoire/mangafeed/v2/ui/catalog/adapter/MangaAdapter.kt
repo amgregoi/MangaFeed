@@ -15,6 +15,7 @@ import com.amgregoire.mangafeed.v2.ScaleImageViewTarget
 import com.amgregoire.mangafeed.v2.enums.FollowType
 import com.amgregoire.mangafeed.v2.model.domain.Manga
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
+import com.amgregoire.mangafeed.v2.service.ImageUrlService
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.Glide
@@ -255,7 +256,7 @@ class MangaAdapter(
 
             CloudFlareService().getCFCookies(imageUrl, NetworkService.defaultUserAgent) { cookies ->
                 for (cookie in cookies) builder.addHeader("Cookie", cookie)
-                val glideUrl = GlideUrl(imageUrl, builder.build())
+                val glideUrl = GlideUrl(ImageUrlService.format(imageUrl), builder.build())
 
                 uiScope.launch {
                     Glide.with(itemView.context)

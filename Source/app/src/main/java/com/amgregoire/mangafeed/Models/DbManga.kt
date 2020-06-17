@@ -5,14 +5,7 @@ import androidx.annotation.Nullable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import com.amgregoire.mangafeed.Common.MangaEnums
-import com.amgregoire.mangafeed.Utils.MangaFeedRest
-import com.amgregoire.mangafeed.Utils.MangaLogger
-import com.amgregoire.mangafeed.Utils.SharedPrefs
-import com.loopj.android.http.JsonHttpResponseHandler
-import com.loopj.android.http.RequestParams
-import cz.msebera.android.httpclient.Header
 import kotlinx.android.parcel.Parcelize
-import org.json.JSONObject
 
 @Parcelize
 @Entity(tableName = "Manga", primaryKeys = ["link", "source"])
@@ -113,38 +106,6 @@ class DbManga(
     override fun hashCode(): Int
     {
         return id.hashCode()
-    }
-
-    /***
-     * This function posts a follow update to the server
-     */
-    private fun updateFollowItem()
-    {
-        val lUserId = SharedPrefs.getUserId()
-
-        if (lUserId < 0)
-        {
-            return
-        }
-
-        val params = RequestParams()
-        params.put("image", image)
-        params.put("url", link)
-        params.put("followStatus", following)
-
-        MangaFeedRest.postFollowedUpdate(lUserId, params, object : JsonHttpResponseHandler()
-        {
-            override fun onSuccess(statusCode: Int, headers: Array<Header>?, response: JSONObject?)
-            {
-                super.onSuccess(statusCode, headers, response)
-                MangaLogger.logError(TAG, response!!.toString())
-            }
-
-            override fun onFailure(statusCode: Int, headers: Array<Header>?, throwable: Throwable, errorResponse: JSONObject?)
-            {
-                super.onFailure(statusCode, headers, throwable, errorResponse)
-            }
-        })
     }
 
     companion object

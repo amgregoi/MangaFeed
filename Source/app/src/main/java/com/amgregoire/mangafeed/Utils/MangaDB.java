@@ -1,6 +1,5 @@
 package com.amgregoire.mangafeed.Utils;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -8,16 +7,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.Models.DbChapter;
 import com.amgregoire.mangafeed.Models.DbManga;
-import com.amgregoire.mangafeed.Utils.BusEvents.UpdateMangaItemViewEvent;
 import com.amgregoire.mangafeed.v2.database.AppDatabase;
 import com.amgregoire.mangafeed.v2.di.ApplicationContext;
 import com.amgregoire.mangafeed.v2.di.DatabaseInfo;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,14 +17,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import cz.msebera.android.httpclient.Header;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -353,54 +343,4 @@ public class MangaDB extends SQLiteOpenHelper
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-    /***
-     * This function queries the server and retrieves the current users list of followed
-     * items, and updates the local database to reflect the status of these items.
-     *
-     * Afterwards its posts an event to let the application views know they need to be updated to reflect these changes.
-     */
-    public void updateNewUsersLibrary()
-    {
-        int lUserId = SharedPrefs.getUserId();
-        RequestParams lParams = new RequestParams();
-
-        MangaFeedRest.getUserLibrary(lUserId, lParams, new JsonHttpResponseHandler()
-        {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response)
-            {
-                super.onSuccess(statusCode, headers, response);
-                try
-                {
-                    JSONArray lFollowList = response.getJSONArray("library");
-                    JSONObject lFollow;
-                    for (int i = 0; i < lFollowList.length(); i++)
-                    {
-                        lFollow = lFollowList.getJSONObject(i);
-
-//                        Manga manga = getManga(lFollow.getString("url"));
-//                        if (manga != null)
-//                        {
-//                            manga.setFollowType(FollowType.Companion.getTypeFromValue(lFollow.getInt("followType")));
-//                            manga.setImage(lFollow.getString("image"));
-//                            putManga(manga);
-//                        }
-                    }
-
-                    MangaFeed.Companion.getApp().rxBus().send(new UpdateMangaItemViewEvent());
-                }
-                catch (JSONException e)
-                {
-                    MangaLogger.logError(TAG, e.getMessage());
-                }
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse)
-            {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-        });
-    }
 }

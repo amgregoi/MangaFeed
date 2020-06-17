@@ -36,7 +36,7 @@ class RecentVM(
             return
         }
 
-        val updateBy = Date(lastUpdate.time + (15 * 60 * 60 * 1000L))
+        val updateBy = Date(lastUpdate.time + (15 * 60 * 1000L))
         if (updateBy.before(Date())) retrieveRecentList()
     }
 

@@ -12,6 +12,7 @@ import com.amgregoire.mangafeed.Utils.NetworkService
 import com.amgregoire.mangafeed.v2.model.domain.Manga
 import com.amgregoire.mangafeed.v2.repository.local.LocalChapterRepository
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
+import com.amgregoire.mangafeed.v2.service.ImageUrlService
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -175,7 +176,7 @@ class MangaInfoAdapter(
                 }
             }
 
-            val glideUrl = GlideUrl(image, builder.build())
+            val glideUrl = GlideUrl(ImageUrlService.format(image), builder.build())
 
             Glide.with(itemView.context)
                     .asBitmap()

@@ -24,6 +24,7 @@ import com.amgregoire.mangafeed.Utils.NetworkService
 import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.custom.EmptyState
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
+import com.amgregoire.mangafeed.v2.service.ImageUrlService
 import com.amgregoire.mangafeed.v2.service.Logger
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.Glide
@@ -148,9 +149,9 @@ class ImagePagerAdapter(
     {
         val lOptions = RequestOptions()
                 .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .fitCenter()
-                .timeout(8000)
+                .timeout(3000)
 
 
         val builder = LazyHeaders.Builder().addHeader("User-Agent", NetworkService.defaultUserAgent)
@@ -158,7 +159,7 @@ class ImagePagerAdapter(
         CloudFlareService().getCFCookies(url, NetworkService.defaultUserAgent) { cookies ->
             for (cookie in cookies) builder.addHeader("Cookie", cookie)
 
-            val glideUrl = GlideUrl(url, builder.build())
+            val glideUrl = GlideUrl(ImageUrlService.format(url), builder.build())
 
             uiScope.launch {
                 try

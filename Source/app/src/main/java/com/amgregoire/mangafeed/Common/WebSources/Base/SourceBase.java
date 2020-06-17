@@ -11,6 +11,7 @@ import com.amgregoire.mangafeed.Utils.NetworkService;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
 import com.amgregoire.mangafeed.v2.model.domain.Manga;
 import com.amgregoire.mangafeed.v2.repository.local.LocalMangaRepository;
+import com.amgregoire.mangafeed.v2.service.ImageUrlService;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.FutureTarget;
@@ -233,7 +234,7 @@ public abstract class SourceBase
                                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
 
                         FutureTarget<Drawable> cacheFuture = Glide.with(MangaFeed.Companion.getApp())
-                                                                  .load(imageUrl)
+                                                                  .load(ImageUrlService.INSTANCE.format(imageUrl))
                                                                   .into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
 
                         subscriber.onNext(cacheFuture.get(30, TimeUnit.SECONDS));
