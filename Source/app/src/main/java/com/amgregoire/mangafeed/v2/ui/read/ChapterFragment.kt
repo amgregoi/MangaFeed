@@ -1,5 +1,6 @@
 package com.amgregoire.mangafeed.v2.ui.read
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +13,10 @@ import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.Logger
+import com.amgregoire.mangafeed.v2.service.ReadService
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
+import com.amgregoire.mangafeed.v2.ui.read.adapter.ImageAdapter
+import com.amgregoire.mangafeed.v2.ui.read.adapter.ImagePagerAdapter
 import com.amgregoire.mangafeed.v2.widget.GestureViewPager
 import kotlinx.android.synthetic.main.item_fragment_reader_chapter.view.*
 import kotlinx.coroutines.delay
@@ -129,7 +133,19 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener
                 }
 
                 self.viewPagerReaderChapter.adapter =
-                        if (isManga) ImagePagerAdapter(this, parent, contents)
+                        if (isManga) ImageAdapter(this, contents){data ->
+                            val bitmaps = data.filterIsInstance(ImageAdapter.Item.Bitmap::class.java).map { it.value }
+                            ChapterCache.apply {
+                                this.chapter = chapter
+                                this.chapterUrls = contents
+                                this.chapterBitmap = bitmaps
+//                                this.chapterList
+                            }
+                            chapter.bitmaps = bitmaps
+                            self.viewPagerReaderChapter.adapter = ImageAdapter(this, data)
+                            readerViewModel?.updateChapterInfo(chapter, chapter.mangaTitle, 0, data.size)
+                            self.viewPagerReaderChapter.adapter?.notifyDataSetChanged()
+                        }
                         else ImagePagerAdapter(this, parent, contents, this)
 
                 self.viewPagerReaderChapter.pageMargin = 128

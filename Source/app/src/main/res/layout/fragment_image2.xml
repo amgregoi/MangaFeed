@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:clickable="true"
+    android:id="@+id/rlParent"
+    android:focusable="true"
+    android:background="?attr/background_color2">
+
+    <com.amgregoire.mangafeed.v2.custom.EmptyState
+        android:id="@+id/emptyState"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:mLoading="true"
+        android:layout_marginBottom="100dp"
+        app:mDrawableImage="@drawable/manga_error"
+        app:mPrimaryText="Oops"
+        app:mButtonVisible="true"
+        app:mButtonText="Refresh"
+        app:mSecondaryText="Something went wrong loading this page, trying refreshing or try again later." />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="center"
+        android:visibility="visible" />
+
+</RelativeLayout>

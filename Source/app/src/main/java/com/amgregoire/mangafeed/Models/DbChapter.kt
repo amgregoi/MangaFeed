@@ -1,5 +1,6 @@
 package com.amgregoire.mangafeed.Models
 
+import android.graphics.Bitmap
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -45,6 +46,9 @@ class DbChapter(
 {
     @Transient
     var mDownloadChecked = false
+
+    @Transient
+    var bitmaps:List<Bitmap> = listOf()
 
     constructor() : this(
             id = null,

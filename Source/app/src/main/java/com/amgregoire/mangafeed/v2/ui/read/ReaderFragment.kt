@@ -25,6 +25,7 @@ import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.base.FragmentNavMap
+import com.amgregoire.mangafeed.v2.ui.read.adapter.ChapterPagerAdapter
 import kotlinx.android.synthetic.main.fragment_reader2.*
 import kotlinx.android.synthetic.main.fragment_reader2.view.*
 import kotlinx.android.synthetic.main.widget_toolbar_2.view.*

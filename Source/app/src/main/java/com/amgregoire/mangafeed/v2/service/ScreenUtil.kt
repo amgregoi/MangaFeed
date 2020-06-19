@@ -62,6 +62,14 @@ object ScreenUtil
         return dm.heightPixels
     }
 
+    fun getScreenHeightDp(context: Context): Int
+    {
+        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val dm = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(dm)
+        return convertPixelsToDp(dm.heightPixels.toFloat(), context).toInt()
+    }
+
     fun getStatusBarHeight(resources: Resources): Int
     {
         var result = 0

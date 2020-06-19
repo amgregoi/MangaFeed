@@ -9,7 +9,9 @@ import android.view.View;
 
 import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.MangaFeed;
-import com.amgregoire.mangafeed.v2.ui.read.ImagePagerAdapter;
+import com.amgregoire.mangafeed.v2.ui.read.ImageFragment;
+import com.amgregoire.mangafeed.v2.ui.read.adapter.ImageAdapter;
+import com.amgregoire.mangafeed.v2.ui.read.adapter.ImagePagerAdapter;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
 import com.amgregoire.mangafeed.v2.custom.EmptyState;
@@ -150,8 +152,10 @@ public class GestureViewPager extends ViewPager implements GestureDetector.OnGes
 
     private void fetchGestureImageViewByTag()
     {
-        mEmptyState = findViewWithTag(ImagePagerAdapter.Companion.getEMPTY_TAG() + ":" + getCurrentItem());
-        mGestureImageView = findViewWithTag(ImagePagerAdapter.Companion.getIMAGE_TAG() + ":" + getCurrentItem());
+        ImageFragment fragment = (ImageFragment)((ImageAdapter)getAdapter()).getItem(getCurrentItem());
+
+//        mEmptyState = fragment.getEmptyState();
+//        mGestureImageView = fragment.getImageView();
     }
 
     /**

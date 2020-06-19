@@ -1,4 +1,4 @@
-package com.amgregoire.mangafeed.v2.ui.read
+package com.amgregoire.mangafeed.v2.ui.read.adapter
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
@@ -26,6 +26,7 @@ import com.amgregoire.mangafeed.v2.custom.EmptyState
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.ImageUrlService
 import com.amgregoire.mangafeed.v2.service.Logger
+import com.amgregoire.mangafeed.v2.ui.read.ReaderViewModel
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy

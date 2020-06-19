@@ -138,9 +138,17 @@ class ReaderViewModel : ViewModel()
 
         val info = readerInfo.value ?: return
 
+        val chPos = info.dbChapters.indexOf(dbChapter)
+        info.dbChapters[chPos].bitmaps = dbChapter.bitmaps
+
         if (dbChapter.url != info.dbChapter.url) return
 
-        val newInfo = ChapterInfo(dbChapter, title ?: dbChapter.chapterTitle, currentPage ?: dbChapter.currentPage, totalPages ?: dbChapter.totalPages)
+        val chapInfo = chapterInfo.value
+
+        val _totalPages = totalPages ?: chapInfo?.totalPages ?: dbChapter.totalPages
+        val _currentPage = currentPage ?: chapInfo?.currentPage ?: dbChapter.currentPage
+
+        val newInfo = ChapterInfo(dbChapter, title ?: dbChapter.chapterTitle, _currentPage, _totalPages)
         chapterInfo.value = newInfo
     }
 

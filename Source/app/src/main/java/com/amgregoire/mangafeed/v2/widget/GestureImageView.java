@@ -16,6 +16,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.widget.ImageView;
 import android.widget.OverScroller;
 
 public class GestureImageView extends AppCompatImageView implements ScaleGestureDetector.OnScaleGestureListener
