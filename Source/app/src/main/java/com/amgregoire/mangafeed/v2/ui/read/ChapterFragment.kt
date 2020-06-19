@@ -13,7 +13,6 @@ import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.Logger
-import com.amgregoire.mangafeed.v2.service.ReadService
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.read.adapter.ImageAdapter
 import com.amgregoire.mangafeed.v2.ui.read.adapter.ImagePagerAdapter
@@ -133,19 +132,7 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener
                 }
 
                 self.viewPagerReaderChapter.adapter =
-                        if (isManga) ImageAdapter(this, contents){data ->
-                            val bitmaps = data.filterIsInstance(ImageAdapter.Item.Bitmap::class.java).map { it.value }
-                            ChapterCache.apply {
-                                this.chapter = chapter
-                                this.chapterUrls = contents
-                                this.chapterBitmap = bitmaps
-//                                this.chapterList
-                            }
-                            chapter.bitmaps = bitmaps
-                            self.viewPagerReaderChapter.adapter = ImageAdapter(this, data)
-                            readerViewModel?.updateChapterInfo(chapter, chapter.mangaTitle, 0, data.size)
-                            self.viewPagerReaderChapter.adapter?.notifyDataSetChanged()
-                        }
+                        if (isManga) ImageAdapter(this, contents)
                         else ImagePagerAdapter(this, parent, contents, this)
 
                 self.viewPagerReaderChapter.pageMargin = 128

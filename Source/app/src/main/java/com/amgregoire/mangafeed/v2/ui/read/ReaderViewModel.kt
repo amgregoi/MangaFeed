@@ -19,17 +19,15 @@ import io.reactivex.schedulers.Schedulers
 data class ReaderInfo(var manga: Manga, var dbChapter: DbChapter, var dbChapters: List<DbChapter>)
 data class ChapterInfo(var dbChapter: DbChapter, var title: String, var currentPage: Int = 0, var totalPages: Int = 0)
 
-sealed class ReaderUIState
-{
+sealed class ReaderUIState {
     object INIT : ReaderUIState()
     object SHOW : ReaderUIState()
     object HIDE : ReaderUIState()
     object BLOCK : ReaderUIState()
 }
 
-class ReaderViewModel : ViewModel()
-{
-    val uiState = MutableLiveData<ReaderUIState>()
+class ReaderViewModel : ViewModel() {
+    val uiState = MutableLiveData<ReaderUIState>().apply { value = ReaderUIState.SHOW }
     val readerInfo = MutableLiveData<ReaderInfo>()
     val chapterInfo = MutableLiveData<ChapterInfo>()
 
@@ -39,13 +37,11 @@ class ReaderViewModel : ViewModel()
 
     // Note: should only be called from manga info fragment to initialize reader view model data
     // TODO :: account for reversed list throughout vm (currently only account for ascending order due to ui
-    fun updateReaderInfo(manga: Manga, dbChapters: List<DbChapter>, dbChapter: DbChapter, isDataReversed: Boolean)
-    {
+    fun updateReaderInfo(manga: Manga, dbChapters: List<DbChapter>, dbChapter: DbChapter, isDataReversed: Boolean) {
         if (isDataReversed) readerInfo.value = ReaderInfo(manga, dbChapter, dbChapters.reversed())
         else readerInfo.value = ReaderInfo(manga, dbChapter, dbChapters)
 
-        if (manga.isFollowing)
-        {
+        if (manga.isFollowing) {
             localChapterRepository.putChapter(dbChapter)
             manga.recentChapter = dbChapter.url
             localMangaRepository.updateManga(manga)
@@ -54,20 +50,17 @@ class ReaderViewModel : ViewModel()
         updateChapterInfo(dbChapter, dbChapter.chapterTitle, dbChapter.currentPage, dbChapter.totalPages)
     }
 
-    private fun updateReaderInfo(manga: Manga, dbChapters: List<DbChapter>, dbChapter: DbChapter)
-    {
+    private fun updateReaderInfo(manga: Manga, dbChapters: List<DbChapter>, dbChapter: DbChapter) {
         readerInfo.value = ReaderInfo(manga, dbChapter, dbChapters)
 
-        if (manga.isFollowing)
-        {
+        if (manga.isFollowing) {
             localChapterRepository.putChapter(dbChapter)
             manga.recentChapter = dbChapter.url
             localMangaRepository.updateManga(manga)
         }
     }
 
-    fun updateCurrentChapterByPosition(position: Int)
-    {
+    fun updateCurrentChapterByPosition(position: Int) {
         val info = readerInfo.value ?: return
         val newChapter = getChapterByPosition(position) ?: return
         if (info.dbChapter.url == newChapter.url) return
@@ -76,8 +69,7 @@ class ReaderViewModel : ViewModel()
         updateChapterInfo(newChapter, newChapter.chapterTitle, 0, newChapter.totalPages)
     }
 
-    fun getChapterByPosition(position: Int): DbChapter?
-    {
+    fun getChapterByPosition(position: Int): DbChapter? {
         val info = readerInfo.value ?: return null
         return info.dbChapters.getOrNull(position)
     }
@@ -86,8 +78,7 @@ class ReaderViewModel : ViewModel()
      * Note chapters are ordered in descending order, incrementing is going down the list (-1)
      * TODO :: account for normal and reversed chapter lists
      */
-    fun incrementChapter()
-    {
+    fun incrementChapter() {
         val info = readerInfo.value ?: return
         val position = info.dbChapters.indexOf(info.dbChapter)
         val newChapter = info.dbChapters.getOrNull(position + 1) ?: return
@@ -100,8 +91,7 @@ class ReaderViewModel : ViewModel()
      * Note chapters are ordered in descending order, incrementing is going up the list (+1)
      * TODO :: account for normal and reversed chapter lists
      */
-    fun decrementChapter()
-    {
+    fun decrementChapter() {
         val info = readerInfo.value ?: return
         val position = info.dbChapters.indexOf(info.dbChapter)
         val newChapter = info.dbChapters.getOrNull(position - 1) ?: return
@@ -110,30 +100,23 @@ class ReaderViewModel : ViewModel()
         updateChapterInfo(newChapter, newChapter.chapterTitle, 0, newChapter.totalPages)
     }
 
-    fun toggleUiState()
-    {
-        val state = uiState.value ?: run {
-            uiState.value = ReaderUIState.INIT
-            return
-        }
+    fun toggleUiState() {
+        val state = uiState.value ?: ReaderUIState.SHOW
 
         uiState.value =
                 if (state == ReaderUIState.HIDE) ReaderUIState.SHOW
                 else ReaderUIState.HIDE
     }
 
-    fun setUiStateBlock()
-    {
+    fun setUiStateBlock() {
         //        uiState.value = ReaderUIState.BLOCK
     }
 
-    fun setUIStateShow()
-    {
+    fun setUIStateShow() {
         uiState.value = ReaderUIState.SHOW
     }
 
-    fun updateChapterInfo(dbChapter: DbChapter?, title: String? = null, currentPage: Int? = null, totalPages: Int? = null)
-    {
+    fun updateChapterInfo(dbChapter: DbChapter?, title: String? = null, currentPage: Int? = null, totalPages: Int? = null) {
         dbChapter ?: return
 
         val info = readerInfo.value ?: return
@@ -152,8 +135,7 @@ class ReaderViewModel : ViewModel()
         chapterInfo.value = newInfo
     }
 
-    fun incrementPage(dbChapter: DbChapter)
-    {
+    fun incrementPage(dbChapter: DbChapter) {
         val reader = readerInfo.value ?: return
         val current = chapterInfo.value ?: return
         if (reader.dbChapter.url != dbChapter.url) return
@@ -161,22 +143,31 @@ class ReaderViewModel : ViewModel()
         if (current.currentPage < current.totalPages) updateChapterInfo(dbChapter, currentPage = current.currentPage + 1)
     }
 
-    fun decrementPage(dbChapter: DbChapter)
-    {
+    fun incrementPage() {
+        val reader = readerInfo.value ?: return
+        val current = chapterInfo.value ?: return
+        if (current.currentPage < current.totalPages) updateChapterInfo(current.dbChapter, currentPage = current.currentPage + 1)
+    }
+
+    fun decrementPage(dbChapter: DbChapter) {
         val reader = readerInfo.value ?: return
         val current = chapterInfo.value ?: return
         if (reader.dbChapter.url != dbChapter.url) return
         if (current.currentPage > 0) updateChapterInfo(dbChapter, currentPage = current.currentPage - 1)
     }
 
-    fun isCurrentChapter(dbChapter: DbChapter): Boolean
-    {
+    fun decrementPage() {
+        val reader = readerInfo.value ?: return
+        val current = chapterInfo.value ?: return
+        if (current.currentPage > 0) updateChapterInfo(current.dbChapter, currentPage = current.currentPage - 1)
+    }
+
+    fun isCurrentChapter(dbChapter: DbChapter): Boolean {
         val info = readerInfo.value ?: return false
         return info.dbChapter.url == dbChapter.url
     }
 
-    fun getChapterContents(dbChapter: DbChapter, chapterContent: (List<String>, DbChapter, Boolean) -> Unit)
-    {
+    fun getChapterContents(dbChapter: DbChapter, chapterContent: (List<String>, DbChapter, Boolean) -> Unit) {
         CloudFlareService().verifyCookieAndDoAction {
             val urls = arrayListOf<String>()
             subscriptions.add(
@@ -205,15 +196,13 @@ class ReaderViewModel : ViewModel()
     }
 
 
-    fun getCurrentPosition(): Int
-    {
+    fun getCurrentPosition(): Int {
         val info = readerInfo.value ?: return 0
         return info.dbChapters.indexOf(info.dbChapter)
     }
 
 
-    override fun onCleared()
-    {
+    override fun onCleared() {
         super.onCleared()
         subscriptions.clear()
     }

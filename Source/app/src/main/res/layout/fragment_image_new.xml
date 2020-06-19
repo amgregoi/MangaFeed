@@ -1,25 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:clickable="true"
     android:id="@+id/rlParent"
     android:focusable="true"
     android:background="?attr/background_color2">
 
-    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+    <com.amgregoire.mangafeed.v2.widget.MangaImageView
+        android:layout_marginTop="10dp"
         android:id="@+id/iv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="center"
         android:visibility="visible" />
-
-    <ImageView
-        android:id="@+id/iv2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="center"
-        android:visibility="visible" />
-
 </RelativeLayout>
