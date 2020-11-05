@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.NetworkService
@@ -24,7 +25,11 @@ import com.bumptech.glide.request.transition.Transition
 import com.davemorrissey.labs.subscaleview.ImageSource
 import kotlinx.android.synthetic.main.fragment_image_new.view.*
 
-class ImageListAdapter(val url: String, val listener: MangaImageView.ScreenInteraction) : RecyclerView.Adapter<ImageListAdapter.ViewHolder>() {
+class ImageListAdapter(
+        val url: String,
+        val screenListener: MangaImageView.ScreenInteraction,
+        val onCompleteListener: (Boolean) -> Unit
+) : RecyclerView.Adapter<ImageListAdapter.ViewHolder>() {
 
     var items: ArrayList<Item> = arrayListOf()
 
@@ -32,9 +37,6 @@ class ImageListAdapter(val url: String, val listener: MangaImageView.ScreenInter
         items.add(Item.Url(url))
     }
 
-    //    constructor(bitmaps: List<Bitmap>) : this() {
-    //        bitmaps.forEach { items.add(Item.Bitmap(it)) }
-    //    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.fragment_image_new, parent, false)
@@ -51,13 +53,12 @@ class ImageListAdapter(val url: String, val listener: MangaImageView.ScreenInter
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun onBind(position: Int) {
-            val item = items[position]
 
-            when (item) {
+            when (val item = items[position]) {
                 is Item.Url -> setupImage(position, item.value)
                 is Item.Bitmap -> {
                     itemView.iv.setImage(ImageSource.cachedBitmap(item.value))
-                    itemView.iv.setScreenInteractionListener(listener)
+                    itemView.iv.setScreenInteractionListener(screenListener)
                 }
             }
         }
@@ -88,8 +89,14 @@ class ImageListAdapter(val url: String, val listener: MangaImageView.ScreenInter
                                 override fun onResourceReady(resource: Bitmap, glideAnimation: Transition<in Bitmap>?) {
                                     try {
 
+                                        val resHeight = resource.getScaledHeight(itemView.resources.displayMetrics)
+                                        val resWidth = resource.getScaledWidth(itemView.resources.displayMetrics)
                                         val screenHeight = (ScreenUtil.getScreenHeight(context) * 1.5).toInt()
-                                        if (resource.height > screenHeight) {
+
+                                        if (resHeight > screenHeight) {
+                                            itemView.rlParent.layoutParams.height = RelativeLayout.LayoutParams.WRAP_CONTENT
+                                            itemView.rlParent.requestLayout()
+
                                             // split the bitmap
                                             var imageHeight = 0
 
@@ -97,9 +104,9 @@ class ImageListAdapter(val url: String, val listener: MangaImageView.ScreenInter
 
                                             while (imageHeight < resource.height) {
                                                 val newHeight =
-                                                        if (resource.height >= imageHeight + screenHeight) screenHeight
-                                                        else resource.height - imageHeight
-                                                bitmaps.add(Bitmap.createBitmap(resource, 0, imageHeight, resource.width, newHeight))
+                                                        if (resHeight >= imageHeight + screenHeight) screenHeight
+                                                        else resHeight - imageHeight
+                                                bitmaps.add(Bitmap.createBitmap(resource, 0, imageHeight, resWidth, newHeight))
                                                 imageHeight += screenHeight
                                             }
 
@@ -111,16 +118,22 @@ class ImageListAdapter(val url: String, val listener: MangaImageView.ScreenInter
                                                     items.add(Item.Bitmap(bitmap))
                                                 }
                                                 notifyDataSetChanged()
+                                                onCompleteListener(true)
                                                 return
                                             }
                                         }
 
-                                        itemView.iv.setImage(ImageSource.cachedBitmap(resource))
-                                        itemView.iv.setScreenInteractionListener(listener)
 
+                                        // Using default url
+                                        itemView.rlParent.layoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT
+                                        itemView.rlParent.requestLayout()
+
+                                        itemView.iv.setImage(ImageSource.cachedBitmap(resource))
+                                        itemView.iv.setScreenInteractionListener(screenListener)
+                                        onCompleteListener(true)
                                     }
                                     catch (ex: Exception) {
-                                        //                                            itemView.emptyState.hideLoader(true)
+                                        onCompleteListener(false)
                                         Logger.error("Well shit..")
                                         Logger.error(ex)
                                     }
@@ -128,7 +141,7 @@ class ImageListAdapter(val url: String, val listener: MangaImageView.ScreenInter
 
                                 override fun onLoadFailed(errorDrawable: Drawable?) {
                                     super.onLoadFailed(errorDrawable)
-                                    //                                        itemView.emptyState.hideLoader(true)
+                                    onCompleteListener(false)
                                 }
 
                                 override fun onLoadCleared(placeholder: Drawable?) {
@@ -149,6 +162,4 @@ class ImageListAdapter(val url: String, val listener: MangaImageView.ScreenInter
         class Url(val value: String) : Item()
         class Bitmap(val value: android.graphics.Bitmap) : Item()
     }
-
-
 }

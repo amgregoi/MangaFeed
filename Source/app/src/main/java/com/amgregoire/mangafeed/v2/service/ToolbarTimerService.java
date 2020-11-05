@@ -65,7 +65,7 @@ public class ToolbarTimerService extends Service
                           .observeOn(AndroidSchedulers.mainThread())
                           .subscribe(aComplete ->
                           {
-                              mListener.hideToolbar();
+                              mListener.hideToolbarService();
                               mTimerSub.dispose();
                               mTimerSub = null;
                               MangaLogger.logInfo(TAG, "ToolBar Service >> Hide Toolbar");
@@ -102,13 +102,13 @@ public class ToolbarTimerService extends Service
 
         mSystemUISub = mSystemUI.subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(aComplete -> mListener.hideSystemUi(),
+                                .subscribe(aComplete -> mListener.hideSystemUiService(),
                                         throwable -> MangaLogger.logError(TAG, throwable.getMessage()));
 
     }
 
     public interface ReaderTimerListener{
-        void hideToolbar();
-        void hideSystemUi();
+        void hideToolbarService();
+        void hideSystemUiService();
     }
 }

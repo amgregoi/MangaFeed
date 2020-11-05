@@ -23,13 +23,6 @@
         app:mButtonText="Refresh"
         app:mSecondaryText="Something went wrong loading this page, trying refreshing or try again later." />
 
-    <com.amgregoire.mangafeed.v2.widget.GestureImageView
-        android:id="@+id/gestureImageViewReaderChapter"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="center"
-        android:visibility="visible" />
-
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollViewTextContainer"
         android:layout_width="match_parent"

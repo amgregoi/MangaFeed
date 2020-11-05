@@ -1,7 +1,5 @@
 package com.amgregoire.mangafeed.v2.ui.read
 
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -13,16 +11,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.AccelerateInterpolator
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.amgregoire.mangafeed.Common.MangaEnums
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.R
-import com.amgregoire.mangafeed.v2.service.ToolbarTimerService
 import com.amgregoire.mangafeed.Utils.MangaLogger
 import com.amgregoire.mangafeed.Utils.SharedPrefs
 import com.amgregoire.mangafeed.v2.NavigationType
 import com.amgregoire.mangafeed.v2.ResourceFactory
 import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
+import com.amgregoire.mangafeed.v2.service.ToolbarTimerService
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.base.FragmentNavMap
 import com.amgregoire.mangafeed.v2.ui.read.adapter.ChapterPagerAdapter
@@ -41,46 +41,39 @@ import kotlinx.android.synthetic.main.widget_toolbar_2.view.*
  * we need to add margin/padding to top and bottom views of reader again
  *
  */
-class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
-{
+class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener {
     private val readerViewModel: ReaderViewModel? by lazy {
         val parent = activity ?: return@lazy null
         ViewModelProviders.of(parent).get(ReaderViewModel::class.java)
     }
 
     private var mToolBarService: ToolbarTimerService? = null
-    private val mConnection: ServiceConnection = object : ServiceConnection
-    {
-        override fun onServiceConnected(className: ComponentName, service: IBinder)
-        {
+    private val mConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
             // We've bound to ToolbarTimerService, cast the IBinder and get ToolbarTimerService instance
             val binder = service as ToolbarTimerService.LocalBinder
             mToolBarService = binder.service
             mToolBarService?.setToolbarListener(this@ReaderFragment)
         }
 
-        override fun onServiceDisconnected(aComponent: ComponentName)
-        {
+        override fun onServiceDisconnected(aComponent: ComponentName) {
             MangaLogger.logInfo(TAG, aComponent.flattenToShortString() + " service disconnected.")
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
-    {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         self = inflater.inflate(R.layout.fragment_reader2, null)
         return self
     }
 
-    override fun onResume()
-    {
+    override fun onResume() {
         super.onResume()
         setupToolbarService()
         showToolbar()
         enterAndExitSystemUI()
     }
 
-    override fun onPause()
-    {
+    override fun onPause() {
         super.onPause()
         showToolbar()
         enterAndExitSystemUI()
@@ -90,8 +83,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
         parent.window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
     }
 
-    override fun onStart()
-    {
+    override fun onStart() {
         super.onStart()
 
         readerViewModel?.let { readerVm ->
@@ -126,16 +118,13 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
             readerVm.uiState.observe(parent, Observer { state ->
                 state ?: return@Observer
 
-                when (state)
-                {
+                when (state) {
                     is ReaderUIState.INIT -> showToolbar()
-                    is ReaderUIState.SHOW ->
-                    {
+                    is ReaderUIState.SHOW -> {
                         showToolbar()
                         mToolBarService?.startTimer()
                     }
-                    else ->
-                    {
+                    else -> {
                         Logger.error("Toggling UI State = $state")
                         hideToolbar()
                     }
@@ -146,8 +135,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
         setupListeners()
     }
 
-    private fun setupListeners()
-    {
+    private fun setupListeners() {
         fabNextPage.setOnClickListener {
             val chapter = readerViewModel?.getChapterByPosition(self.vpReader.currentItem) ?: return@setOnClickListener
             readerViewModel?.incrementPage(chapter)
@@ -177,10 +165,8 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
 
     }
 
-    fun initViews()
-    {
-        if (MangaFeed.app.currentSourceType == MangaEnums.SourceType.NOVEL)
-        {
+    fun initViews() {
+        if (MangaFeed.app.currentSourceType == MangaEnums.SourceType.NOVEL) {
             self.fabNextPage.visibility = View.GONE
             self.fabPrevPage.visibility = View.GONE
         }
@@ -188,8 +174,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
         setupViewPager()
     }
 
-    override fun hideSystemUi()
-    {
+    fun hideSystemUi() {
         val parent = activity ?: return
         parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
@@ -203,8 +188,13 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
                 View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
     }
 
-    private fun showSystemUi()
-    {
+    override fun hideSystemUiService() {
+        activity ?: return
+        readerViewModel?.setUIStateHide()
+        hideSystemUi()
+    }
+
+    private fun showSystemUi() {
         val parent = activity ?: return
         parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
@@ -215,8 +205,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
                 View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
     }
 
-    private fun enterAndExitSystemUI()
-    {
+    private fun enterAndExitSystemUI() {
         val parent = activity ?: return
         parent.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
@@ -236,20 +225,17 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
      * Reader Interactions
      *
      **********************************************************/
-    fun onRefreshClicked()
-    {
+    fun onRefreshClicked() {
         MangaFeed.app.makeToastShort("NOT IMPLEMENTED")
         mToolBarService?.stopTimer()
     }
 
-    fun onScreenRotateClicked()
-    {
+    fun onScreenRotateClicked() {
         MangaFeed.app.makeToastShort("NOT IMPLEMENTED")
         mToolBarService?.startTimer()
     }
 
-    fun onVerticalScrollClicked()
-    {
+    fun onVerticalScrollClicked() {
         MangaFeed.app.makeToastShort("NOT IMPLEMENTED")
         mToolBarService?.startTimer()
     }
@@ -258,14 +244,11 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
      * This function sets up the activity viewpager.
      *
      */
-    private fun setupViewPager()
-    {
-        self.vpReader.addOnPageChangeListener(object : androidx.viewpager.widget.ViewPager.OnPageChangeListener
-        {
+    private fun setupViewPager() {
+        self.vpReader.addOnPageChangeListener(object : androidx.viewpager.widget.ViewPager.OnPageChangeListener {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) = Unit
             override fun onPageScrollStateChanged(state: Int) = Unit
-            override fun onPageSelected(position: Int)
-            {
+            override fun onPageSelected(position: Int) {
                 Logger.error("Chapter selected: $position")
                 //                showToolbar()
                 //                mToolBarService?.startTimer()
@@ -279,8 +262,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
      * after a set period of time after it has been shown.
      *
      */
-    private fun setupToolbarService()
-    {
+    private fun setupToolbarService() {
         mToolBarService = ToolbarTimerService()
         mToolBarService?.setToolbarListener(this)
 
@@ -293,8 +275,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
      * This function makes the status bar, toolbar, and reader header/footers visible
      *
      */
-    private fun showToolbar()
-    {
+    private fun showToolbar() {
         self.topContainer.animate()
                 .translationY(self.topContainer.scrollY.toFloat())
                 .setInterpolator(AccelerateInterpolator())
@@ -312,8 +293,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
      * This function hides the status bar, toolbar, and reader header/footers
      *
      */
-    override fun hideToolbar()
-    {
+    fun hideToolbar() {
         val parent = activity ?: return
         self.topContainer.animate()
                 .translationY((-self.topContainer.height - ScreenUtil.getStatusBarHeight(parent.resources)).toFloat())
@@ -328,8 +308,13 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
         hideSystemUi()
     }
 
-    private fun setupToolbar(title: String)
-    {
+    override fun hideToolbarService() {
+        activity ?: return
+        readerViewModel?.setUIStateHide()
+        hideToolbar()
+    }
+
+    private fun setupToolbar(title: String) {
         self.toolbar.title = title
         self.toolbar.setNavigationIcon(ResourceFactory.getNavigationIcon(NavigationType.Back))
         self.toolbar.setNavigationOnClickListener {
@@ -338,8 +323,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener
         }
     }
 
-    companion object
-    {
+    companion object {
         val TAG: String = ReaderFragment::class.java.simpleName
         fun newInstance() = ReaderFragment()
     }

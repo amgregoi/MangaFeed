@@ -116,6 +116,10 @@ class ReaderViewModel : ViewModel() {
         uiState.value = ReaderUIState.SHOW
     }
 
+    fun setUIStateHide() {
+        uiState.value = ReaderUIState.HIDE
+    }
+
     fun updateChapterInfo(dbChapter: DbChapter?, title: String? = null, currentPage: Int? = null, totalPages: Int? = null) {
         dbChapter ?: return
 

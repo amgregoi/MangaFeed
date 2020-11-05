@@ -11,7 +11,6 @@ import com.amgregoire.mangafeed.Common.MangaEnums;
 import com.amgregoire.mangafeed.MangaFeed;
 import com.amgregoire.mangafeed.v2.ui.read.ImageFragment;
 import com.amgregoire.mangafeed.v2.ui.read.adapter.ImageAdapter;
-import com.amgregoire.mangafeed.v2.ui.read.adapter.ImagePagerAdapter;
 import com.amgregoire.mangafeed.Utils.MangaLogger;
 import com.amgregoire.mangafeed.Utils.SharedPrefs;
 import com.amgregoire.mangafeed.v2.custom.EmptyState;
@@ -152,7 +151,7 @@ public class GestureViewPager extends ViewPager implements GestureDetector.OnGes
 
     private void fetchGestureImageViewByTag()
     {
-        ImageFragment fragment = (ImageFragment)((ImageAdapter)getAdapter()).getItem(getCurrentItem());
+//        ImageFragment fragment = (ImageFragment)((ImageAdapter)getAdapter()).getItemCount(getCurrentItem());
 
 //        mEmptyState = fragment.getEmptyState();
 //        mGestureImageView = fragment.getImageView();

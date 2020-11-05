@@ -11,6 +11,8 @@ import android.view.View.OnClickListener
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.SharedPrefs
+import com.amgregoire.mangafeed.v2.extension.gone
+import com.amgregoire.mangafeed.v2.extension.visible
 import com.amgregoire.mangafeed.v2.widget.GestureViewPager
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.cv_empty_state.view.*
@@ -86,14 +88,14 @@ class EmptyState @JvmOverloads constructor(context: Context, attrs: AttributeSet
     {
         isClickable = false
         isFocusable = false
-        constraintParent.visibility = View.GONE
+        gone()
     }
 
     fun show()
     {
         isClickable = true
         isFocusable = true
-        constraintParent.visibility = View.VISIBLE
+        visible()
     }
 
     fun hideLoader(isEmpty: Boolean)
@@ -109,6 +111,7 @@ class EmptyState @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
     fun showLoader()
     {
+        visible()
         buttonAction.visibility = View.GONE
         clEmptyState.visibility = View.GONE
         show()
