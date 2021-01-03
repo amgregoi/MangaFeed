@@ -6,10 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.view.animation.AccelerateInterpolator
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.Observer
@@ -169,7 +166,7 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener {
 
         self.ivReaderSetting.setOnClickListener {
             val context = context ?: return@setOnClickListener
-            val popMenu = PopupMenu(context, self.ivReaderSetting)
+            val popMenu = PopupMenu(context, self.ivReaderSetting, Gravity.RIGHT)
 
             popMenu.menuInflater.inflate(R.menu.menu_reader_setting, popMenu.menu)
 
