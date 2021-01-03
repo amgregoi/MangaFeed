@@ -25,7 +25,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
-            buildConfigField 'String', 'BASE_URL', '"http://ec2-3-20-183-67.us-east-2.compute.amazonaws.com/"'
+            buildConfigField 'String', 'BASE_URL', '"http://ec2-3-137-195-69.us-east-2.compute.amazonaws.com"'
         }
 
         debug {
@@ -98,7 +98,7 @@ dependencies {
      *  Rhino - javascript library
      */
 
-    implementation files('/Users/amgregoi/Desktop/Git/mangafeed/Source/libs/rhino-1.7.10.jar')
+    implementation files('/Users/andy/Desktop/Git/mangafeed/Source/libs/rhino-1.7.10.jar')
 //    implementation files('C:/Users/amgregoi/Desktop/Git/mangafeed/Source/libs/rhino-1.7.10.jar')
 
     /**

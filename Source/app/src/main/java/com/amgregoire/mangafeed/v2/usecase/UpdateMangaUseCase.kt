@@ -12,7 +12,7 @@ class UpdateMangaUseCase(
 {
     fun updateManga(manga: Manga)
     {
-        local.updateManga(manga, null)
+        local.updateManga(manga, manga.followType)
         remote.updateManga(manga)
     }
 

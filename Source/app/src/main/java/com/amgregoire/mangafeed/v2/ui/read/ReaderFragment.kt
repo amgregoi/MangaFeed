@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.AccelerateInterpolator
+import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.amgregoire.mangafeed.Common.MangaEnums
@@ -20,12 +21,15 @@ import com.amgregoire.mangafeed.Utils.MangaLogger
 import com.amgregoire.mangafeed.Utils.SharedPrefs
 import com.amgregoire.mangafeed.v2.NavigationType
 import com.amgregoire.mangafeed.v2.ResourceFactory
+import com.amgregoire.mangafeed.v2.enums.FollowType
+import com.amgregoire.mangafeed.v2.enums.ReaderSettings
 import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.service.ScreenUtil
 import com.amgregoire.mangafeed.v2.service.ToolbarTimerService
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.base.FragmentNavMap
 import com.amgregoire.mangafeed.v2.ui.read.adapter.ChapterPagerAdapter
+import kotlinx.android.synthetic.main.fragment_manga_info2.view.*
 import kotlinx.android.synthetic.main.fragment_reader2.*
 import kotlinx.android.synthetic.main.fragment_reader2.view.*
 import kotlinx.android.synthetic.main.widget_toolbar_2.view.*
@@ -163,6 +167,24 @@ class ReaderFragment : BaseFragment(), ToolbarTimerService.ReaderTimerListener {
             (self.vpReader.adapter as? ChapterPagerAdapter)?.updateItemAt(self.vpReader.currentItem)
         }
 
+        self.ivReaderSetting.setOnClickListener {
+            val context = context ?: return@setOnClickListener
+            val popMenu = PopupMenu(context, self.ivReaderSetting)
+
+            popMenu.menuInflater.inflate(R.menu.menu_reader_setting, popMenu.menu)
+
+            popMenu.setOnMenuItemClickListener { popupItem ->
+                when (popupItem.itemId) {
+                    R.id.menuReaderSettingLow -> readerViewModel?.updateReaderSettings(ReaderSettings.Low)
+                    R.id.menuReaderSettingMedium -> readerViewModel?.updateReaderSettings(ReaderSettings.Medium)
+                    R.id.menuReaderSettingMax -> readerViewModel?.updateReaderSettings(ReaderSettings.Max)
+                    else -> readerViewModel?.updateReaderSettings(ReaderSettings.Max)
+                }
+                true
+            }
+
+            popMenu.show()
+        }
     }
 
     fun initViews() {

@@ -6,6 +6,7 @@ import com.amgregoire.mangafeed.Common.MangaEnums
 import com.amgregoire.mangafeed.Common.RequestWrapper
 import com.amgregoire.mangafeed.MangaFeed
 import com.amgregoire.mangafeed.Models.DbChapter
+import com.amgregoire.mangafeed.v2.enums.ReaderSettings
 import com.amgregoire.mangafeed.v2.model.domain.Manga
 import com.amgregoire.mangafeed.v2.repository.local.LocalChapterRepository
 import com.amgregoire.mangafeed.v2.repository.local.LocalMangaRepository
@@ -30,10 +31,26 @@ class ReaderViewModel : ViewModel() {
     val uiState = MutableLiveData<ReaderUIState>().apply { value = ReaderUIState.SHOW }
     val readerInfo = MutableLiveData<ReaderInfo>()
     val chapterInfo = MutableLiveData<ChapterInfo>()
+    val readerSettings = MutableLiveData<ReaderSettings>()
 
     private val subscriptions = CompositeDisposable()
     private val localMangaRepository = LocalMangaRepository()
     private val localChapterRepository = LocalChapterRepository()
+
+
+    init {
+        updateReaderSettings(ReaderSettings.Max)
+    }
+
+    /***
+     *
+     */
+    fun updateReaderSettings(setting:ReaderSettings)
+    {
+        readerSettings.value = setting
+    }
+
+    fun getReaderSetting() = readerSettings.value ?: ReaderSettings.Max
 
     // Note: should only be called from manga info fragment to initialize reader view model data
     // TODO :: account for reversed list throughout vm (currently only account for ascending order due to ui

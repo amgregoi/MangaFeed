@@ -55,14 +55,14 @@
                     android:src="@drawable/ic_refresh_white_24dp" />
 
                 <ImageButton
-                    android:id="@+id/imageViewReaderScreenOrientationToggle"
+                    android:id="@+id/ivReaderSetting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toStartOf="@id/imageViewReaderRefresh"
                     android:background="?attr/selectableItemBackground"
                     android:paddingEnd="10dp"
-                    android:src="@drawable/ic_refresh_white_24dp"
-                    android:visibility="gone" />
+                    android:src="@drawable/ic_settings_white"
+                    android:visibility="visible" />
 
                 <!--TODO.. get a new icon -->
                 <ImageButton

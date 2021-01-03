@@ -14,6 +14,7 @@ import com.amgregoire.mangafeed.Models.DbChapter
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.ioScope
 import com.amgregoire.mangafeed.uiScope
+import com.amgregoire.mangafeed.v2.enums.ReaderSettings
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.Logger
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
@@ -36,6 +37,9 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener {
         ViewModelProviders.of(parent).get(ReaderViewModel::class.java)
     }
 
+    private val readerSettings: ReaderSettings
+        get() = readerViewModel?.getReaderSetting() ?: ReaderSettings.Max
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         self = inflater.inflate(R.layout.item_fragment_reader_chapter, null)
         return self
@@ -44,7 +48,6 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener {
     override fun onStart() {
         super.onStart()
 
-        val parent = activity ?: return
 
         val chapter = readerViewModel?.getChapterByPosition(arguments!![POSITION_KEY] as Int) ?: return
 
@@ -52,12 +55,18 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener {
             setup(chapter, refreshing = true)
         })
 
-        readerViewModel?.chapterInfo?.observe(parent, Observer { info ->
-            info ?: return@Observer
-            if (info.dbChapter.url != chapter.url) return@Observer
+        activity?.let { parent ->
+            readerViewModel?.chapterInfo?.observe(parent, Observer { info ->
+                info ?: return@Observer
+                if (info.dbChapter.url != chapter.url) return@Observer
 
-            self.viewPagerReaderChapter.currentItem = info.currentPage
-        })
+                self.viewPagerReaderChapter.currentItem = info.currentPage
+            })
+
+            readerViewModel?.readerSettings?.observe(parent, Observer {
+                self.viewPagerReaderChapter.offscreenPageLimit = readerSettings.pageCountCache
+            })
+        }
 
         setup(chapter)
 
@@ -126,18 +135,16 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener {
                             else NovelAdapter(contents, this)
 
                     //                    self.viewPagerReaderChapter.setPageTransformer(MarginPageTransformer(125))
-                    self.viewPagerReaderChapter.offscreenPageLimit = 6
+                    self.viewPagerReaderChapter.offscreenPageLimit = readerSettings.pageCountCache
                     self.emptyStateReader.hideImmediate()
                     self.viewPagerReaderChapter.currentItem = currentItem
                     self.viewPagerReaderChapter.requestDisallowInterceptTouchEvent(true)
                     setupViewpager()
-                }
-                catch (ex: Exception) {
+                } catch (ex: Exception) {
                     Logger.error("Switching chapters too fast")
                 }
             })
-        }
-        else {
+        } else {
             self.emptyStateReader.hide()
             return
         }
@@ -177,8 +184,7 @@ class ChapterFragment : BaseFragment(), GestureViewPager.UserGestureListener {
                 val totalItems = self.viewPagerReaderChapter.adapter?.itemCount ?: 0
                 if (currentItem == 0 && checkSwipe(event) == -1) {
                     if (app.currentSourceType == MangaEnums.SourceType.MANGA) onLeft()
-                }
-                else if (totalItems - 1 == currentItem && checkSwipe(event) == 1) {
+                } else if (totalItems - 1 == currentItem && checkSwipe(event) == 1) {
                     if (app.currentSourceType == MangaEnums.SourceType.MANGA) onRight()
                 }
                 return false

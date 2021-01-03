@@ -36,7 +36,7 @@ class AccountFragment : BaseFragment()
 
         self.itConfigSourceSync.setOnClickListener(View.OnClickListener {
             val parent = activity ?: return@OnClickListener
-            (parent as FragmentNavMap).addFragment(SyncSourceFragment.newInstance(), this, SyncSourceFragment.TAG)
+            (parent as FragmentNavMap).addFragment(SyncSourceFragment.newInstance(), SyncSourceFragment.TAG)
         })
     }
 

@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.amgregoire.mangafeed.R
+import com.amgregoire.mangafeed.v2.enums.ReaderSettings
 import com.amgregoire.mangafeed.v2.ui.base.BaseFragment
 import com.amgregoire.mangafeed.v2.ui.read.adapter.ImageListAdapter
 import com.amgregoire.mangafeed.v2.widget.MangaImageView
@@ -21,6 +23,9 @@ class ImageFragment : BaseFragment() {
 
     private val url by lazy { arguments!![URL_KEY] as String }
 
+    private val readerSettings: ReaderSettings
+        get() = readerViewModel?.getReaderSetting() ?: ReaderSettings.Max
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_image2, null).also {
             self = it
@@ -34,6 +39,12 @@ class ImageFragment : BaseFragment() {
         self.emptyState.setButtonClickListener(View.OnClickListener {
             setupImages()
         })
+
+        activity?.let {
+            readerViewModel?.readerSettings?.observe(it, Observer {
+                setupImages()
+            })
+        }
     }
 
     private fun setupImages() {
@@ -41,12 +52,12 @@ class ImageFragment : BaseFragment() {
         self.rv.layoutManager = LinearLayoutManager(context)
         self.rv.adapter = ImageListAdapter(
                 url = url,
+                readerSettings = readerSettings,
                 screenListener = screenListener,
                 onCompleteListener = { isComplete ->
                     if (isComplete) self.emptyState.hide()
                     else self.emptyState.show()
                 })
-
     }
 
     private val screenListener = object : MangaImageView.ScreenInteraction {

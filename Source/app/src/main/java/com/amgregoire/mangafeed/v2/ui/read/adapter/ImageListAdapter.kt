@@ -2,13 +2,16 @@ package com.amgregoire.mangafeed.v2.ui.read.adapter
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.amgregoire.mangafeed.R
 import com.amgregoire.mangafeed.Utils.NetworkService
+import com.amgregoire.mangafeed.v2.enums.ReaderSettings
 import com.amgregoire.mangafeed.v2.service.CloudFlareService
 import com.amgregoire.mangafeed.v2.service.ImageUrlService
 import com.amgregoire.mangafeed.v2.service.Logger
@@ -19,6 +22,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
+import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -27,6 +31,7 @@ import kotlinx.android.synthetic.main.fragment_image_new.view.*
 
 class ImageListAdapter(
         val url: String,
+        val readerSettings: ReaderSettings,
         val screenListener: MangaImageView.ScreenInteraction,
         val onCompleteListener: (Boolean) -> Unit
 ) : RecyclerView.Adapter<ImageListAdapter.ViewHolder>() {
@@ -84,14 +89,15 @@ class ImageListAdapter(
                             .asBitmap()
                             .load(glideUrl)
                             .apply(lOptions)
+                            .downsample(DownsampleStrategy.DEFAULT)
                             .transition(GenericTransitionOptions<Any>().transition(android.R.anim.fade_in))
                             .into(object : CustomTarget<Bitmap>() {
+                                @RequiresApi(Build.VERSION_CODES.P)
                                 override fun onResourceReady(resource: Bitmap, glideAnimation: Transition<in Bitmap>?) {
                                     try {
-
                                         val resHeight = resource.getScaledHeight(itemView.resources.displayMetrics)
                                         val resWidth = resource.getScaledWidth(itemView.resources.displayMetrics)
-                                        val screenHeight = (ScreenUtil.getScreenHeight(context) * 1.5).toInt()
+                                        val screenHeight = (ScreenUtil.getScreenHeight(context) * readerSettings.imageSizeFactor).toInt()
 
                                         if (resHeight > screenHeight) {
                                             itemView.rlParent.layoutParams.height = RelativeLayout.LayoutParams.WRAP_CONTENT
@@ -102,12 +108,16 @@ class ImageListAdapter(
 
                                             val bitmaps = arrayListOf<Bitmap>()
 
-                                            while (imageHeight < resource.height) {
+                                            while (imageHeight < resHeight) {
                                                 val newHeight =
                                                         if (resHeight >= imageHeight + screenHeight) screenHeight
                                                         else resHeight - imageHeight
-                                                bitmaps.add(Bitmap.createBitmap(resource, 0, imageHeight, resWidth, newHeight))
-                                                imageHeight += screenHeight
+
+                                                if(newHeight >= 0) {
+                                                    val bm = Bitmap.createBitmap(resource, 0, imageHeight, resWidth, newHeight)
+                                                    bitmaps.add(bm)
+                                                    imageHeight += screenHeight
+                                                }
                                             }
 
                                             val indexOf = items.indexOfFirst { it is Item.Url && it.value == url }

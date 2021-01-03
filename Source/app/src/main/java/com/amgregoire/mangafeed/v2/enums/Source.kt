@@ -12,7 +12,8 @@ enum class Source(var source: SourceBase, val sourceId:String)
     FunManga(FunManga(),"d4758a05-ac1a-486c-92c1-537b987fdcea"),
     MangaHere(MangaHere(),"33f3ea26-aeb0-4bab-ac0c-ccfc2333c13b"),
     MangaEden(MangaEden(),"0ed4656e-4377-4df8-bada-81823bbed935"),
-    Wuxia(Wuxia(),"97f4fd6e-5348-4127-8bdb-4dbff0f6275f");
+    Wuxia(Wuxia(),"97f4fd6e-5348-4127-8bdb-4dbff0f6275f"),
+    MangaGo(MangaGo(),"c18f1dd3-2c30-461c-bdde-ac2fb4f5a8bb");
 
     val baseUrl: String
         get() = source.baseUrl
